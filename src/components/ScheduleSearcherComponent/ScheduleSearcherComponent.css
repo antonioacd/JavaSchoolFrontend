@@ -1,0 +1,19 @@
+.search-content {
+    max-width: 800px;
+}
+
+.search-button {
+    border-radius: 20px;
+}
+.search-button:hover {
+    background-color:rgb(23, 62, 146);
+        border-color: grey;
+        border-radius: 20px;
+}
+
+.search-button:active {
+    background-color:darkgray;
+        border-color: grey;
+        border-radius: 20px;
+}
+    

@@ -1,0 +1,11 @@
+.input-custom {
+    width: '100px'
+}
+
+
+.bottom-alert {
+    position: fixed;
+    bottom: 5px;
+    left: 50px;
+    right: 50px;
+}

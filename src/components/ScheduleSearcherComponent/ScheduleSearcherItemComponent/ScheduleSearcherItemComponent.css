@@ -1,0 +1,15 @@
+.schedule-item {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Tres columnas: primera estación, flecha y segunda estación */
+    grid-gap: 10px; /* Espacio entre las columnas */
+    align-items: center; /* Centra verticalmente el contenido */
+    text-align: center; /* Centra horizontalmente el contenido */
+    padding: 10px;
+    border-top: 1px solid #ccc; /* Borde superior */
+    border-bottom: 1px solid #ccc; /* Borde inferior */
+}
+  
+.arrow {
+    font-size: 24px;
+}
+  
