@@ -8,7 +8,6 @@ function ComboBoxTrains({ options, onSelect }) {
       id="combo-box-demo"
       options={options}
       getOptionLabel={(option) => option.seats}
-      style={{ width: 300 }}
       renderInput={(params) => <TextField {...params} label="Capacity" />}
       onChange={(event, value) => onSelect(value)}
     />

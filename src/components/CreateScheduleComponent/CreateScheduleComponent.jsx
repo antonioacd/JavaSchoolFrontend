@@ -2,285 +2,289 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScheduleService from '../../services/ScheduleService';
 import Alert from 'react-bootstrap/Alert';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { format } from 'date-fns';
 import StationService from '../../services/StationService';
-import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent';
 import TrainService from '../../services/TrainService';
 import ComboBoxTrains from '../ComboBox/ComboBoxTrains';
 import ComboBoxStations from '../ComboBox/ComboBoxStations';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
+import './CreateScheduleComponent.css';
 
 /**
- * 
- * @returns 
+ * Component for creating a schedule.
  */
 function CreateScheduleComponent() {
-    const [state, setState] = useState(
-        {
-            "departureTime": "",
-            "arrivalTime": "",
-            "occupiedSeats": "0",
-            "departureStation": {
-              "id": 0,
-              "name": "",
-              "city": ""
-            },
-            "arrivalStation": {
-              "id": 0,
-              "name": "",
-              "city": ""
-            },
-            "train": {
-              "id": 0,
-              "seats": ""
-            }
+    const [state, setState] = useState({
+        "departureTime": "",
+        "arrivalTime": "",
+        "occupiedSeats": "0",
+        "departureStation": {
+            "id": 0,
+            "name": "",
+            "city": ""
+        },
+        "arrivalStation": {
+            "id": 0,
+            "name": "",
+            "city": ""
+        },
+        "train": {
+            "id": 0,
+            "seats": ""
         }
-    );
+    });
 
     // Init the navigate variable
     const navigate = useNavigate();
-
 
     // Set the states of alerts
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
 
-    const [selectedDepartureDate, setSelectedDepartureDate] = useState(new Date());
-    const [selectedArrivalDate, setSelectedArrivalDate] = useState(new Date());
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const [selectedDepartureDate, setSelectedDepartureDate] = useState(dayjs());
+    const [selectedArrivalDate, setSelectedArrivalDate] = useState(dayjs());
 
     const [departureStationList, setDepartureStationList] = useState([]);
-    const [departureStationNameList, setDepartureStationNameList] = useState([]);
-
     const [arrivalStationList, setArrivalStationList] = useState([]);
-
-    const [trainSeatsList, setTrainNameList] = useState([]);
     const [trainList, setTrainList] = useState([]);
 
     useEffect(() => {
-        // You can fetch the data and update departureStationList here
+        // Fetch the data and update departureStationList here
         StationService.getStations().then((res) => {
             const updatedDepartureStationList = res.data;
             setDepartureStationList(updatedDepartureStationList);
-
-            console.log("Lista estaciones", updatedDepartureStationList);
-
-            updatedDepartureStationList.forEach(station => {
-                console.log(station.name);
-                departureStationNameList.push(station.name);
-            });
-
-            console.log(departureStationNameList);
         });
 
-        // You can fetch the data and update departureStationList here
+        // Fetch the data and update departureStationList here
         TrainService.getTrains().then((res) => {
             const updatedTrainList = res.data;
             setTrainList(updatedTrainList);
-
-            updatedTrainList.forEach(train => {
-                trainSeatsList.push(train.seats);
-            });
         });
-
-
     }, []);
 
-
-    const changeDepartureTimeHandler = (date) => {
-        const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-        setSelectedDepartureDate(date); // Actualiza el estado de la fecha seleccionada
+    /**
+     * Handle the change of departure time.
+     * @param {object} newDate - The new departure time.
+     */
+    const changeDepartureTimeHandler = (newDate) => {
+        const formattedDate = newDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        setSelectedDepartureDate(newDate);
         setState({ ...state, departureTime: formattedDate });
     };
 
-    const changeArrivalTimeHandler = (date) => {
-        const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
-        setSelectedArrivalDate(date); // Actualiza el estado de la fecha seleccionada
+    /**
+     * Handle the change of arrival time.
+     * @param {object} newDate - The new arrival time.
+     */
+    const changeArrivalTimeHandler = (newDate) => {
+        const formattedDate = newDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        setSelectedArrivalDate(newDate);
         setState({ ...state, arrivalTime: formattedDate });
     };
 
-    // Change departureStation whith the user input
+    /**
+     * Handle the change of departure station.
+     * @param {object} selectedDepartureStation - The selected departure station.
+     */
     const changeDepartureStationHandler = (selectedDepartureStation) => {
-
-        if(selectedDepartureStation === null){
+        if (selectedDepartureStation === null) {
             return;
         }
 
         departureStationList.forEach(station => {
-            if(station.id === selectedDepartureStation.id){
-                setState({ ...state, departureStation: station })
-            }    
+            if (station.id === selectedDepartureStation.id) {
+                setState({ ...state, departureStation: station });
+            }
         });
 
-        // You can fetch the data and update departureStationList here
+        // Fetch the data and update departureStationList here
         StationService.getStations().then((res) => {
             const updatedArrivalStationList = res.data;
             setArrivalStationList(updatedArrivalStationList);
-
-            console.log("Lista estaciones", updatedArrivalStationList);
-
-            updatedArrivalStationList.forEach(station => {
-                console.log(station.name);
-                if(station.name === state.departureStation.name){
-                    return;
-                }
-                arrivalStationList.push(station);
-            });
-
-            //console.log(arrivalStationNameList);
         });
     };
 
-    // Change arrivalStation whith the user input
+    /**
+     * Handle the change of arrival station.
+     * @param {object} selectedArrivalStation - The selected arrival station.
+     */
     const changeArrivalStationHandler = (selectedArrivalStation) => {
-
-        if(selectedArrivalStation === null){
+        if (selectedArrivalStation === null) {
             return;
         }
 
         arrivalStationList.forEach(station => {
-            if(station.id === selectedArrivalStation.id){
-                setState({ ...state, arrivalStation: station })
-            }    
-        });
-    };
-
-    const changeTrainHandler = (selectedTrain) => {
-
-        if(selectedTrain === null){
-            return;
-        }
-
-        trainList.forEach(train => {
-            if(train.id === selectedTrain.id){
-                setState({ ...state, train: train })
+            if (station.id === selectedArrivalStation.id) {
+                setState({ ...state, arrivalStation: station });
             }
         });
     };
 
-    // Go to home page
+    /**
+     * Handle the change of the selected train.
+     * @param {object} selectedTrain - The selected train.
+     */
+    const changeTrainHandler = (selectedTrain) => {
+        if (selectedTrain === null) {
+            return;
+        }
+
+        trainList.forEach(train => {
+            if (train.id === selectedTrain.id) {
+                setState({ ...state, train: train });
+            }
+        });
+    };
+
+    /**
+     * Navigate to the home page.
+     */
     const cancel = () => {
         navigate("/");
     };
 
-    
-    // Save the station in the database
+    /**
+     * Save the schedule in the database.
+     * @param {object} event - The event object.
+     */
     const saveSchedule = (event) => {
         event.preventDefault();
-
-        console.log("Schedule",state);
-
-        
+        const error = checkState();
 
         // Check if the fields are empty
-        if (checkState() === 1) {
-            return;
-        }
+        if (error) {
+            setErrorMessage(error);
+            setShowSuccessAlert(false);
+            setShowErrorAlert(true);
+        } else {
+            setShowSuccessAlert(true);
+            setShowErrorAlert(false);
 
-        // 
-        ScheduleService.createSchedule(state)
+            // Call the save method
+            ScheduleService.createSchedule(state)
             .then(response => {
                 if (response.status === 200) {
-                    console.log('Schedule added successfully:', response.data);
                     setShowSuccessAlert(true);
                     setShowErrorAlert(false);
                 } else {
-                    console.error('Error adding station:', response.data);
                     setShowSuccessAlert(false);
                     setShowErrorAlert(true);
                 }
             })
             .catch(error => {
-                console.error('Error adding station:', error);
                 setShowSuccessAlert(false);
                 setShowErrorAlert(true);
             });
+        }
     };
 
+    /**
+     * Check the state for any errors.
+     * @returns {string} - The error message, or an empty string if there are no errors.
+     */
     function checkState() {
-        if (state.departureStation.id === "" || 
-            state.departureStation.name === "" || 
-            state.departureStation.city === "" || 
-            state.arrivalStation.id === "" || 
-            state.arrivalStation.name === "" || 
-            state.arrivalStation.city === "" || 
-            state.train.id === "" || 
-            state.train.seats === "" || 
-            state.departureTime === "" || 
+        if (state.departureStation.id === "" ||
+            state.departureStation.name === "" ||
+            state.departureStation.city === "" ||
+            state.arrivalStation.id === "" ||
+            state.arrivalStation.name === "" ||
+            state.arrivalStation.city === "" ||
+            state.train.id === "" ||
+            state.train.seats === "" ||
+            state.departureTime === "" ||
             state.arrivalTime === "") {
-            setShowSuccessAlert(false);
-            setShowErrorAlert(true);
-            return 1;
+            return "Please fill in all fields.";
         }
-        return 0;
+
+        if (dayjs().isBefore(dayjs())) {
+            return "";
+        }
+
+        if (selectedArrivalDate.isBefore(selectedDepartureDate)) {
+            return "The arrival time cannot be before the departure time.";
+        }
+
+        return "";
     }
 
     return (
         <div className="container">
             <div className="row justify-content-center">
-                <h1 className='text-center'>Create station</h1>
+                <h1 className="text-center">Create Schedule</h1>
+            </div>
+      
+            <div className="row mt-4">
+                <div className="col">
+                    <h5>Departure Time</h5>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                        label="Departure time"
+                        value={dayjs(selectedDepartureDate)}
+                        onChange={changeDepartureTimeHandler}
+                    />
+              </LocalizationProvider>
             </div>
 
-            <div className='card-body'>
-                <form>
-                    <div className="form-group">
-                        <h5>Departure Time</h5>
-                        <DatePicker
-                            selected={selectedDepartureDate}
-                            onChange={changeDepartureTimeHandler}
-                            showTimeSelect
-                            dateFormat="yyyy-MM-dd HH:mm" // Formato de fecha y hora
-                        />
-                        <h5>Arrival Time</h5>
-                        <DatePicker
-                            selected={selectedArrivalDate}
-                            onChange={changeArrivalTimeHandler}
-                            showTimeSelect
-                            dateFormat="yyyy-MM-dd HH:mm" // Formato de fecha y hora
-                        />
-                        <h5>Departure Station</h5>
-                        <ComboBoxStations options={departureStationList} onSelect={changeDepartureStationHandler} />
-                        https://github.com/antonioacd/JavaSchoolFrontend.git                  <h5>Arrival Station</h5>
-                        <ComboBoxStations options={arrivalStationList} onSelect={changeArrivalStationHandler} />
-                        <h5>Train</h5>
-                        <ComboBoxTrains options={trainList} onSelect={changeTrainHandler} />
-                    </div>
-
-                    <div className='justify-content-around mt-2'>
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={saveSchedule}
-                        >
-                            Save station
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={cancel}
-                            style={{ marginLeft: "10px" }}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+            <div className="col">
+                <h5>Arrival Time</h5>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                        label="Arrival time"
+                        value={dayjs(selectedArrivalDate)}
+                        onChange={changeArrivalTimeHandler}
+                    />
+                </LocalizationProvider>
             </div>
-
-            <div className="alert-container">
-                {showSuccessAlert && (
-                    <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible className="bottom-alert">
-                        Schedule added successfully.
-                    </Alert>
-                )}
-
-                {showErrorAlert && (
-                    <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible className="bottom-alert">
-                        Error adding station. Please try again.
-                    </Alert>
-                )}
+            
+          </div>
+      
+          <div className="row mt-4">
+                <div className="col custom-selector">
+                    <h5>Departure Station</h5>
+                    <ComboBoxStations options={departureStationList} onSelect={changeDepartureStationHandler} />
+                </div>
+                <div className="col custom-selector-train">
+                    <h5>Train</h5>
+                    <ComboBoxTrains options={trainList} onSelect={changeTrainHandler} />
+                </div>
             </div>
+      
+          <div className="row mt-4">
+            <div className="col custom-selector">
+              <h5>Train</h5>
+              <ComboBoxTrains options={trainList} onSelect={changeTrainHandler} />
+            </div>
+          </div>
+      
+          <div className="row mt-4 justify-content-between">
+            <button type="button" className="btn btn-primary" onClick={saveSchedule}>
+              Save schedule
+            </button>
+            <button type="button" className="btn btn-secondary mt-2" onClick={cancel}>
+              Cancel
+            </button>
+          </div>
+      
+          <div className="alert-container mt-4">
+            {showSuccessAlert && (
+              <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible className="bottom-alert">
+                Schedule added successfully.
+              </Alert>
+            )}
+
+            {showErrorAlert && (
+              <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible className="bottom-alert">
+                {errorMessage || "Error adding schedule. Please try again."}
+              </Alert>
+            )}
+          </div>
         </div>
-    );
+      );
 }
 
 export default CreateScheduleComponent;
