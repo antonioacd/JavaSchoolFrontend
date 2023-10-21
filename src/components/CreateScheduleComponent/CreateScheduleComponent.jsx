@@ -11,7 +11,10 @@ import TrainService from '../../services/TrainService';
 import ComboBoxTrains from '../ComboBox/ComboBoxTrains';
 import ComboBoxStations from '../ComboBox/ComboBoxStations';
 
-// Schedule Component
+/**
+ * 
+ * @returns 
+ */
 function CreateScheduleComponent() {
     const [state, setState] = useState(
         {
@@ -237,7 +240,7 @@ function CreateScheduleComponent() {
                         />
                         <h5>Departure Station</h5>
                         <ComboBoxStations options={departureStationList} onSelect={changeDepartureStationHandler} />
-                        <h5>Arrival Station</h5>
+                        https://github.com/antonioacd/JavaSchoolFrontend.git                  <h5>Arrival Station</h5>
                         <ComboBoxStations options={arrivalStationList} onSelect={changeArrivalStationHandler} />
                         <h5>Train</h5>
                         <ComboBoxTrains options={trainList} onSelect={changeTrainHandler} />
