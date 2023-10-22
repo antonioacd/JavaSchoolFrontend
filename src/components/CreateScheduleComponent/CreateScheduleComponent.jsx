@@ -33,7 +33,12 @@ function CreateScheduleComponent() {
         },
         "train": {
             "id": 0,
-            "seats": ""
+            "seats": "",
+            "currentStation": {
+                "id": 0,
+                "name": "",
+                "city": ""
+            }
         }
     });
 
@@ -60,11 +65,6 @@ function CreateScheduleComponent() {
             setDepartureStationList(updatedDepartureStationList);
         });
 
-        // Fetch the data and update departureStationList here
-        TrainService.getTrains().then((res) => {
-            const updatedTrainList = res.data;
-            setTrainList(updatedTrainList);
-        });
     }, []);
 
     /**
@@ -87,26 +87,66 @@ function CreateScheduleComponent() {
         setState({ ...state, arrivalTime: formattedDate });
     };
 
+    function getStations() {
+        StationService.getStations().then((res) => {
+          const updatedArrivalStationList = res.data;
+          const filteredArrivalStationList = updatedArrivalStationList.filter(station => station.id !== state.departureStation.id);
+          setArrivalStationList(filteredArrivalStationList);
+        });
+    }
+
+    function getTrains(){
+        // Fetch the data and update departureStationList here
+        TrainService.getTrains().then((res) => {
+            const trainListTmp = res.data;
+
+            const updatedTrainList = [];
+
+            trainListTmp.forEach(train => {
+                console.log("Tren: ", train.currentStation.id + " - " + state.departureStation.id);
+                if(train.currentStation.id === state.departureStation.id){
+                    updatedTrainList.push(train);
+                }
+            });
+
+            console.log("Updated", updatedTrainList);
+
+            setTrainList(updatedTrainList);
+        });
+    }
+
+    useEffect(() => {
+        // Este efecto se ejecutará cada vez que el estado o alguna de las dependencias cambie
+        // Puedes realizar operaciones adicionales aquí después de que el estado se haya actualizado
+        getStations();
+        getTrains();
+      
+        // Fetch the data and update departureStationList here
+      
+        console.log("Before", trainList);
+      }, [state.departureStation]);
+
     /**
      * Handle the change of departure station.
      * @param {object} selectedDepartureStation - The selected departure station.
      */
     const changeDepartureStationHandler = (selectedDepartureStation) => {
+        
         if (selectedDepartureStation === null) {
             return;
         }
 
-        departureStationList.forEach(station => {
-            if (station.id === selectedDepartureStation.id) {
-                setState({ ...state, departureStation: station });
-            }
-        });
+        const selectedStation = departureStationList.find(station => station.id === selectedDepartureStation.id);
+
+        setState({ ...state, departureStation: selectedStation });
+        
 
         // Fetch the data and update departureStationList here
-        StationService.getStations().then((res) => {
-            const updatedArrivalStationList = res.data;
-            setArrivalStationList(updatedArrivalStationList);
-        });
+        
+
+        console.log("Before", trainList);
+
+        
     };
 
     /**
@@ -248,9 +288,9 @@ function CreateScheduleComponent() {
                     <h5>Departure Station</h5>
                     <ComboBoxStations options={departureStationList} onSelect={changeDepartureStationHandler} />
                 </div>
-                <div className="col custom-selector-train">
-                    <h5>Train</h5>
-                    <ComboBoxTrains options={trainList} onSelect={changeTrainHandler} />
+                <div className="col custom-selector">
+                    <h5>Arrival Station</h5>
+                    <ComboBoxStations options={arrivalStationList} onSelect={changeArrivalStationHandler} />
                 </div>
             </div>
       

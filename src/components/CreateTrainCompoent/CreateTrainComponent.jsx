@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TrainService from '../../services/TrainService';
+import StationService from '../../services/StationService';
 import Alert from 'react-bootstrap/Alert';
 import "./CreateTrainComponent.css";
+import ComboBoxStations from '../ComboBox/ComboBoxStations';
 
 // Train Component
 function CreateTrainComponent() {
     const [state, setState] = useState({
         seats: '',
+        currentStation: {
+            id: '',
+            name: '',
+            city: ''
+        }
     });
 
     // Init the navigate variable
@@ -16,6 +23,29 @@ function CreateTrainComponent() {
     // Set the states of alerts
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+    const [stationList, setStationList] = useState([]);
+
+    useEffect(() => {
+        // Fetch the data and update departureStationList here
+        StationService.getStations().then((res) => {
+            const updatedStationList = res.data;
+            setStationList(updatedStationList);
+        });
+    }, []);
+
+    const changeArrivalStationHandler = (selectedStation) => {
+        if (selectedStation === null) {
+            return;
+        }
+
+        stationList.forEach(station => {
+            if (station.id === selectedStation.id) {
+                setState({ ...state, currentStation: station });
+            }
+        });
+    };
+
 
     // Change seats whith the user input
     const changeSeatsHandler = (event) => {
@@ -31,16 +61,14 @@ function CreateTrainComponent() {
     const saveTrain = (event) => {
         event.preventDefault();
 
-        const trainData = {
-            seats: state.seats
-        }
-
         // Check if the fields are empty
         if (checkState() === 1) {
             return;
         }
 
-        TrainService.createTrain(trainData)
+        console.log("State", state);
+
+        TrainService.createTrain(state)
             .then(response => {
                 if (response.status === 200) {
                     console.log('Train added successfully:', response.data);
@@ -68,9 +96,11 @@ function CreateTrainComponent() {
         return 0;
     }
 
+    
+
     return (
         <div className="container">
-            <div className="row justify-content-center">
+            <div className="row justify-content-center mt-5">
                 <h1 className='text-center'>Create train</h1>
             </div>
 
@@ -87,6 +117,8 @@ function CreateTrainComponent() {
                             onChange={changeSeatsHandler}
                             style={{ width: '200px', margin: 'auto' }}
                         />
+                        <h5>Current Station</h5>
+                        <ComboBoxStations options={stationList} onSelect={changeArrivalStationHandler} />
                     </div>
                     <div className='justify-content-around mt-2'>
                         <button
