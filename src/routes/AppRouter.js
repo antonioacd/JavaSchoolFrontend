@@ -1,54 +1,74 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from '../components/HeaderComponent/HeaderComponent';
-import CreateScheduleComponent from '../components/CreateScheduleComponent/CreateScheduleComponent';
-import CreateStationComponent from '../components/CreateStationComponent/CreateStationComponent';
-import CreateTrainComponent from '../components/CreateTrainCompoent/CreateTrainComponent';
-import CreateTrainPage from '../pages/CreateTrain';
-import ScheduleSearcher from '../components/ScheduleSearcherComponent/ScheduleSearcherComponent';
-import AllUsers from '../pages/AllUsers';
-import User from '../pages/User';
-import { Home } from '@mui/icons-material';
-import About from '../pages/About';
+import Header from '../components/Other/HeaderComponent/HeaderComponent';
+import CreateTrainPage from '../pages/Train/CreateTrainPage';
+import CreateSchedulePage from '../pages/Schedule/CreateSchedulePage';
+import CreateStationPage from '../pages/Station/CreateStationPage';
+import SearchSchedulePage from '../pages/Schedule/SearchSchedulePage';
+import CreateUserPage from '../pages/User/CreateUserPage';
+import ViewUsersPage from '../pages/User/ViewUsersPage';
+import HomePage from '../pages/HomePage';
+import ViewTrainsPage from '../pages/Train/ViewTrainsPage';
+import ViewSchedulesPage from '../pages/Schedule/ViewSchedulesPage';
 
 
 const AppRouter = () => {
     return (
         <Router>
             <Header/>
-            <Routes>
-                <Route 
-                    path="/"
-                    element={<Home/>}
-                />
-                <Route 
-                    path="/about"
-                    element={<About/>}
-                />
-                <Route 
-                    path="/user"
-                    element={<User/>}
-                />
-                <Route 
-                    path="/users"
-                    element={<AllUsers/>}
-                />
-                <Route 
-                    path="/searcher"
-                    element={<ScheduleSearcher/>}
-                />
-                <Route 
-                    path="/create-train"
-                    element={<CreateTrainPage/>}
-                />
-                <Route 
-                    path="/create-station"
-                    element={<CreateStationComponent/>}
-                />
-                <Route 
-                    path="/create-schedule"
-                    element={<CreateScheduleComponent/>}
-                />
-            </Routes>
+            <div style={{marginTop: '70px'}}>
+                <Routes>
+                     {/* Home */}
+
+                    <Route 
+                        path="/"
+                        element={<HomePage/>}
+                    />
+
+                    {/* User */}
+
+                    <Route 
+                        path="/user/view"
+                        element={<ViewUsersPage/>}
+                    />
+                    <Route 
+                        path="/user/create"
+                        element={<CreateUserPage/>}
+                    />
+
+                    {/* Station */}
+
+                    <Route 
+                        path="/station/create"
+                        element={<CreateStationPage/>}
+                    />
+
+                    {/* Train */}
+
+                    <Route 
+                        path="/train/create"
+                        element={<CreateTrainPage/>}
+                    />
+                    <Route 
+                        path="/train/view"
+                        element={<ViewTrainsPage/>}
+                    />
+
+                    {/* Schedule */}
+
+                    <Route 
+                        path="/schedule/create"
+                        element={<CreateSchedulePage/>}
+                    />
+                    <Route 
+                        path="/schedule/search"
+                        element={<SearchSchedulePage/>}
+                    />
+                    <Route 
+                        path="/schedule/view"
+                        element={<ViewSchedulesPage/>}
+                    />
+                </Routes>
+            </div>
         </Router>
     );
   };
