@@ -1,11 +1,21 @@
-import AppRouter from "./routes/AppRouter";
+import './App.css';
 
-function App(){
-    return (
-        <div>
-            <AppRouter></AppRouter>
+import Header from './Header';
+import AppContent from './AppContent';
+
+function App() {
+  return (
+    <div className="App">
+      <Header pageTitle="Frontend authenticated with JWT"/>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col">
+            <AppContent />
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default App;

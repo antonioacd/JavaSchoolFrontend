@@ -3,7 +3,6 @@ import axios from 'axios';
 const SCHEDULES_API_BASE_URL = "http://localhost:8080/api/schedules";
 
 class ScheduleService {
-
     constructor() {
         this.axiosInstance = axios.create({
             baseURL: SCHEDULES_API_BASE_URL,
@@ -19,12 +18,12 @@ class ScheduleService {
         });
     }
 
-    getSchedules(){
-        return axios.get(SCHEDULES_API_BASE_URL);
+    getSchedules() {
+        return this.axiosInstance.get(); // Usar this.axiosInstance en lugar de axios
     }
 
-    createSchedule(stationData) {
-        return axios.post(SCHEDULES_API_BASE_URL, stationData);
+    createSchedule(scheduleData) {
+        return this.axiosInstance.post('', scheduleData); // Usar this.axiosInstance en lugar de axios
     }
 }
 

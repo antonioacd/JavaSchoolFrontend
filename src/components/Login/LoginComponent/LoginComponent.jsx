@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+//import { useNavigate } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import userService from '../../../services/UserService';
 import SnackbarComponent from '../../Other/SnackbarComponent/SnackbarComponent';
@@ -17,7 +14,7 @@ function LoginComponent() {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('');
 
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const changeEmailHandler = (event) => {
         setState({ ...state, email: event.target.value });
@@ -43,6 +40,7 @@ function LoginComponent() {
                     const token = response.data.token;
                     localStorage.setItem('token', token)
                     console.log('Token: ',token);
+                    //navigate("/");
 
                 }).catch((error) => {
                     setSnackbarSeverity('error');
@@ -65,7 +63,7 @@ function LoginComponent() {
     }
 
     const cancel = () => {
-        navigate("/");
+        //navigate("/");
     }; 
 
 const handleSnackbarClose = () => {
