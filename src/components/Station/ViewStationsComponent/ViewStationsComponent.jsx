@@ -1,36 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComponent';
 import { useNavigate } from 'react-router-dom';
-import trainService from '../../../services/TrainService';
+import stationService from '../../../services/StationService';
 
-function ViewTrainsComponent() {
+function ViewStationsComponent() {
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
     
-    const trains = [];
+    const stations = [];
 
-    trainService.getTrains().then((res) => {
+    stationService.getStations().then((res) => {
       console.log(res.data);
         setData(res.data);
 
-        const trainsInfo = res.data;
+        const stationsInfo = res.data;
 
-        trainsInfo.forEach(trainInfo => {
-          const train = {
-            id: trainInfo.id,
-            departureStation: trainInfo.departureStation.name,
-            arrivalStation: trainInfo.arrivalStation.name,
-            trainNumber: trainInfo.trainNumber,
-            trainSeats: trainInfo.seats
+        stationsInfo.forEach(stationInfo => {
+          const station = {
+            id: stationInfo.id,
+            name: stationInfo.name,
+            city: stationInfo.city
           }
 
-          trains.push(train);
+          stations.push(station);
 
         });
 
-        setData(trains);
+        setData(stations);
   });
 
   }, []);
@@ -39,16 +37,14 @@ function ViewTrainsComponent() {
 
   const columns = [
     { id: 'id', numeric: false, disablePadding: false, label: 'Id' },
-    { id: 'departureStation', numeric: false, disablePadding: false, label: 'Departure Station' },
-    { id: 'arrivalStation', numeric: false, disablePadding: false, label: 'Arrival Station' },
-    { id: 'trainNumber', numeric: false, disablePadding: false, label: 'Train Number' },
-    { id: 'trainSeats', numeric: false, disablePadding: false, label: 'Train Seats' },
+    { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
+    { id: 'city', numeric: false, disablePadding: false, label: 'City' },
   ];
 
   const rowsPerPageOptions = [5, 10, 25];
 
   const handleAddRecord = () => {
-    navigate("/train/create");
+    navigate("/station/create");
   };
 
   const handleDeleteRecords = (selectedIds) => {
@@ -61,7 +57,7 @@ function ViewTrainsComponent() {
     <div>
       <EnhancedTableComponent
         data={data}
-        title="Trains"
+        title="Stations"
         columns={columns}
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
@@ -71,4 +67,4 @@ function ViewTrainsComponent() {
   );
 }
 
-export default ViewTrainsComponent;
+export default ViewStationsComponent;

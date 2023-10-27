@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TrainService from '../../../services/TrainService';
 import StationService from '../../../services/StationService';
-import Alert from 'react-bootstrap/Alert';
 import "./CreateTrainComponent.css";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import { Duration } from "luxon";
 import { TextField } from '@mui/material';
+import SnackbarComponent from '../../Other/SnackbarComponent/SnackbarComponent'; // Import SnackbarComponent
 
 function CreateTrainComponent() {
   const [state, setState] = useState({
@@ -18,15 +18,19 @@ function CreateTrainComponent() {
       id: ''
     },
     duration: '',
+    trainNumber: ''
   });
 
   const [updatedDuration, setUpdatedDuration] = useState('');
 
   const navigate = useNavigate();
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [departureStationList, setDepartureStationList] = useState([]);
   const [arrivalStationList, setArrivalStationList] = useState([]);
+  
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('');
 
   useEffect(() => {
     StationService.getStations().then((res) => {
@@ -75,6 +79,10 @@ function CreateTrainComponent() {
     setState({ ...state, seats: event.target.value });
   };
 
+  const changeTrainNumberHandler = (event) => {
+    setState({ ...state, trainNumber: event.target.value });
+  };
+
   useEffect(() => {
     const formattedDuration = durationFormatter();
     setState({ ...state, duration: formattedDuration });
@@ -119,29 +127,37 @@ function CreateTrainComponent() {
       .then((response) => {
         if (response.status === 200) {
           console.log('Train added successfully:', response.data);
-          setShowSuccessAlert(true);
-          setShowErrorAlert(false);
+          setSnackbarSeverity('success');
+          setSnackbarMessage('Train added successfully');
+          setSnackbarOpen(true);
         } else {
           console.error('Error adding train:', response.data);
-          setShowSuccessAlert(false);
-          setShowErrorAlert(true);
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Error adding train. Please try again.');
+          setSnackbarOpen(true);
         }
       })
       .catch((error) => {
         console.error('Error adding train:', error);
-        setShowSuccessAlert(false);
-        setShowErrorAlert(true);
+        setSnackbarSeverity('error');
+        setSnackbarMessage('Error adding train. Please try again.');
+        setSnackbarOpen(true);
       });
   }
 
   function checkState() {
     if (state.seats === "") {
-      setShowSuccessAlert(false);
-      setShowErrorAlert(true);
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Please fill in all fields');
+      setSnackbarOpen(true);
       return 1;
     }
     return 0;
   }
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <div className="container">
@@ -185,6 +201,16 @@ function CreateTrainComponent() {
       </div>
 
       <div className="row mt-4 justify-content-center">
+          <TextField
+            id="outlined-basic"
+            label="Train number"
+            variant="outlined"
+            value={state.trainNumber}
+            onChange={changeTrainNumberHandler}
+          />
+      </div>
+
+      <div className="row mt-4 justify-content-center">
         <button
           type="button"
           className="btn btn-primary"
@@ -201,19 +227,12 @@ function CreateTrainComponent() {
         </button>
       </div>
 
-      <div className="alert-container">
-        {showSuccessAlert && (
-          <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible className="bottom-alert">
-            Train added successfully.
-          </Alert>
-        )}
-
-        {showErrorAlert && (
-          <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible className="bottom-alert">
-            Error adding train. Please try again.
-          </Alert>
-        )}
-      </div>
+      <SnackbarComponent
+        open={snackbarOpen}
+        onClose={handleSnackbarClose}
+        severity={snackbarSeverity}
+        message={snackbarMessage}
+      />
     </div>
   );
 

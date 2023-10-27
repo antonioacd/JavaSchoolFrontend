@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScheduleService from '../../../services/ScheduleService';
-import Alert from 'react-bootstrap/Alert';
+import SnackbarComponent from '../../Other/SnackbarComponent/SnackbarComponent'; // Import SnackbarComponent
 import 'react-datepicker/dist/react-datepicker.css';
 import StationService from '../../../services/StationService';
 import TrainService from '../../../services/TrainService';
@@ -29,16 +29,15 @@ function CreateScheduleComponent() {
 
     // Init the navigate variable
     const navigate = useNavigate();
-
-    // Set the states of alerts
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-    const [showErrorAlert, setShowErrorAlert] = useState(false);
-
-    const [errorMessage, setErrorMessage] = useState("");
-
+    
     const [selectedDepartureDate, setSelectedDepartureDate] = useState(dayjs());
     const [selectedArrivalDate, setSelectedArrivalDate] = useState(dayjs());
     const [trainList, setTrainList] = useState([]);
+    
+    // Snackbar state
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
 
     useEffect(() => {
         // Fetch the data and update departureStationList here
@@ -46,7 +45,6 @@ function CreateScheduleComponent() {
             const trains = res.data;
             setTrainList(trains);
         });
-
     }, []);
 
     useEffect(() => {
@@ -115,30 +113,29 @@ function CreateScheduleComponent() {
         console.log("State",state);
 
         // Check if the fields are empty
-        /*if (error) {
-            setErrorMessage(error);
-            setShowSuccessAlert(false);
-            setShowErrorAlert(true);
+        if (error) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage(error);
+            setSnackbarOpen(true);
         } else {
-            setShowSuccessAlert(true);
-            setShowErrorAlert(false);
-
-            // Call the save method
             ScheduleService.createSchedule(state)
             .then(response => {
                 if (response.status === 200) {
-                    setShowSuccessAlert(true);
-                    setShowErrorAlert(false);
+                    setSnackbarSeverity('success');
+                    setSnackbarMessage('Schedule added successfully');
+                    setSnackbarOpen(true);
                 } else {
-                    setShowSuccessAlert(false);
-                    setShowErrorAlert(true);
+                    setSnackbarSeverity('error');
+                    setSnackbarMessage('Error adding schedule. Please try again.');
+                    setSnackbarOpen(true);
                 }
             })
             .catch(error => {
-                setShowSuccessAlert(false);
-                setShowErrorAlert(true);
+                setSnackbarSeverity('error');
+                setSnackbarMessage('Error adding schedule. Please try again.');
+                setSnackbarOpen(true);
             });
-        }*/
+        }
     };
 
     /**
@@ -146,7 +143,6 @@ function CreateScheduleComponent() {
      * @returns {string} - The error message, or an empty string if there are no errors.
      */
     function checkState() {
-        
         if (state.train.id === "" ||
             state.departureTime === "" ||
             state.arrivalTime === "") {
@@ -164,6 +160,10 @@ function CreateScheduleComponent() {
         return "";
     }
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
     return (
         <div className="container">
             <div className="row justify-content-center">
@@ -179,6 +179,7 @@ function CreateScheduleComponent() {
                         onChange={changeDepartureTimeHandler}
                     />
               </LocalizationProvider>
+              </div>
             </div>
       
           <div className="row mt-4">
@@ -199,20 +200,12 @@ function CreateScheduleComponent() {
             </button>
           </div>
       
-          <div className="alert-container mt-4">
-            {showSuccessAlert && (
-              <Alert variant="success" onClose={() => setShowSuccessAlert(false)} dismissible className="bottom-alert">
-                Schedule added successfully.
-              </Alert>
-            )}
-
-            {showErrorAlert && (
-              <Alert variant="danger" onClose={() => setShowErrorAlert(false)} dismissible className="bottom-alert">
-                {errorMessage || "Error adding schedule. Please try again."}
-              </Alert>
-            )}
-          </div>
-          </div>
+          <SnackbarComponent
+            open={snackbarOpen}
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            message={snackbarMessage}
+          />
         </div>
       );
 }

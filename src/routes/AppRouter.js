@@ -9,6 +9,9 @@ import ViewUsersPage from '../pages/User/ViewUsersPage';
 import HomePage from '../pages/HomePage';
 import ViewTrainsPage from '../pages/Train/ViewTrainsPage';
 import ViewSchedulesPage from '../pages/Schedule/ViewSchedulesPage';
+import ViewStationsPage from '../pages/Station/ViewStationsPage';
+import LoginPage from '../pages/LoginPage';
+import ProtectedRoute from './ProtectedRoute';
 
 
 const AppRouter = () => {
@@ -17,12 +20,20 @@ const AppRouter = () => {
             <Header/>
             <div style={{marginTop: '70px'}}>
                 <Routes>
-                     {/* Home */}
+                    {/* Login */}
 
+                    <Route 
+                        path="/login"
+                        element={<LoginPage/>}
+                    />
+                    
+                    {/* Home */}
+                    <Route element={<ProtectedRoute/>}>
                     <Route 
                         path="/"
                         element={<HomePage/>}
                     />
+                    </Route>
 
                     {/* User */}
 
@@ -40,6 +51,10 @@ const AppRouter = () => {
                     <Route 
                         path="/station/create"
                         element={<CreateStationPage/>}
+                    />
+                    <Route 
+                        path="/station/view"
+                        element={<ViewStationsPage/>}
                     />
 
                     {/* Train */}

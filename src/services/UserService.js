@@ -6,6 +6,17 @@ class UserService {
     getUsers(){
         return axios.get(USER_API_BASE_URL);
     }
+
+    createUser(userData) {
+        return axios.post(USER_API_BASE_URL, userData);
+    }
+
+    login(email, password) {
+        return axios.post("http://localhost:8080/api/auth/login", {
+            email: email,
+            password: password
+        });
+    }
 }
 
 const userService = new UserService();

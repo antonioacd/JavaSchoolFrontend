@@ -1,57 +1,74 @@
-import React, { Component } from 'react';
-import UserService from '../../../services/UserService';
+import React, { useState, useEffect } from 'react';
+import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComponent';
+import { useNavigate } from 'react-router-dom';
+import userService from '../../../services/UserService';
 
-class ViewUsersComponent extends Component {
+function ViewUsersComponent() {
 
-    constructor(props){
-        super(props)
-        this.state = {
-            users: []
-        }
-    }
+  const [data, setData] = useState([]);
 
-    componentDidMount(){
-        UserService.getUsers().then((res) => {
-            this.setState({users: res.data})
+  useEffect(() => {
+    
+    const users = [];
+
+    userService.getUsers().then((res) => {
+      console.log(res.data);
+        setData(res.data);
+
+        const usersInfo = res.data;
+
+        usersInfo.forEach(userInfo => {
+          const user = {
+            id: userInfo.id,
+            name: userInfo.name,
+            surname: userInfo.surname,
+            email: userInfo.email,
+            rol: userInfo.rol.rol
+          }
+
+          users.push(user);
+
         });
-    }
 
-    render() {
-        return (
-            <div>
-                <h2 className='text-center'>Users List</h2>
-                <div className='row'>
-                    <table className='table table-stripped table-bordered'>
-                        <thead>
-                            <tr>
-                                <th>User first Name</th>
-                                <th>User surname</th>
-                                <th>User birth</th>
-                                <th>User rol</th>
+        setData(users);
+  });
 
-                            </tr>
-                        </thead>
+  }, []);
 
-                        <tbody>
-                            {
-                                this.state.users.map(
-                                    user => 
-                                    <tr key={user.id}>
-                                        <td>{user.name}</td>
-                                        <td>{user.surname}</td>
-                                        <td>{user.date_of_birth}</td>
-                                        <td>{user.rolId}</td>
+  const navigate = useNavigate();
 
-                                    </tr>
-                                )
-                            }
-                        </tbody>
+  const columns = [
+    { id: 'id', numeric: false, disablePadding: false, label: 'Id' },
+    { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
+    { id: 'surname', numeric: false, disablePadding: false, label: 'Surname' },
+    { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
+    { id: 'rol', numeric: false, disablePadding: false, label: 'Rol' },
+  ];
 
-                    </table>
-                </div>
-            </div>
-        );
-    }
+  const rowsPerPageOptions = [5, 10, 25];
+
+  const handleAddRecord = () => {
+    navigate("/user/create");
+  };
+
+  const handleDeleteRecords = (selectedIds) => {
+    // Lógica para eliminar registros seleccionados
+    const newData = data.filter((item) => !selectedIds.includes(item.id));
+    setData(newData);
+  };
+
+  return (
+    <div>
+      <EnhancedTableComponent
+        data={data}
+        title="Users"
+        columns={columns}
+        rowsPerPageOptions={rowsPerPageOptions}
+        onAddRecord={handleAddRecord}
+        onDeleteRecords={handleDeleteRecords}
+      />
+    </div>
+  );
 }
 
 export default ViewUsersComponent;

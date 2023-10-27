@@ -4,11 +4,15 @@ import TrainIcon from '@mui/icons-material/Train';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate desde React Router
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
+import { Login } from '@mui/icons-material';
 
 const PAGES = [
+    { name: "Home", route: "/" },
     { name: "Schedules", route: "/schedule/view" },
     { name: "Trains", route: "/train/view" },
-    { name: "Stations", route: "/station/create" }
+    { name: "Stations", route: "/station/view" },
+    { name: "Users", route: "/user/view" },
+    { name: "Login", route: "/login" }
 ];
 
 const Header = () => {
@@ -20,6 +24,10 @@ const Header = () => {
         setValue(newValue);
         const selectedPage = PAGES[newValue];
         navigate(selectedPage.route);
+    };
+
+    const handleLogin = () => {
+        navigate("/login");
     };
 
     return (
@@ -45,7 +53,7 @@ const Header = () => {
                                     <Tab key={index} label={page.name} />
                                 ))}
                             </Tabs>
-                            <Button sx={{ marginLeft: 'auto' }} variant='contained'>Login</Button>
+                            <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>
                             <Button sx={{ marginLeft: '10px' }} variant='contained'>Sing Up</Button>
                         </>
                     )}
