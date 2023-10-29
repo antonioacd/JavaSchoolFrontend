@@ -18,7 +18,7 @@ const AppRouter = () => {
     return (
         <Router>
             <Header/>
-            <div style={{marginTop: '70px'}}>
+            <div style={{marginTop: '90px'}}>
                 <Routes>
                     {/* Login */}
 
@@ -29,59 +29,60 @@ const AppRouter = () => {
                     
                     {/* Home */}
                     <Route element={<ProtectedRoute/>}>
-                    <Route 
-                        path="/"
-                        element={<HomePage/>}
-                    />
+                        <Route 
+                            path="/"
+                            element={<HomePage/>}
+                        />
+                        
+
+                        {/* User */}
+
+                        <Route 
+                            path="/user/view"
+                            element={<ViewUsersPage/>}
+                        />
+                        <Route 
+                            path="/user/create"
+                            element={<CreateUserPage/>}
+                        />
+
+                        {/* Station */}
+
+                        <Route 
+                            path="/station/create"
+                            element={<CreateStationPage/>}
+                        />
+                        <Route 
+                            path="/station/view"
+                            element={<ViewStationsPage/>}
+                        />
+
+                        {/* Train */}
+
+                        <Route 
+                            path="/train/create"
+                            element={<CreateTrainPage/>}
+                        />
+                        <Route 
+                            path="/train/view"
+                            element={<ViewTrainsPage/>}
+                        />
+
+                        {/* Schedule */}
+
+                        <Route 
+                            path="/schedule/create"
+                            element={<CreateSchedulePage/>}
+                        />
+                        <Route 
+                            path="/schedule/search"
+                            element={<SearchSchedulePage/>}
+                        />
+                        <Route 
+                            path="/schedule/view"
+                            element={<ViewSchedulesPage/>}
+                        />
                     </Route>
-
-                    {/* User */}
-
-                    <Route 
-                        path="/user/view"
-                        element={<ViewUsersPage/>}
-                    />
-                    <Route 
-                        path="/user/create"
-                        element={<CreateUserPage/>}
-                    />
-
-                    {/* Station */}
-
-                    <Route 
-                        path="/station/create"
-                        element={<CreateStationPage/>}
-                    />
-                    <Route 
-                        path="/station/view"
-                        element={<ViewStationsPage/>}
-                    />
-
-                    {/* Train */}
-
-                    <Route 
-                        path="/train/create"
-                        element={<CreateTrainPage/>}
-                    />
-                    <Route 
-                        path="/train/view"
-                        element={<ViewTrainsPage/>}
-                    />
-
-                    {/* Schedule */}
-
-                    <Route 
-                        path="/schedule/create"
-                        element={<CreateSchedulePage/>}
-                    />
-                    <Route 
-                        path="/schedule/search"
-                        element={<SearchSchedulePage/>}
-                    />
-                    <Route 
-                        path="/schedule/view"
-                        element={<ViewSchedulesPage/>}
-                    />
                 </Routes>
             </div>
         </Router>

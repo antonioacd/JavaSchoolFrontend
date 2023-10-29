@@ -2,37 +2,37 @@ import React, { useState, useEffect } from 'react';
 import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComponent';
 import { useNavigate } from 'react-router-dom';
 import trainService from '../../../services/TrainService';
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 
 function ViewTrainsComponent() {
-
   const [data, setData] = useState([]);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [errorDialogMessage, setErrorDialogMessage] = useState('');
 
   useEffect(() => {
-    
     const trains = [];
 
     trainService.getTrains().then((res) => {
-      console.log(res.data);
-        setData(res.data);
+      setData(res.data);
 
-        const trainsInfo = res.data;
+      const trainsInfo = res.data;
 
-        trainsInfo.forEach(trainInfo => {
-          const train = {
-            id: trainInfo.id,
-            departureStation: trainInfo.departureStation.name,
-            arrivalStation: trainInfo.arrivalStation.name,
-            trainNumber: trainInfo.trainNumber,
-            trainSeats: trainInfo.seats
-          }
+      trainsInfo.forEach(trainInfo => {
+        const train = {
+          id: trainInfo.id,
+          departureStation: trainInfo.departureStation.name,
+          arrivalStation: trainInfo.arrivalStation.name,
+          trainNumber: trainInfo.trainNumber,
+          trainSeats: trainInfo.seats
+        }
 
-          trains.push(train);
+        trains.push(train);
+      });
 
-        });
-
-        setData(trains);
-  });
-
+      setData(trains);
+    });
   }, []);
 
   const navigate = useNavigate();
@@ -52,9 +52,46 @@ function ViewTrainsComponent() {
   };
 
   const handleDeleteRecords = (selectedIds) => {
-    // Lógica para eliminar registros seleccionados
-    const newData = data.filter((item) => !selectedIds.includes(item.id));
-    setData(newData);
+    setSelectedIds(selectedIds);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const failedDeletions = [];
+
+    try {
+      for (const id of selectedIds) {
+        const response = await trainService.deleteTrain(id);
+
+        if (response.status !== 200) {
+          failedDeletions.push(id);
+        }
+      }
+
+      if (failedDeletions.length === 0) {
+        const newData = data.filter(item => !selectedIds.includes(item.id));
+        setData(newData);
+        setDeleteDialogOpen(false);
+        window.location.reload();
+      } else {
+        setErrorDialogMessage('Unable to delete the selected records. They may be in use.');
+        setErrorDialogOpen(true);
+        setDeleteDialogOpen(false);
+      }
+    } catch (error) {
+      setErrorDialogMessage('An error occurred while deleting the records.');
+      setErrorDialogOpen(true);
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDismissError = () => {
+    setErrorDialogOpen(false);
+    window.location.reload();
   };
 
   return (
@@ -66,6 +103,28 @@ function ViewTrainsComponent() {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
+      />
+
+      <CustomizableDialog
+        type='warning'
+        open={isDeleteDialogOpen}
+        title="Are you sure you want to delete the selected records?"
+        content="This action will permanently delete the selected records."
+        agreeButtonLabel="Yes, delete"
+        cancelButtonLabel='Cancel'
+        showCancelButton={true}
+        onCancel={handleCancelDelete}
+        onAgree={handleConfirmDelete}
+      />
+
+      <CustomizableDialog
+        type='error'
+        open={isErrorDialogOpen}
+        title="Deletion Error"
+        content={errorDialogMessage}
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={handleDismissError}
       />
     </div>
   );

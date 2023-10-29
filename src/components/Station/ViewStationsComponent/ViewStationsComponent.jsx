@@ -2,36 +2,14 @@ import React, { useState, useEffect } from 'react';
 import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComponent';
 import { useNavigate } from 'react-router-dom';
 import stationService from '../../../services/StationService';
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 
 function ViewStationsComponent() {
-
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    
-    const stations = [];
-
-    stationService.getStations().then((res) => {
-      console.log(res.data);
-        setData(res.data);
-
-        const stationsInfo = res.data;
-
-        stationsInfo.forEach(stationInfo => {
-          const station = {
-            id: stationInfo.id,
-            name: stationInfo.name,
-            city: stationInfo.city
-          }
-
-          stations.push(station);
-
-        });
-
-        setData(stations);
-  });
-
-  }, []);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [errorDialogMessage, setErrorDialogMessage] = useState('');
 
   const navigate = useNavigate();
 
@@ -44,14 +22,73 @@ function ViewStationsComponent() {
   const rowsPerPageOptions = [5, 10, 25];
 
   const handleAddRecord = () => {
-    navigate("/station/create");
+    navigate('/station/create');
   };
 
   const handleDeleteRecords = (selectedIds) => {
-    // Lógica para eliminar registros seleccionados
-    const newData = data.filter((item) => !selectedIds.includes(item.id));
-    setData(newData);
+    setSelectedIds(selectedIds);
+    setDeleteDialogOpen(true);
   };
+
+  const handleConfirmDelete = async () => {
+    const failedDeletions = [];
+
+    try {
+      for (const id of selectedIds) {
+        const response = await stationService.deleteStation(id);
+
+        if (response.status !== 200) {
+          failedDeletions.push(id);
+        }
+      }
+
+      if (failedDeletions.length === 0) {
+        const newData = data.filter(item => !selectedIds.includes(item.id));
+        setData(newData);
+        setDeleteDialogOpen(false);
+        window.location.reload();
+      } else {
+        setErrorDialogMessage('Unable to delete the selected records. They may be in use.');
+        setErrorDialogOpen(true);
+        setDeleteDialogOpen(false);
+      }
+    } catch (error) {
+      setErrorDialogMessage('An error occurred while deleting the records.');
+      setErrorDialogOpen(true);
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDismissError = () => {
+    setErrorDialogOpen(false);
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    const stations = [];
+
+    stationService.getStations().then(res => {
+      setData(res.data);
+
+      const stationsInfo = res.data;
+
+      stationsInfo.forEach(stationInfo => {
+        const station = {
+          id: stationInfo.id,
+          name: stationInfo.name,
+          city: stationInfo.city,
+        };
+
+        stations.push(station);
+      });
+
+      setData(stations);
+    });
+  }, []);
 
   return (
     <div>
@@ -62,6 +99,28 @@ function ViewStationsComponent() {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
+      />
+
+      <CustomizableDialog
+        type='warning'
+        open={isDeleteDialogOpen}
+        title="Are you sure you want to delete the selected records?"
+        content="This action will permanently delete the selected records."
+        agreeButtonLabel="Yes, delete"
+        cancelButtonLabel='Cancel'
+        showCancelButton={true}
+        onCancel={handleCancelDelete}
+        onAgree={handleConfirmDelete}
+      />
+
+      <CustomizableDialog
+        type='error'
+        open={isErrorDialogOpen}
+        title="Deletion Error"
+        content={errorDialogMessage}
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={handleDismissError}
       />
     </div>
   );

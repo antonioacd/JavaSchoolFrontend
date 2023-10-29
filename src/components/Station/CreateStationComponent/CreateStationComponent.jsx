@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StationService from '../../../services/StationService';
 import TextField from '@mui/material/TextField';
-import SnackbarComponent from '../../Other/SnackbarComponent/SnackbarComponent';
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import './CreateStationComponent.css';
 
 function CreateStationComponent() {
@@ -13,10 +13,9 @@ function CreateStationComponent() {
 
   const navigate = useNavigate();
 
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('');
+  const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
   const changeNameHandler = (event) => {
     setState({ ...state, name: event.target.value });
@@ -24,10 +23,6 @@ function CreateStationComponent() {
 
   const changeCityHandler = (event) => {
     setState({ ...state, city: event.target.value });
-  };
-
-  const cancel = () => {
-    navigate('/');
   };
 
   const saveStation = (event) => {
@@ -45,40 +40,27 @@ function CreateStationComponent() {
     StationService.createStation(stationData)
       .then(response => {
         if (response.status === 200) {
-          setSnackbarSeverity('success');
-          setSnackbarMessage('Station added successfully');
-          setShowSuccessAlert(true);
-          setShowErrorAlert(false);
+          setDialogMessage('Station added successfully');
+          setSuccessDialogOpen(true);
         } else {
-          setSnackbarSeverity('error');
-          setSnackbarMessage('Error adding station. Please try again.');
-          setShowSuccessAlert(false);
-          setShowErrorAlert(true);
+          setDialogMessage('Error adding station. Please try again.');
+          setErrorDialogOpen(true);
         }
       })
       .catch(error => {
-        setSnackbarSeverity('error');
-        setSnackbarMessage('Error adding station. Please try again.');
-        setShowSuccessAlert(false);
-        setShowErrorAlert(true);
+        setDialogMessage('Error adding station. Please try again.');
+        setErrorDialogOpen(true);
       });
   };
 
   function checkState() {
     if (state.name === '' || state.city === '') {
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Please fill in all fields');
-      setShowSuccessAlert(false);
-      setShowErrorAlert(true);
+      setDialogMessage('Please fill in all fields');
+      setErrorDialogOpen(true);
       return 1;
     }
     return 0;
   }
-
-  const handleSnackbarClose = () => {
-    setShowSuccessAlert(false);
-    setShowErrorAlert(false);
-  };
 
   return (
     <div className="container">
@@ -119,18 +101,33 @@ function CreateStationComponent() {
           <button
             type="button"
             className="btn btn-secondary mt-2"
-            onClick={cancel}
+            onClick={()=>window.location.reload()}
           >
-            Cancel
+            Clear
           </button>
         </div>
       </div>
 
-      <SnackbarComponent
-        open={showSuccessAlert || showErrorAlert}
-        onClose={handleSnackbarClose}
-        severity={snackbarSeverity}
-        message={snackbarMessage}
+      <CustomizableDialog
+        type='success'
+        open={isSuccessDialogOpen}
+        title="Success"
+        content={dialogMessage}
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={() => {
+          setSuccessDialogOpen(false);
+          window.location.reload();
+        }}
+      />
+      <CustomizableDialog
+        type='error'
+        open={isErrorDialogOpen}
+        title="Error"
+        content={dialogMessage}
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={() => setErrorDialogOpen(false)}
       />
     </div>
   );

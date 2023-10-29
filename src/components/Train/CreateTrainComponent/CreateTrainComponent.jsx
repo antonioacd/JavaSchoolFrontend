@@ -6,7 +6,7 @@ import "./CreateTrainComponent.css";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import { Duration } from "luxon";
 import { TextField } from '@mui/material';
-import SnackbarComponent from '../../Other/SnackbarComponent/SnackbarComponent'; // Import SnackbarComponent
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog'; // Import CustomizableDialog
 
 function CreateTrainComponent() {
   const [state, setState] = useState({
@@ -26,11 +26,10 @@ function CreateTrainComponent() {
   const navigate = useNavigate();
   const [departureStationList, setDepartureStationList] = useState([]);
   const [arrivalStationList, setArrivalStationList] = useState([]);
-  
-  // Snackbar state
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('');
+
+  const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
   useEffect(() => {
     StationService.getStations().then((res) => {
@@ -114,49 +113,44 @@ function CreateTrainComponent() {
 
   const saveTrain = (event) => {
     event.preventDefault();
-    // No se necesita actualizar el estado aquí
+    const error = checkState();
 
-    // Check if the fields are empty
-    if (checkState() === 1) {
-      return;
+    if (error) {
+      setDialogMessage('Error adding train. Please try again.');
+      setErrorDialogOpen(true);
+    } else {
+      TrainService.createTrain(state)
+        .then(response => {
+          if (response.status === 200) {
+            setDialogMessage('Train added successfully');
+            setSuccessDialogOpen(true);
+          } else {
+            setDialogMessage('Error adding train. Please try again.');
+            setErrorDialogOpen(true);
+          }
+        })
+        .catch(error => {
+          setDialogMessage('Error adding train. Please try again.');
+          setErrorDialogOpen(true);
+        });
     }
-
-    console.log("State", state);
-
-    TrainService.createTrain(state)
-      .then((response) => {
-        if (response.status === 200) {
-          console.log('Train added successfully:', response.data);
-          setSnackbarSeverity('success');
-          setSnackbarMessage('Train added successfully');
-          setSnackbarOpen(true);
-        } else {
-          console.error('Error adding train:', response.data);
-          setSnackbarSeverity('error');
-          setSnackbarMessage('Error adding train. Please try again.');
-          setSnackbarOpen(true);
-        }
-      })
-      .catch((error) => {
-        console.error('Error adding train:', error);
-        setSnackbarSeverity('error');
-        setSnackbarMessage('Error adding train. Please try again.');
-        setSnackbarOpen(true);
-      });
   }
 
   function checkState() {
     if (state.seats === "") {
-      setSnackbarSeverity('error');
-      setSnackbarMessage('Please fill in all fields');
-      setSnackbarOpen(true);
-      return 1;
+      return "Please fill in all fields.";
     }
-    return 0;
+
+    return "";
   }
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
+  const handleSuccessDialogClose = () => {
+    setSuccessDialogOpen(false);
+    navigate("/");
+  };
+
+  const handleErrorDialogClose = () => {
+    setErrorDialogOpen(false);
   };
 
   return (
@@ -167,14 +161,14 @@ function CreateTrainComponent() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col">
-          <ComboBoxStations 
-            options={departureStationList} 
+          <ComboBoxStations
+            options={departureStationList}
             onSelect={changeDepartureStationHandler}
             label={"Departure Station"} />
         </div>
         <div className="col">
-          <ComboBoxStations 
-            options={arrivalStationList} 
+          <ComboBoxStations
+            options={arrivalStationList}
             onSelect={changeArrivalStationHandler}
             label={"Arrival Station"} />
         </div>
@@ -201,13 +195,13 @@ function CreateTrainComponent() {
       </div>
 
       <div className="row mt-4 justify-content-center">
-          <TextField
-            id="outlined-basic"
-            label="Train number"
-            variant="outlined"
-            value={state.trainNumber}
-            onChange={changeTrainNumberHandler}
-          />
+        <TextField
+          id="outlined-basic"
+          label="Train number"
+          variant="outlined"
+          value={state.trainNumber}
+          onChange={changeTrainNumberHandler}
+        />
       </div>
 
       <div className="row mt-4 justify-content-center">
@@ -221,17 +215,30 @@ function CreateTrainComponent() {
         <button
           type="button"
           className="btn btn-secondary mt-2"
-          onClick={cancel}
+          onClick={()=>window.location.reload()}
         >
-          Cancel
+          Clear
         </button>
       </div>
 
-      <SnackbarComponent
-        open={snackbarOpen}
-        onClose={handleSnackbarClose}
-        severity={snackbarSeverity}
-        message={snackbarMessage}
+      <CustomizableDialog
+        type='success'
+        open={isSuccessDialogOpen}
+        title="Success"
+        content={dialogMessage}
+        agreeButtonLabel="Accept"
+        showCancelButton={false}
+        onAgree={handleSuccessDialogClose}
+      />
+
+      <CustomizableDialog
+        type='error'
+        open={isErrorDialogOpen}
+        title="Error"
+        content={dialogMessage}
+        agreeButtonLabel="Accept"
+        showCancelButton={false}
+        onAgree={handleErrorDialogClose}
       />
     </div>
   );

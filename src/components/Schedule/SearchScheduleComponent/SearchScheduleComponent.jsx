@@ -1,147 +1,134 @@
-import React, { Component } from 'react';
-import ScheduleSearcherItem from './SearchItemScheduleComponent/SearchItemScheduleComponent';
-import ScheduleService from '../../../services/ScheduleService';
-import AutocompleteComponent from '../../Other/AutocompleteComponent/AutocompleteComponent';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 import './SearchScheduleComponent.css';
+import stationService from '../../../services/StationService';
+import scheduleService from '../../../services/ScheduleService';
+import ComboBoxCities from '../../Other/ComboBox/ComboBoxCities';
+import SearchItemScheduleComponent from './SearchItemScheduleComponent/SearchItemScheduleComponent';
 
-class SearchScheduleComponent extends Component {
-  constructor(props) {
-    super(props);
-    // Initialize the component's state with default values.
-    this.state = {
-      schedules: [],
-      search: {
-        departureCity: '',
-        arrivalCity: '',
-        selectedDate: '',
-      },
-      departureCities: [],
-      arrivalCities: [],
-    };
-  }
-
-  componentDidMount() {
-    // Fetch schedules data and populate the departureCities state.
-    ScheduleService.getSchedules().then((res) => {
-      const schedules = res.data;
-      const departureCitiesSet = new Set();
-
-      schedules.forEach((schedule) => {
-        departureCitiesSet.add(schedule.departureStation.city);
-      });
-
-      const departureCities = [...departureCitiesSet];
-
-      this.setState({ departureCities: departureCities });
+function SearchScheduleComponent() {
+    const [state, setState] = useState({
+        "departureStation": "",
+        "arrivalStation": "",
+        "date": dayjs(),
     });
-  }
 
-  // Update the departureCity in the search state when input changes.
-  changeDepartureCityHandler = (input) => {
-    this.setState({ search: { ...this.state.search, departureCity: input } });
+    const [departureStationList, setDepartureStationList] = useState([]);
+    const [arrivalStationList, setArrivalStationList] = useState([]);
+    const [schedules, setSchedules] = useState([]);
 
-    // Fetch schedules and populate the arrivalCities state based on the selected departureCity.
-    ScheduleService.getSchedules().then((res) => {
-      const schedules = res.data;
-      const arrivalCitiesSet = new Set();
+    const navigate = useNavigate();
 
-      schedules.forEach((schedule) => {
-        if (this.state.search.departureCity === schedule.departureStation.city) {
-          arrivalCitiesSet.add(schedule.arrivalStation.city);
+    useEffect(() => {
+        stationService.getStations().then((res) => {
+            console.log(res.data);
+              setDepartureStationList(res.data);
+            });
+    }, []);
+
+    useEffect(() => {
+        getStations();
+    }, [state.departureStation]);
+
+    function getStations() {
+        stationService.getStations().then((res) => {
+          const updatedArrivalStationList = res.data;
+          const filteredArrivalStationList = updatedArrivalStationList.filter(
+            (station) => station.id !== state.departureStation.id
+          );
+          setArrivalStationList(filteredArrivalStationList);
+        });
+      }
+
+    const changeDepartureStationHandler = (selectedDepartureStation) => {
+        if (selectedDepartureStation === null) {
+            return;
         }
+        setState({ ...state, departureStation: selectedDepartureStation.city });
+    };
+
+    const changeArrivalStationHandler = (selectedArrivalStation) => {
+        if (selectedArrivalStation === null) {
+            return;
+        }
+        setState({ ...state, arrivalStation: selectedArrivalStation.city });
+    };
+
+    const changeDateHandler = (newDate) => {
+        setState({ ...state, date: newDate });
+    };
+
+    const searchSchedules = () => {
+      const selectedDate = state.date.format('YYYY-MM-DD'); // Obtén solo el día de la fecha seleccionada
+  
+      scheduleService.getSchedules().then((res) => {
+          const allSchedules = res.data;
+  
+          const filteredSchedules = allSchedules.filter((schedule) => {
+              const isDepartureCityMatch = schedule.train.departureStation.city === state.departureStation;
+              const isArrivalCityMatch = schedule.train.arrivalStation.city === state.arrivalStation;
+  
+              // Compara solo el día de las fechas
+              const isDateMatch = dayjs(schedule.departureTime).format('YYYY-MM-DD') === selectedDate;
+  
+              // Combinar las tres condiciones con un operador lógico "&&" (y)
+              return isDepartureCityMatch && isArrivalCityMatch && isDateMatch;
+          });
+  
+          setSchedules(filteredSchedules);
       });
-
-      const arrivalCities = [...arrivalCitiesSet];
-
-      this.setState({ arrivalCities: arrivalCities });
-    });
-  }
-
-  // Update the arrivalCity in the search state when input changes.
-  changeArrivalCityHandler = (input) => {
-    this.setState({ search: { ...this.state.search, arrivalCity: input } });
-  }
-
-  // Update the selectedDate in the search state when the date input changes.
-  changeDate = (event) => {
-    this.setState({ search: { ...this.state.search, selectedDate: event.target.value } });
-  }
-
-  // Perform a search based on user input and update the schedules state.
-  handleSearch = () => {
-    ScheduleService.getSchedules().then((res) => {
-      const schedulesData = res.data;
-
-      const correctSchedules = schedulesData.filter((schedule) =>
-        schedule.departureStation.city === this.state.search.departureCity &&
-        schedule.arrivalStation.city === this.state.search.arrivalCity &&
-        schedule.departureTime.substring(0, 10) === this.state.search.selectedDate
-      );
-
-      this.setState({ schedules: correctSchedules });
-    });
-  }
-
-  // Handle the selection of a suggestion and update the departureCity in the search state.
-  suggestionSelectedHandler = (suggestion) => {
-    this.setState({ search: { ...this.state.search, departureCity: suggestion } });
-  }
-
-  render() {
+    }
     return (
-      <div>
-        <div className="row my-3 justify-content-center">
-          <div className="col-md-12 schedule-search-form form-inline d-flex justify-content-between search-content">
-            <div className="form-group">
-              <label>Departure City</label>
-              {/* Render AutocompleteComponent for departure cities. */}
-              <AutocompleteComponent
-                cities={this.state.departureCities}
-                onInputChange={this.changeDepartureCityHandler}
-              />
+        <div>
+            <div className="container">
+                <div className="form-container">
+                    <div className="row">
+                        <div className="col">
+                            <ComboBoxCities
+                                label="Departure Station"
+                                options={departureStationList}
+                                onSelect={changeDepartureStationHandler}
+                            />
+                        </div>
+        
+                        <div className="col">
+                            <ComboBoxCities
+                                label="Arrival Station"
+                                options={arrivalStationList}
+                                onSelect={changeArrivalStationHandler}
+                            />
+                        </div>
+        
+                        <div className="col">
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    label="Date"
+                                    value={state.date}
+                                    onChange={changeDateHandler}
+                                />
+                            </LocalizationProvider>
+                        </div>
+
+                        <div className="col mt-2">
+                            <button type="button" className="btn btn-primary" onClick={searchSchedules}>
+                                Search Schedules
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="form-group">
-              <label>Arrival City</label>
-              {/* Render AutocompleteComponent for arrival cities. */}
-              <AutocompleteComponent
-                cities={this.state.arrivalCities}
-                onInputChange={this.changeArrivalCityHandler}
-              />
+            <div className='mt-4'>
+                {schedules.map((schedule, index) => (
+                    <SearchItemScheduleComponent key={index} schedule={schedule} />
+                ))}
             </div>
-            <div className="form-group">
-              <label>Select Date</label>
-              {/* Render the date input and handle its change. */}
-              <input
-                type="date"
-                className="form-control"
-                name="selectedDate"
-                value={this.state.search.selectedDate}
-                onChange={this.changeDate}
-              />
-            </div>
-            <div className="form-group mt-4">
-              {/* Button to trigger the search. */}
-              <button
-                type="button"
-                className="search-button px-4 btn btn-primary"
-                onClick={this.handleSearch}
-              >
-                Search
-              </button>
-            </div>
-          </div>
         </div>
-        <div className="row">
-          <div className="col-md-12">
-            {/* Render the schedules based on the search results. */}
-            {this.state.schedules.map((schedule) => (
-              <ScheduleSearcherItem key={schedule.id} schedule={schedule} />
-            ))}
-          </div>
-        </div>
-      </div>
     );
-  }
 }
 
 export default SearchScheduleComponent;
