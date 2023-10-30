@@ -20,7 +20,7 @@ class TrainService {
     }
 
     getTrains(){
-        return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
+        return this.axiosInstance.get();
     }
 
     getTrainById(id){

@@ -12,6 +12,8 @@ import { IconButton, TextField } from '@mui/material';
 import trainService from '../../../services/TrainService';
 import EditIcon from '@mui/icons-material/Edit';
 import { Duration } from "luxon";
+import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
+import stationService from '../../../services/StationService';
 
 dayjs.extend(duration);
 
@@ -22,9 +24,11 @@ function DetailTrainComponent() {
     const [state, setState] = useState({
         "id": 0,
         "departureStation": {
+            "id": "",
             "name": ""
         },
         "arrivalStation": {
+            "id": "",
             "name": ""
         },
         "trainNumber": "",
@@ -37,7 +41,9 @@ function DetailTrainComponent() {
     const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
     const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
-    const [isEditable, setIsEditable] = useState(false); // Nuevo estado para la edición
+    const [isEditable, setIsEditable] = useState(false);
+    const [departureStationList, setDepartureStationList] = useState([]);
+    const [arrivalStationList, setArrivalStationList] = useState([]);
 
     useEffect(() => {
         trainService.getTrainById(id)
@@ -45,7 +51,6 @@ function DetailTrainComponent() {
                 if (response.status === 200) {
                     const trainData = response.data;
                     setState(trainData);
-                    console.log(trainData);
                 } else {
                     console.error("Error fetching train data.");
                 }
@@ -54,6 +59,98 @@ function DetailTrainComponent() {
                 console.error("Error fetching train data:", error);
             });
     }, []);
+
+    useEffect(() => {
+        console.log("Obtiene las de llegada");
+        getArrivalStationList();
+    }, [state.departureStation]);
+
+    useEffect(() => {
+        console.log("Obtiene las de salida");
+        getDepartureStationList();
+    }, [state.arrivalStation]);
+
+    function getArrivalStationList() {
+        stationService.getStations()
+          .then((response) => {
+            const stations = response.data;
+            const departureStationId = state.departureStation.id;
+            
+            const filteredStationList = stations.filter(
+              (station) => station.id !== departureStationId
+            );
+      
+            setArrivalStationList(filteredStationList);
+          })
+          .catch((error) => {
+            setDialogMessage(error);
+            setErrorDialogOpen(true);
+          });
+      }
+
+      function getDepartureStationList() {
+        stationService.getStations()
+          .then((response) => {
+            const stations = response.data;
+            const arrivalStationId = state.arrivalStation.id;
+            
+            const filteredStationList = stations.filter(
+              (station) => station.id !== arrivalStationId
+            );
+      
+            setDepartureStationList(filteredStationList);
+          })
+          .catch((error) => {
+            setDialogMessage(error);
+            setErrorDialogOpen(true);
+          });
+      }
+
+      function getAllStations() {
+        console.log("Obtiene todas");
+        stationService.getStations()
+          .then((response) => {
+            const stations = response.data;
+            setDepartureStationList(stations);
+            setArrivalStationList(stations);
+          })
+          .catch((error) => {
+            setDialogMessage(error);
+            setErrorDialogOpen(true);
+          });
+      }
+
+      const changeDepartureStationHandler = (selectedDepartureStation) => {
+        if (selectedDepartureStation === null) {
+          return;
+        }
+      
+        if (selectedDepartureStation.id !== state.arrivalStation.id) {
+          setState({
+            ...state,
+            departureStation: selectedDepartureStation,
+          });
+        } else {
+            setDialogMessage('You cannot select the same station as both departure and arrival.');
+            setErrorDialogOpen(true);
+        }
+      };
+      
+      const changeArrivalStationHandler = (selectedArrivalStation) => {
+        if (selectedArrivalStation === null) {
+          return;
+        }
+      
+        if (selectedArrivalStation.id !== state.departureStation.id) {
+          setState({
+            ...state,
+            arrivalStation: selectedArrivalStation,
+          });
+        } else {
+            setDialogMessage('You cannot select the same station as both departure and arrival.');
+            setErrorDialogOpen(true);
+        }
+      };
 
     const saveTrain = (event) => {
         event.preventDefault();
@@ -81,15 +178,25 @@ function DetailTrainComponent() {
         return duration.as('minutes');
     }
 
+    function minutesToDuration(timeInMinutes) {
+        const minutes = parseInt(timeInMinutes);
+        const newDuration = Duration.fromObject({ minutes });
+        return newDuration.toISO();
+    }
+
+    function handleEditButton(){
+        setIsEditable(!isEditable)
+        getAllStations();
+    }
+
     return (
         <div className="container border border-primary rounded p-3">
             
-
             <div className="mb-4 d-flex justify-content-between align-items-center">
                 <h1 className="">Train Details</h1>
                 <IconButton
                   className="bg-primary"
-                  onClick={() => setIsEditable(!isEditable)}
+                  onClick={handleEditButton}
                 >
                   <EditIcon className='text-white'/> {/* Agrega el ícono de lápiz aquí */}
                 </IconButton>
@@ -104,7 +211,9 @@ function DetailTrainComponent() {
                         disabled={true}
                     />
                 </div>
-                <div className='col'>
+
+                {!isEditable &&
+                    <div className='col'>
                     <TextField
                         label="DepartureStation"
                         variant="outlined"
@@ -112,6 +221,8 @@ function DetailTrainComponent() {
                         disabled={!isEditable}
                     />
                 </div>
+                }
+                {!isEditable &&
                 <div className='col'>
                     <TextField
                         label="ArrivalStation"
@@ -120,6 +231,23 @@ function DetailTrainComponent() {
                         disabled={!isEditable}
                     />
                 </div>
+                }
+                {isEditable &&
+                    <div className="col">
+                    <ComboBoxStations
+                      options={departureStationList}
+                      onSelect={changeDepartureStationHandler}
+                      label={"Departure Station"} />
+                  </div>
+                }
+                {isEditable &&
+                  <div className="col">
+                    <ComboBoxStations
+                      options={arrivalStationList}
+                      onSelect={changeArrivalStationHandler}
+                      label={"Arrival Station"} />
+                  </div>
+                }
             </div>
             <div className='row mt-4'>
                 <div className='col'>

@@ -6,7 +6,7 @@ class StationService {
 
     constructor() {
         this.axiosInstance = axios.create({
-            baseURL: STAION_API_BASE_URL,
+            baseURL: STATIONS_API_BASE_URL,
         });
 
         // Agregar un interceptor para incluir el token en las solicitudes

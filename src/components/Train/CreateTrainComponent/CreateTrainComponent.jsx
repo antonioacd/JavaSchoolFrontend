@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TrainService from '../../../services/TrainService';
-import StationService from '../../../services/StationService';
+import stationService from '../../../services/StationService';
 import "./CreateTrainComponent.css";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import { Duration } from "luxon";
@@ -32,25 +32,55 @@ function CreateTrainComponent() {
   const [dialogMessage, setDialogMessage] = useState('');
 
   useEffect(() => {
-    StationService.getStations().then((res) => {
-      const updatedDepartureStationList = res.data;
-      setDepartureStationList(updatedDepartureStationList);
-    });
-  }, []);
-
-  function getStations() {
-    StationService.getStations().then((res) => {
-      const updatedArrivalStationList = res.data;
-      const filteredArrivalStationList = updatedArrivalStationList.filter(
-        (station) => station.id !== state.departureStation.id
-      );
-      setArrivalStationList(filteredArrivalStationList);
-    });
-  }
+    console.log("Obtiene las de salida");
+    getDepartureStationList();
+}, []);
 
   useEffect(() => {
-    getStations();
-  }, [state.departureStation]);
+    console.log("Obtiene las de llegada");
+    getArrivalStationList();
+}, [state.departureStation]);
+
+useEffect(() => {
+    console.log("Obtiene las de salida");
+    getDepartureStationList();
+}, [state.arrivalStation]);
+
+function getArrivalStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const departureStationId = state.departureStation.id;
+        
+        const filteredStationList = stations.filter(
+          (station) => station.id !== departureStationId
+        );
+  
+        setArrivalStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
+
+  function getDepartureStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const arrivalStationId = state.arrivalStation.id;
+        
+        const filteredStationList = stations.filter(
+          (station) => station.id !== arrivalStationId
+        );
+  
+        setDepartureStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
 
   const changeDepartureStationHandler = (selectedDepartureStation) => {
     if (selectedDepartureStation === null) {
@@ -59,7 +89,7 @@ function CreateTrainComponent() {
 
     setState({
       ...state,
-      departureStation: { id: selectedDepartureStation.id },
+      departureStation: selectedDepartureStation,
     });
   };
 
@@ -70,7 +100,7 @@ function CreateTrainComponent() {
 
     setState({
       ...state,
-      arrivalStation: { id: selectedArrivalStation.id },
+      arrivalStation: selectedArrivalStation,
     });
   };
 
