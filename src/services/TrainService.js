@@ -23,8 +23,16 @@ class TrainService {
         return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
     }
 
-    createTrain(scheduleData) {
-        return this.axiosInstance.post('', scheduleData); // Utiliza this.axiosInstance en lugar de axios
+    getTrainById(id){
+        return this.axiosInstance.get(`${TRAINS_API_BASE_URL}/${id}`);
+    }
+
+    updateTrain(id, trainData) {
+        return this.axiosInstance.put(`${TRAINS_API_BASE_URL}/${id}`, trainData);
+    }
+
+    createTrain(trainData) {
+        return this.axiosInstance.post('', trainData); // Utiliza this.axiosInstance en lugar de axios
     }
 
     deleteTrain(id) {
@@ -33,6 +41,6 @@ class TrainService {
 
 }
 
-const scheduleService = new TrainService();
+const trainService = new TrainService();
 
-export default scheduleService;
+export default trainService;

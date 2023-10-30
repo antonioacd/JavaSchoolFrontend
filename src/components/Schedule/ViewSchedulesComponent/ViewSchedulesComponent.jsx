@@ -51,6 +51,7 @@ function ViewSchedulesComponent() {
     { id: 'arrivalTime', numeric: false, disablePadding: false, label: 'Arrival Time' },
     { id: 'trainNumber', numeric: false, disablePadding: false, label: 'Train Number' },
     { id: 'occupiedSeats', numeric: false, disablePadding: false, label: 'Occupied Seats' },
+    { id: 'view', numeric: false, disablePadding: false, label: 'Details' }
   ];
 
   const rowsPerPageOptions = [5, 10, 25];
@@ -102,6 +103,13 @@ function ViewSchedulesComponent() {
     window.location.reload();
   };
 
+  const handleDetailsRecords = (id) => {
+    console.log('Showing details for schedule with ID:', id);
+    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
+    navigate(`/schedule/details/${id}`);
+  };
+
+
   return (
     <div>
       <EnhancedTableComponent
@@ -111,6 +119,7 @@ function ViewSchedulesComponent() {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
+        onViewRecord={handleDetailsRecords}
       />
 
       <CustomizableDialog

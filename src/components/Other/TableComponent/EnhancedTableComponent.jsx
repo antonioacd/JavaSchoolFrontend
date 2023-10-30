@@ -18,9 +18,10 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import VisibilityIcon from '@mui/icons-material/Visibility'; // Import the visibility icon
 import { visuallyHidden } from '@mui/utils';
 
-function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords }) {
+function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState(columns[0].id);
   const [selected, setSelected] = useState([]);
@@ -76,14 +77,13 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
 
   const visibleRows = useMemo(() => {
     const comparator = (a, b) => {
-      const orderValue = order === 'desc' ? -1 : 1; // Use orderValue instead of order
+      const orderValue = order === 'desc' ? -1 : 1;
       return orderValue * (a[orderBy] - b[orderBy]);
     };
     return data
       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       .sort(comparator);
-  }, [data, page, rowsPerPage, order, orderBy]); // Add 'order' as a dependency
-  
+  }, [data, page, rowsPerPage, order, orderBy]);
 
   return (
     <Box sx={{ width: '80%', margin: '0 auto', mt: 4 }}>
@@ -120,14 +120,14 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
 
           {selected.length > 0 ? (
             <Tooltip title="Delete" onClick={() => onDeleteRecords(selected)}>
-              <IconButton>
-                <DeleteIcon />
+              <IconButton className='bg-danger'>
+                <DeleteIcon className='text-white'/>
               </IconButton>
             </Tooltip>
           ) : (
             <Tooltip title="Add Record" onClick={onAddRecord}>
-              <IconButton>
-                <AddIcon />
+              <IconButton className='bg-primary'>
+                <AddIcon className='text-white'/>
               </IconButton>
             </Tooltip>
           )}
@@ -195,11 +195,29 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
                         }}
                       />
                     </TableCell>
-                    {columns.map((column) => (
-                      <TableCell key={column.id} align={column.numeric ? 'right' : 'left'}>
-                        {row[column.id]}
-                      </TableCell>
-                    ))}
+                    {columns.map((column) => {
+                      if (column.id === 'view') {
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.numeric ? 'right' : 'left'}
+                            >
+                            <IconButton
+                              aria-label="View"
+                              onClick={() => onViewRecord(row.id)}
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          </TableCell>
+                        );
+                      } else {
+                        return (
+                          <TableCell key={column.id} align={column.numeric ? 'right' : 'left'}>
+                            {row[column.id]}
+                          </TableCell>
+                        );
+                      }
+                    })}
                   </TableRow>
                 );
               })}
@@ -232,6 +250,7 @@ EnhancedTableComponent.propTypes = {
   rowsPerPageOptions: PropTypes.array.isRequired,
   onAddRecord: PropTypes.func.isRequired,
   onDeleteRecords: PropTypes.func.isRequired,
+  onViewRecord: PropTypes.func.isRequired, // Add the prop type for viewing a record
 };
 
 export default EnhancedTableComponent;

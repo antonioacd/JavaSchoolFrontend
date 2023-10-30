@@ -23,6 +23,14 @@ class ScheduleService {
         return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
     }
 
+    getScheduleById(id){
+        return this.axiosInstance.get(`${SCHEDULES_API_BASE_URL}/${id}`);
+    }
+
+    updateSchedule(id, scheduleData) {
+        return this.axiosInstance.put(`${SCHEDULES_API_BASE_URL}/${id}`, scheduleData);
+    }
+
     createSchedule(scheduleData) {
         return this.axiosInstance.post('', scheduleData); // Utiliza this.axiosInstance en lugar de axios
     }

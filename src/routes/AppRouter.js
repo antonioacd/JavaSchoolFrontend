@@ -12,6 +12,8 @@ import ViewSchedulesPage from '../pages/Schedule/ViewSchedulesPage';
 import ViewStationsPage from '../pages/Station/ViewStationsPage';
 import LoginPage from '../pages/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
+import DetailSchedulePage from '../pages/Schedule/DetailsSchedulePage';
+import DetailTrainPage from '../pages/Train/DetailTrainPage';
 
 
 const AppRouter = () => {
@@ -67,6 +69,10 @@ const AppRouter = () => {
                             path="/train/view"
                             element={<ViewTrainsPage/>}
                         />
+                        <Route 
+                            path="/train/details/:id"
+                            element={<DetailTrainPage />}
+                        />
 
                         {/* Schedule */}
 
@@ -82,6 +88,11 @@ const AppRouter = () => {
                             path="/schedule/view"
                             element={<ViewSchedulesPage/>}
                         />
+                        <Route 
+                            path="/schedule/details/:id"
+                            element={<DetailSchedulePage />}
+                        />
+
                     </Route>
                 </Routes>
             </div>

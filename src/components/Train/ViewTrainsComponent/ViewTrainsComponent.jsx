@@ -3,6 +3,7 @@ import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComp
 import { useNavigate } from 'react-router-dom';
 import trainService from '../../../services/TrainService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import dayjs from 'dayjs';
 
 function ViewTrainsComponent() {
   const [data, setData] = useState([]);
@@ -20,12 +21,15 @@ function ViewTrainsComponent() {
       const trainsInfo = res.data;
 
       trainsInfo.forEach(trainInfo => {
+
+
         const train = {
           id: trainInfo.id,
           departureStation: trainInfo.departureStation.name,
           arrivalStation: trainInfo.arrivalStation.name,
           trainNumber: trainInfo.trainNumber,
-          trainSeats: trainInfo.seats
+          trainSeats: trainInfo.seats,
+          duration: formatDuration(trainInfo.duration)
         }
 
         trains.push(train);
@@ -35,6 +39,11 @@ function ViewTrainsComponent() {
     });
   }, []);
 
+  function formatDuration(durationString) {
+    const duration = dayjs.duration(durationString);
+    return `${duration.hours()} hours, ${duration.minutes()} mins`;
+  }
+
   const navigate = useNavigate();
 
   const columns = [
@@ -43,6 +52,8 @@ function ViewTrainsComponent() {
     { id: 'arrivalStation', numeric: false, disablePadding: false, label: 'Arrival Station' },
     { id: 'trainNumber', numeric: false, disablePadding: false, label: 'Train Number' },
     { id: 'trainSeats', numeric: false, disablePadding: false, label: 'Train Seats' },
+    { id: 'duration', numeric: false, disablePadding: false, label: 'Duration' },
+    { id: 'view', numeric: false, disablePadding: false, label: 'Details' }
   ];
 
   const rowsPerPageOptions = [5, 10, 25];
@@ -94,6 +105,11 @@ function ViewTrainsComponent() {
     window.location.reload();
   };
 
+  const handleDetailsRecords = (id) => {
+    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
+    navigate(`/train/details/${id}`);
+  };
+
   return (
     <div>
       <EnhancedTableComponent
@@ -103,6 +119,7 @@ function ViewTrainsComponent() {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
+        onViewRecord={handleDetailsRecords}
       />
 
       <CustomizableDialog

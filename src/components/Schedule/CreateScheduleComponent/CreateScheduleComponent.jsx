@@ -24,8 +24,6 @@ function CreateScheduleComponent() {
     });
 
     const navigate = useNavigate();
-
-    const [selectedDepartureDate, setSelectedDepartureDate] = useState(dayjs());
     const [trainList, setTrainList] = useState([]);
 
     const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -53,11 +51,10 @@ function CreateScheduleComponent() {
         const resultadoFormateado = resultado.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 
         setState({ ...state, arrivalTime: resultadoFormateado });
-    }, [state.train.id]);
+    }, [state.train.id, state.departureTime]);
 
     const changeDepartureTimeHandler = (newDate) => {
         const formattedDate = newDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-        setSelectedDepartureDate(newDate);
         setState({ ...state, departureTime: formattedDate });
     };
 
@@ -118,7 +115,7 @@ function CreateScheduleComponent() {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             label="Departure time"
-                            value={dayjs(selectedDepartureDate)}
+                            value={dayjs(state.departureTime)}
                             onChange={changeDepartureTimeHandler}
                         />
                     </LocalizationProvider>

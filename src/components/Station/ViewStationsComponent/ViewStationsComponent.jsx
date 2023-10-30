@@ -17,6 +17,7 @@ function ViewStationsComponent() {
     { id: 'id', numeric: false, disablePadding: false, label: 'Id' },
     { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
     { id: 'city', numeric: false, disablePadding: false, label: 'City' },
+    { id: 'view', numeric: false, disablePadding: false, label: 'Details' }
   ];
 
   const rowsPerPageOptions = [5, 10, 25];

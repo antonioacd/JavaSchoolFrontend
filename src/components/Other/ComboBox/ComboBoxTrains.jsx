@@ -7,7 +7,7 @@ function ComboBoxTrains({ label, options, onSelect }) {
     <Autocomplete
       id="combo-box-demo"
       options={options}
-      getOptionLabel={(option) => option.seats}
+      getOptionLabel={(option) => option.trainNumber}
       renderInput={(params) => <TextField {...params} label={label} />}
       onChange={(event, value) => onSelect(value)}
     />

@@ -18,21 +18,14 @@ function HomePage() {
     const navigate = useNavigate();
 
     return (
-        <div style={containerStyle}>
+        <div className="text-center">
+
+            <h1>Railway Train Company</h1>
+
             <img
                 src="https://pics.clipartpng.com/midle/Train_PNG_Clipart-1078.png"
                 alt="Train"
-                style={imageStyle}
             />
-            <h1>Railway Train Company</h1>
-            
-            <button onClick={() => {
-                navigate("/users")
-            }}>Users</button>
-
-            <button onClick={() => {
-                navigate("/searcher")
-            }}>Shearch Travel</button>
             
         </div>
     );
