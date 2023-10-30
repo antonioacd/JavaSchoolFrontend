@@ -22,8 +22,16 @@ class TicketService {
         return this.axiosInstance.get();
     }
 
-    createTicket(scheduleData) {
-        return this.axiosInstance.post('', scheduleData);
+    getTicketById(id){
+        return this.axiosInstance.get(`${TICKETS_API_BASE_URL}/${id}`);
+    }
+
+    updateTicket(id, ticketData) {
+        return this.axiosInstance.put(`${TICKETS_API_BASE_URL}/${id}`, ticketData);
+    }
+
+    createTicket(ticketData) {
+        return this.axiosInstance.post('', ticketData);
     }
 
     deleteTicket(id) {
@@ -32,6 +40,6 @@ class TicketService {
 
 }
 
-const scheduleService = new TicketService();
+const ticketService = new TicketService();
 
-export default scheduleService;
+export default ticketService;

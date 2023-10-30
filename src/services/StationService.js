@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const STAION_API_BASE_URL = "http://localhost:8080/api/stations";
+const STATIONS_API_BASE_URL = "http://localhost:8080/api/stations";
 
 class StationService {
 
@@ -23,16 +23,24 @@ class StationService {
         return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
     }
 
-    createStation(scheduleData) {
-        return this.axiosInstance.post('', scheduleData); // Utiliza this.axiosInstance en lugar de axios
+    getScheduleById(id){
+        return this.axiosInstance.get(`${STATIONS_API_BASE_URL}/${id}`);
+    }
+
+    updateSchedule(id, stationData) {
+        return this.axiosInstance.put(`${STATIONS_API_BASE_URL}/${id}`, stationData);
+    }
+
+    createStation(stationData) {
+        return this.axiosInstance.post('', stationData); // Utiliza this.axiosInstance en lugar de axios
     }
 
     deleteStation(id) {
-        return this.axiosInstance.delete(`${STAION_API_BASE_URL}/${id}`);
+        return this.axiosInstance.delete(`${STATIONS_API_BASE_URL}/${id}`);
     }
 
 }
 
-const scheduleService = new StationService();
+const stationService = new StationService();
 
-export default scheduleService;
+export default stationService;
