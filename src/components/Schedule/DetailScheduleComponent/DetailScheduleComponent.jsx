@@ -12,7 +12,9 @@ import { IconButton, TextField } from '@mui/material';
 import scheduleService from '../../../services/ScheduleService';
 import trainService from '../../../services/TrainService';
 import EditIcon from '@mui/icons-material/Edit';
+import utc from 'dayjs/plugin/utc';
 
+dayjs.extend(utc);
 dayjs.extend(duration);
 
 function DetailScheduleComponent() {
@@ -55,8 +57,6 @@ function DetailScheduleComponent() {
                 if (response.status === 200) {
                     const scheduleData = response.data;
                     setState(scheduleData);
-                    setSelectedDepartureDate(scheduleData.departureTime);
-                    console.log(scheduleData);
                 } else {
                     console.error("Error fetching schedule data.");
                 }
@@ -80,35 +80,34 @@ function DetailScheduleComponent() {
     }, []);
 
     useEffect(() => {
-        let duration = state.train.duration;
+        const originalDate = state.departureTime;
+        const ISOduration = state.train.duration;
 
-        const fecha = state.departureTime;
-        const fechaParseada = dayjs(fecha);
-        const resultado = fechaParseada.add(dayjs.duration(duration));
-        const resultadoFormateado = resultado.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        console.log("fecha original: " + originalDate + " ISOduration: " + ISOduration);
 
-        console.log("resultado", resultadoFormateado);
+        const nuevaFecha = sumarDuracionAFecha(originalDate, ISOduration);
 
-        setState({ ...state, arrivalTime: resultadoFormateado });
+        console.log("sumada" + nuevaFecha);
+
+        setState({ ...state, arrivalTime: nuevaFecha });
     }, [state.train.id, state.departureTime]);
 
-    useEffect(() => {
-        let duration = state.train.duration;
-
-        const fecha = state.departureTime;
-        const fechaParseada = dayjs(fecha);
-        const resultado = fechaParseada.add(dayjs.duration(duration));
-        const resultadoFormateado = resultado.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-
-        console.log("resultado", resultadoFormateado);
-
-        setState({ ...state, arrivalTime: resultadoFormateado });
-    }, []);
+    function sumarDuracionAFecha(originalDate, ISOduration) {
+        // Parsea la fecha original en formato "YYYY-MM-DDTHH:mm"
+        const fecha = dayjs.utc(originalDate);
+      
+        // Parsea la duración en formato ISO
+        const duracion = dayjs.duration(ISOduration);
+      
+        // Suma la duración a la fecha
+        const nuevaFecha = fecha.add(duracion);
+      
+        return nuevaFecha.format('YYYY-MM-DDTHH:mm');
+    }
 
     const changeDepartureTimeHandler = (newDate) => {
         if (isEditable) {
-            const formattedDate = newDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-            setSelectedDepartureDate(newDate);
+            const formattedDate = newDate.format("YYYY-MM-DDTHH:mm");
             setState({ ...state, departureTime: formattedDate });
         }
     };
@@ -168,9 +167,9 @@ function DetailScheduleComponent() {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 label="Departure time"
-                                value={dayjs(state.departureTime)}
+                                value={dayjs.utc(state.departureTime)}
                                 onChange={changeDepartureTimeHandler}
-                                disabled={!isEditable} // Deshabilitar cuando no es editable
+                                disabled={!isEditable}
                             />
                         </LocalizationProvider>
                     </div>
@@ -178,8 +177,8 @@ function DetailScheduleComponent() {
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 label="Arrival time"
-                                value={dayjs(state.arrivalTime)}
-                                disabled={true} // Deshabilitar cuando no es editable
+                                value={dayjs.utc(state.arrivalTime)}
+                                disabled={true}
                             />
                         </LocalizationProvider>
                     </div>

@@ -21,17 +21,13 @@ function ViewSchedulesComponent() {
 
       schedulesInfo.forEach(scheduleInfo => {
         // Convertir las fechas a objetos Date
-        const departureDate = new Date(scheduleInfo.departureTime);
-        const arrivalDate = new Date(scheduleInfo.arrivalTime);
-
-        // Obtener la parte de la fecha y la hora (solo hora y minutos) como cadenas
-        const departureDateTimeString = `${departureDate.toLocaleDateString()} ${departureDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
-        const arrivalDateTimeString = `${arrivalDate.toLocaleDateString()} ${arrivalDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+        const departureDate = scheduleInfo.departureTime.substring(0, 10) + "    " + scheduleInfo.departureTime.substring(11, 19);
+        const arrivalDate = scheduleInfo.arrivalTime.substring(0, 10) + "    " + scheduleInfo.arrivalTime.substring(11, 19);
 
         const schedule = {
           id: scheduleInfo.id,
-          departureTime: departureDateTimeString,
-          arrivalTime: arrivalDateTimeString,
+          departureTime: departureDate,
+          arrivalTime: arrivalDate,
           trainNumber: scheduleInfo.train.trainNumber,
           occupiedSeats: scheduleInfo.occupiedSeats,
         };
@@ -112,37 +108,39 @@ function ViewSchedulesComponent() {
 
   return (
     <div>
-      <EnhancedTableComponent
-        data={data}
-        title='Schedules'
-        columns={columns}
-        rowsPerPageOptions={rowsPerPageOptions}
-        onAddRecord={handleAddRecord}
-        onDeleteRecords={handleDeleteRecords}
-        onViewRecord={handleDetailsRecords}
-      />
+      <div className="full-screen">
+          <EnhancedTableComponent
+            data={data}
+            title='Schedules'
+            columns={columns}
+            rowsPerPageOptions={rowsPerPageOptions}
+            onAddRecord={handleAddRecord}
+            onDeleteRecords={handleDeleteRecords}
+            onViewRecord={handleDetailsRecords}
+          />
+      </div>
 
-      <CustomizableDialog
-        type='warning'
-        open={isDeleteDialogOpen}
-        title="Are you sure you want to delete the selected records?"
-        content="This action will permanently delete the selected records."
-        agreeButtonLabel="Yes, delete"
-        cancelButtonLabel='Cancel'
-        showCancelButton={true}
-        onCancel={handleCancelDelete}
-        onAgree={handleConfirmDelete}
-      />
+        <CustomizableDialog
+          type='warning'
+          open={isDeleteDialogOpen}
+          title="Are you sure you want to delete the selected records?"
+          content="This action will permanently delete the selected records."
+          agreeButtonLabel="Yes, delete"
+          cancelButtonLabel='Cancel'
+          showCancelButton={true}
+          onCancel={handleCancelDelete}
+          onAgree={handleConfirmDelete}
+        />
 
-      <CustomizableDialog
-        type='error'
-        open={isErrorDialogOpen}
-        title="Deletion Error"
-        content={errorDialogMessage}
-        agreeButtonLabel="OK"
-        showCancelButton={false}
-        onAgree={handleDismissError}
-      />
+        <CustomizableDialog
+          type='error'
+          open={isErrorDialogOpen}
+          title="Deletion Error"
+          content={errorDialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={handleDismissError}
+        />
     </div>
   );
 }

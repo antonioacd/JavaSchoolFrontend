@@ -64,31 +64,27 @@ function SearchScheduleComponent() {
   };
 
   const searchSchedules = () => {
-    const selectedDate = state.date.format('YYYY-MM-DD');
+    const { departureStation, arrivalStation, date } = state;
+    
+    scheduleService.getSchedulesWithFilter(departureStation, arrivalStation, date.format('YYYY-MM-DD'))
+        .then((res) => {
+            const filteredSchedules = res.data;
 
-    scheduleService.getSchedules().then((res) => {
-      const allSchedules = res.data;
-
-      const filteredSchedules = allSchedules.filter((schedule) => {
-        const isDepartureCityMatch = schedule.train.departureStation.city === state.departureStation;
-        const isArrivalCityMatch = schedule.train.arrivalStation.city === state.arrivalStation;
-        const isDateMatch = dayjs(schedule.departureTime).format('YYYY-MM-DD') === selectedDate;
-
-        return isDepartureCityMatch && isArrivalCityMatch && isDateMatch;
-      });
-
-      if (filteredSchedules.length === 0) {
-        setNoSchedulesDialogOpen(true);
-      } else {
-        setSchedules(filteredSchedules);
-      }
-    });
-  }
+            if (filteredSchedules.length === 0) {
+                setNoSchedulesDialogOpen(true);
+            } else {
+                setSchedules(filteredSchedules);
+            }
+        })
+        .catch((error) => {
+            console.log("Error al buscar", error);
+        });
+}
 
   return (
     <div>
-      <div className="container">
-        <div className="form-container">
+      <div className="full-screen">
+        <div className='row container-custom-big'>
           <div className="row">
             <div className="col">
               <ComboBoxCities
@@ -122,13 +118,15 @@ function SearchScheduleComponent() {
               </button>
             </div>
           </div>
+            <div className='row mt-4'>
+            {schedules.map((schedule, index) => (
+              <SearchItemScheduleComponent key={index} schedule={schedule} />
+            ))}
+          </div>
+
         </div>
       </div>
-      <div className='mt-4'>
-        {schedules.map((schedule, index) => (
-          <SearchItemScheduleComponent key={index} schedule={schedule} />
-        ))}
-      </div>
+      
         <CustomizableDialog
             type='error'
             open={isNoSchedulesDialogOpen}

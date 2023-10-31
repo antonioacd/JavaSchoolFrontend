@@ -20,6 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility'; // Import the visibility icon
 import { visuallyHidden } from '@mui/utils';
+import '../../SharedCSS.css';
 
 function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord }) {
   const [order, setOrder] = useState('asc');
@@ -86,8 +87,8 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
   }, [data, page, rowsPerPage, order, orderBy]);
 
   return (
-    <Box sx={{ width: '80%', margin: '0 auto', mt: 4 }}>
-      <Paper>
+    <Box sx={{ width: '80%', margin: '0 auto', mt: 4}}>
+      <Paper sx={{ borderRadius: '20px' }}>
         <Toolbar
           sx={{
             pl: { sm: 2 },

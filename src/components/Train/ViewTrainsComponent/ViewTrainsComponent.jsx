@@ -112,6 +112,7 @@ function ViewTrainsComponent() {
 
   return (
     <div>
+      <div className="full-screen">
       <EnhancedTableComponent
         data={data}
         title="Trains"
@@ -121,7 +122,7 @@ function ViewTrainsComponent() {
         onDeleteRecords={handleDeleteRecords}
         onViewRecord={handleDetailsRecords}
       />
-
+      </div>
       <CustomizableDialog
         type='warning'
         open={isDeleteDialogOpen}

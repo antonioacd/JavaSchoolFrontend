@@ -12,7 +12,7 @@ import duration from 'dayjs/plugin/duration';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import './CreateScheduleComponent.css';
 import '../../SharedCSS.css';
-
+import { format } from 'date-fns';
 dayjs.extend(duration);
 
 function CreateScheduleComponent() {
@@ -20,7 +20,10 @@ function CreateScheduleComponent() {
         "departureTime": "",
         "arrivalTime": "",
         "occupiedSeats": 0,
-        "train": { "id": 0 }
+        "train": { 
+            "id": 0,
+            "duration": ""    
+        }
     });
 
     const navigate = useNavigate();
@@ -38,23 +41,35 @@ function CreateScheduleComponent() {
     }, []);
 
     useEffect(() => {
-        let duration = "";
+        const originalDate = state.departureTime;
+        const ISOduration = state.train.duration;
 
-        const train = trainList.find(train => train.id === state.train.id);
-        if (train) {
-            duration = train.duration;
-        }
+        console.log("fecha original: " + originalDate + " ISOduration: " + ISOduration);
 
-        const fecha = state.departureTime;
-        const fechaParseada = dayjs(fecha);
-        const resultado = fechaParseada.add(dayjs.duration(duration));
-        const resultadoFormateado = resultado.format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        const nuevaFecha = sumarDuracionAFecha(originalDate, ISOduration);
 
-        setState({ ...state, arrivalTime: resultadoFormateado });
-    }, [state.train.id, state.departureTime]);
+        console.log("sumada" + nuevaFecha);
+
+        setState({ ...state, arrivalTime: nuevaFecha });
+    }, [state.train.duration, state.departureTime]);
+
+    function sumarDuracionAFecha(originalDate, ISOduration) {
+        // Parsea la fecha original en formato "YYYY-MM-DDTHH:mm"
+        const fecha = dayjs(originalDate);
+      
+        // Parsea la duración en formato ISO
+        const duracion = dayjs.duration(ISOduration);
+      
+        // Suma la duración a la fecha
+        const nuevaFecha = fecha.add(duracion);
+      
+        return nuevaFecha.format('YYYY-MM-DDTHH:mm');
+    }
 
     const changeDepartureTimeHandler = (newDate) => {
-        const formattedDate = newDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        const formattedDate = newDate.format("YYYY-MM-DDTHH:mm");
+        console.log("Fecha departure: ", formattedDate);
+
         setState({ ...state, departureTime: formattedDate });
     };
 
@@ -62,7 +77,7 @@ function CreateScheduleComponent() {
         if (selectedTrain === null) {
             return;
         }
-        setState({ ...state, train: { id: selectedTrain.id } });
+        setState({ ...state, train: selectedTrain });
     };
 
     const saveSchedule = (event) => {
@@ -95,10 +110,6 @@ function CreateScheduleComponent() {
             state.departureTime === "" ||
             state.arrivalTime === "") {
             return "Please fill in all fields.";
-        }
-
-        if (dayjs().isBefore(dayjs())) {
-            return "";
         }
 
         return "";
