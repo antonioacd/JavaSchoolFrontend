@@ -143,132 +143,132 @@ function DetailScheduleComponent() {
     }
 
     return (
-        <div className="container border border-primary rounded p-3">
-            
+        <div className="full-screen">
+            <div className='container-custom-big'>
+                <div className="mb-4 d-flex justify-content-between align-items-center">
+                    <h1 className="">Schedule Details</h1>
+                    <IconButton
+                    className="bg-primary"
+                    onClick={() => setIsEditable(!isEditable)}
+                    >
+                    <EditIcon className='text-white'/> {/* Agrega el ícono de lápiz aquí */}
+                    </IconButton>
+                </div>
 
-            <div className="mb-4 d-flex justify-content-between align-items-center">
-                <h1 className="">Schedule Details</h1>
-                <IconButton
-                  className="bg-primary"
-                  onClick={() => setIsEditable(!isEditable)}
-                >
-                  <EditIcon className='text-white'/> {/* Agrega el ícono de lápiz aquí */}
-                </IconButton>
-            </div>
-
-            <div className="row mt-4">
-                <div className='col'>
-                    <TextField
-                        label="Id"
-                        variant="outlined"
-                        value={state.id}
-                        disabled={true}
-                    />
-                </div>
-                <div className="col">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
-                            label="Departure time"
-                            value={dayjs(state.departureTime)}
-                            onChange={changeDepartureTimeHandler}
-                            disabled={!isEditable} // Deshabilitar cuando no es editable
-                        />
-                    </LocalizationProvider>
-                </div>
-                <div className="col">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
-                            label="Arrival time"
-                            value={dayjs(state.arrivalTime)}
-                            disabled={true} // Deshabilitar cuando no es editable
-                        />
-                    </LocalizationProvider>
-                </div>
-                <div className='col'>
-                    <TextField
-                        label="Occupied Seats"
-                        variant="outlined"
-                        value={state.occupiedSeats}
-                        disabled={true}
-                    />
-                </div>
-            </div>
-            {isEditable &&
                 <div className="row mt-4">
-                    <div className="col custom-selector">
-                        <ComboBoxTrains
-                            label="Train"
-                            options={trainList}
-                            onSelect={changeTrainHandler}
+                    <div className='col'>
+                        <TextField
+                            label="Id"
+                            variant="outlined"
+                            value={state.id}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="col">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                label="Departure time"
+                                value={dayjs(state.departureTime)}
+                                onChange={changeDepartureTimeHandler}
+                                disabled={!isEditable} // Deshabilitar cuando no es editable
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <div className="col">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                label="Arrival time"
+                                value={dayjs(state.arrivalTime)}
+                                disabled={true} // Deshabilitar cuando no es editable
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <div className='col'>
+                        <TextField
+                            label="Occupied Seats"
+                            variant="outlined"
+                            value={state.occupiedSeats}
+                            disabled={true}
                         />
                     </div>
                 </div>
-            }
-            <div className='row mt-4'>
-                <div className='col'>
-                    <TextField
-                        label="DepartureStation"
-                        variant="outlined"
-                        value={state.train.departureStation.name}
-                        disabled={true}
-                    />
+                {isEditable &&
+                    <div className="row mt-4">
+                        <div className="col custom-selector">
+                            <ComboBoxTrains
+                                label="Train"
+                                options={trainList}
+                                onSelect={changeTrainHandler}
+                            />
+                        </div>
+                    </div>
+                }
+                <div className='row mt-4'>
+                    <div className='col'>
+                        <TextField
+                            label="DepartureStation"
+                            variant="outlined"
+                            value={state.train.departureStation.name}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className='col'>
+                        <TextField
+                            id='fullWitdh'
+                            label="ArrivalStation"
+                            variant="outlined"
+                            value={state.train.arrivalStation.name}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className='col'>
+                        <TextField
+                            label="Train Number"
+                            variant="outlined"
+                            value={state.train.trainNumber}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className='col'>
+                        <TextField
+                            label="Seats"
+                            variant="outlined"
+                            value={state.train.seats}
+                            disabled={true}
+                        />
+                    </div>
                 </div>
-                <div className='col'>
-                    <TextField
-                        id='fullWitdh'
-                        label="ArrivalStation"
-                        variant="outlined"
-                        value={state.train.arrivalStation.name}
-                        disabled={true}
-                    />
-                </div>
-                <div className='col'>
-                    <TextField
-                        label="Train Number"
-                        variant="outlined"
-                        value={state.train.trainNumber}
-                        disabled={true}
-                    />
-                </div>
-                <div className='col'>
-                    <TextField
-                        label="Seats"
-                        variant="outlined"
-                        value={state.train.seats}
-                        disabled={true}
-                    />
-                </div>
-            </div>
 
-            <div className="row mt-4 justify-content-between">
-                {isEditable ? (
-                    <button type="button" className="btn btn-primary" onClick={saveSchedule}>
-                        Save schedule
-                    </button>
-                ) : null}
-            </div>
+                <div className="row mt-4 justify-content-between">
+                    {isEditable ? (
+                        <button type="button" className="btn btn-primary" onClick={saveSchedule}>
+                            Save schedule
+                        </button>
+                    ) : null}
+                </div>
 
-            <CustomizableDialog
-                type='success'
-                open={isSuccessDialogOpen}
-                title="Success"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => {
-                    setSuccessDialogOpen(false);
-                    window.location.reload();
-                }}
-            />
-            <CustomizableDialog
-                type='error'
-                open={isErrorDialogOpen}
-                title="Error"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => setErrorDialogOpen(false)}
-            />
+                <CustomizableDialog
+                    type='success'
+                    open={isSuccessDialogOpen}
+                    title="Success"
+                    content={dialogMessage}
+                    agreeButtonLabel="OK"
+                    showCancelButton={false}
+                    onAgree={() => {
+                        setSuccessDialogOpen(false);
+                        window.location.reload();
+                    }}
+                />
+                <CustomizableDialog
+                    type='error'
+                    open={isErrorDialogOpen}
+                    title="Error"
+                    content={dialogMessage}
+                    agreeButtonLabel="OK"
+                    showCancelButton={false}
+                    onAgree={() => setErrorDialogOpen(false)}
+                />
+            </div>
         </div>
     );
 }

@@ -1,0 +1,40 @@
+/* Clase para el fondo rojo en pantalla completa */
+.full-screen {
+  background-color: rgb(220, 220, 220);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  
+}
+
+/* Clase para el contenedor personalizado con bordes redondeados */
+.container-custom {
+    margin-top: 5vh;
+    text-align: center;
+    max-width: 530px;
+    width: 100%;
+    border-radius: 20px;
+    background-color: white; /* Color de fondo blanco */
+    padding: 30px; /* Añade un espacio interior al contenedor */
+}
+
+.container-custom-big {
+  margin-top: 5vh;
+  text-align: center;
+  max-width: 1000px;
+  width: 100%;
+  border-radius: 20px;
+  background-color: white; /* Color de fondo blanco */
+  padding: 30px; /* Añade un espacio interior al contenedor */
+}
+
+.container-custom-mid {
+  margin-top: 5vh;
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  border-radius: 20px;
+  background-color: white; /* Color de fondo blanco */
+  padding: 30px; /* Añade un espacio interior al contenedor */
+}

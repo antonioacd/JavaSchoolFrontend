@@ -6,7 +6,8 @@ import "./CreateTrainComponent.css";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import { Duration } from "luxon";
 import { TextField } from '@mui/material';
-import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog'; // Import CustomizableDialog
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import '../../SharedCSS.css';
 
 function CreateTrainComponent() {
   const [state, setState] = useState({
@@ -184,92 +185,94 @@ function getArrivalStationList() {
   };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center mt-5">
-        <h1 className='text-center'>Create train</h1>
-      </div>
+    <div className="full-screen">
+      <div className='container-custom'>
+        <div className="row justify-content-center">
+          <h1 className='text-center'>Create train</h1>
+        </div>
 
-      <div className="row mt-4 justify-content-center">
-        <div className="col">
-          <ComboBoxStations
-            options={departureStationList}
-            onSelect={changeDepartureStationHandler}
-            label={"Departure Station"} />
+        <div className="row mt-4 justify-content-center">
+          <div className="col">
+            <ComboBoxStations
+              options={departureStationList}
+              onSelect={changeDepartureStationHandler}
+              label={"Departure Station"} />
+          </div>
+          <div className="col">
+            <ComboBoxStations
+              options={arrivalStationList}
+              onSelect={changeArrivalStationHandler}
+              label={"Arrival Station"} />
+          </div>
         </div>
-        <div className="col">
-          <ComboBoxStations
-            options={arrivalStationList}
-            onSelect={changeArrivalStationHandler}
-            label={"Arrival Station"} />
+        <div className="row mt-4 justify-content-center">
+          <div className="col">
+            <TextField
+              id="outlined-basic"
+              label="Number of seats"
+              variant="outlined"
+              value={state.seats}
+              onChange={changeSeatsHandler}
+            />
+          </div>
+          <div className="col">
+            <TextField
+              id="outlined-basic"
+              label="Duration in minutes"
+              variant="outlined"
+              value={updatedDuration}
+              onChange={changeDurationHandler}
+            />
+          </div>
         </div>
-      </div>
-      <div className="row mt-4 justify-content-center">
-        <div className="col">
+
+        <div className="row mt-4 justify-content-center">
           <TextField
             id="outlined-basic"
-            label="Number of seats"
+            label="Train number"
             variant="outlined"
-            value={state.seats}
-            onChange={changeSeatsHandler}
+            value={state.trainNumber}
+            onChange={changeTrainNumberHandler}
           />
         </div>
-        <div className="col">
-          <TextField
-            id="outlined-basic"
-            label="Duration in minutes"
-            variant="outlined"
-            value={updatedDuration}
-            onChange={changeDurationHandler}
-          />
-        </div>
-      </div>
 
-      <div className="row mt-4 justify-content-center">
-        <TextField
-          id="outlined-basic"
-          label="Train number"
-          variant="outlined"
-          value={state.trainNumber}
-          onChange={changeTrainNumberHandler}
+        <div className="row mt-4 justify-content-center">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={saveTrain}
+          >
+            Save train
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary mt-2"
+            onClick={()=>window.location.reload()}
+          >
+            Clear
+          </button>
+        </div>
+
+        <CustomizableDialog
+          type='success'
+          open={isSuccessDialogOpen}
+          title="Success"
+          content={dialogMessage}
+          agreeButtonLabel="Accept"
+          showCancelButton={false}
+          onAgree={handleSuccessDialogClose}
+        />
+
+        <CustomizableDialog
+          type='error'
+          open={isErrorDialogOpen}
+          title="Error"
+          content={dialogMessage}
+          agreeButtonLabel="Accept"
+          showCancelButton={false}
+          onAgree={handleErrorDialogClose}
         />
       </div>
-
-      <div className="row mt-4 justify-content-center">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={saveTrain}
-        >
-          Save train
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary mt-2"
-          onClick={()=>window.location.reload()}
-        >
-          Clear
-        </button>
-      </div>
-
-      <CustomizableDialog
-        type='success'
-        open={isSuccessDialogOpen}
-        title="Success"
-        content={dialogMessage}
-        agreeButtonLabel="Accept"
-        showCancelButton={false}
-        onAgree={handleSuccessDialogClose}
-      />
-
-      <CustomizableDialog
-        type='error'
-        open={isErrorDialogOpen}
-        title="Error"
-        content={dialogMessage}
-        agreeButtonLabel="Accept"
-        showCancelButton={false}
-        onAgree={handleErrorDialogClose}
-      />
     </div>
   );
 

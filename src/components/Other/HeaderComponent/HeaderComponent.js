@@ -31,7 +31,7 @@ const Header = () => {
 
     return (
         <React.Fragment>
-            <AppBar sx={{ background: "#063970" }}>
+            <AppBar className='bg-primary'>
                 <Toolbar>
                     <TrainIcon />
                     {isMatch ? (
@@ -46,7 +46,7 @@ const Header = () => {
                                 textColor='inherit'
                                 value={value}
                                 onChange={handleChangeTab}
-                                indicatorColor='secondary'
+                                indicatorColor='primary'
                             >
                                 {PAGES.map((page, index) => (
                                     <Tab key={index} label={page.name} />

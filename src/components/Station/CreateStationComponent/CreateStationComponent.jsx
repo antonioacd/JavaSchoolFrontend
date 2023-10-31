@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StationService from '../../../services/StationService';
 import TextField from '@mui/material/TextField';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-import './CreateStationComponent.css';
+import '../../SharedCSS.css';
 
 function CreateStationComponent() {
   const [state, setState] = useState({
@@ -63,72 +63,74 @@ function CreateStationComponent() {
   }
 
   return (
-    <div className="container">
-      <div className="row justify-content-center mt-5">
-        <h1 className='text-center'>Create station</h1>
-      </div>
+    <div className='full-screen'>
+      <div className="container-custom">
+        <div className="row justify-content-center">
+          <h1 className='text-center'>Create Station</h1>
+        </div>
 
-      <div className="card-body">
-        <div className="row mt-4 justify-content-center">
-          <div className="col">
-            <TextField
-              label="Station Name"
-              variant="outlined"
-              value={state.name}
-              onChange={changeNameHandler}
-              style={{ width: '100%' }}
-            />
+        <div className="card-body">
+          <div className="row mt-4 justify-content-center">
+            <div className="col">
+              <TextField
+                label="Station Name"
+                variant="outlined"
+                value={state.name}
+                onChange={changeNameHandler}
+                style={{ width: '100%' }}
+              />
+            </div>
+            <div className="col">
+              <TextField
+                label="Station City"
+                variant="outlined"
+                value={state.city}
+                onChange={changeCityHandler}
+                style={{ width: '100%' }}
+              />
+            </div>
           </div>
-          <div className="col">
-            <TextField
-              label="Station City"
-              variant="outlined"
-              value={state.city}
-              onChange={changeCityHandler}
-              style={{ width: '100%' }}
-            />
+
+          <div className="row mt-4 justify-content-center">
+            <button
+              type="button"
+              className="btn btn-primary mt-2"
+              onClick={saveStation}
+            >
+              Save station
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary mt-2"
+              onClick={()=>window.location.reload()}
+            >
+              Clear
+            </button>
           </div>
         </div>
 
-        <div className="row mt-4 justify-content-center">
-          <button
-            type="button"
-            className="btn btn-primary mt-2"
-            onClick={saveStation}
-          >
-            Save station
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary mt-2"
-            onClick={()=>window.location.reload()}
-          >
-            Clear
-          </button>
-        </div>
+        <CustomizableDialog
+          type='success'
+          open={isSuccessDialogOpen}
+          title="Success"
+          content={dialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={() => {
+            setSuccessDialogOpen(false);
+            window.location.reload();
+          }}
+        />
+        <CustomizableDialog
+          type='error'
+          open={isErrorDialogOpen}
+          title="Error"
+          content={dialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={() => setErrorDialogOpen(false)}
+        />
       </div>
-
-      <CustomizableDialog
-        type='success'
-        open={isSuccessDialogOpen}
-        title="Success"
-        content={dialogMessage}
-        agreeButtonLabel="OK"
-        showCancelButton={false}
-        onAgree={() => {
-          setSuccessDialogOpen(false);
-          window.location.reload();
-        }}
-      />
-      <CustomizableDialog
-        type='error'
-        open={isErrorDialogOpen}
-        title="Error"
-        content={dialogMessage}
-        agreeButtonLabel="OK"
-        showCancelButton={false}
-        onAgree={() => setErrorDialogOpen(false)}
-      />
     </div>
   );
 }

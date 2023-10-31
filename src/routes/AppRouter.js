@@ -12,15 +12,16 @@ import ViewSchedulesPage from '../pages/Schedule/ViewSchedulesPage';
 import ViewStationsPage from '../pages/Station/ViewStationsPage';
 import LoginPage from '../pages/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
-import DetailSchedulePage from '../pages/Schedule/DetailsSchedulePage';
+import DetailSchedulePage from '../pages/Schedule/DetailSchedulePage';
 import DetailTrainPage from '../pages/Train/DetailTrainPage';
+import DetailStationPage from '../pages/Station/DetailStationPage';
 
 
 const AppRouter = () => {
     return (
         <Router>
             <Header/>
-            <div style={{marginTop: '90px'}}>
+            <div style={{marginTop: '60px'}}>
                 <Routes>
                     {/* Login */}
 
@@ -57,6 +58,10 @@ const AppRouter = () => {
                         <Route 
                             path="/station/view"
                             element={<ViewStationsPage/>}
+                        />
+                        <Route 
+                            path="/station/details/:id"
+                            element={<DetailStationPage />}
                         />
 
                         {/* Train */}

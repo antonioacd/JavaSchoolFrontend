@@ -10,8 +10,8 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-
 import './CreateScheduleComponent.css';
+import '../../SharedCSS.css';
 
 dayjs.extend(duration);
 
@@ -105,63 +105,62 @@ function CreateScheduleComponent() {
     }
 
     return (
-        <div className="container">
-            <div className="row justify-content-center">
-                <h1 className="text-center">Create Schedule</h1>
-            </div>
+        <div className="full-screen">
+            <div className='container-custom'>
+                <div className="row justify-content-center">
+                    <h1 className="text-center">Create Schedule</h1>
+                </div>
 
-            <div className="row mt-4">
-                <div className="col">
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateTimePicker
-                            label="Departure time"
-                            value={dayjs(state.departureTime)}
-                            onChange={changeDepartureTimeHandler}
+                <div className="row mt-4">
+                    <div className="col">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                label="Departure time"
+                                value={dayjs(state.departureTime)}
+                                onChange={changeDepartureTimeHandler}
+                            />
+                        </LocalizationProvider>
+                    </div>
+                </div>
+
+                <div className="row mt-4">
+                    <div className="col custom-selector">
+                        <ComboBoxTrains
+                            label="Train"
+                            options={trainList}
+                            onSelect={changeTrainHandler}
                         />
-                    </LocalizationProvider>
+                    </div>
                 </div>
-            </div>
 
-            <div className="row mt-4">
-                <div className="col custom-selector">
-                    <ComboBoxTrains
-                        label="Train"
-                        options={trainList}
-                        onSelect={changeTrainHandler}
-                    />
+                <div className="row mt-4 justify-content-between">
+                    <button type="button" className="btn btn-primary" onClick={saveSchedule}>
+                        Save schedule
+                    </button>
                 </div>
-            </div>
 
-            <div className="row mt-4 justify-content-between">
-                <button type="button" className="btn btn-primary" onClick={saveSchedule}>
-                    Save schedule
-                </button>
-                <button type="button" className="btn btn-secondary mt-2" onClick={()=>window.location.reload()}>
-                    Clear
-                </button>
+                <CustomizableDialog
+                    type='success'
+                    open={isSuccessDialogOpen}
+                    title="Success"
+                    content={dialogMessage}
+                    agreeButtonLabel="OK"
+                    showCancelButton={false}
+                    onAgree={() => {
+                        setSuccessDialogOpen(false);
+                        window.location.reload();
+                    }}
+                />
+                <CustomizableDialog
+                    type='error'
+                    open={isErrorDialogOpen}
+                    title="Error"
+                    content={dialogMessage}
+                    agreeButtonLabel="OK"
+                    showCancelButton={false}
+                    onAgree={() => setErrorDialogOpen(false)}
+                />
             </div>
-
-            <CustomizableDialog
-                type='success'
-                open={isSuccessDialogOpen}
-                title="Success"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => {
-                    setSuccessDialogOpen(false);
-                    window.location.reload();
-                }}
-            />
-            <CustomizableDialog
-                type='error'
-                open={isErrorDialogOpen}
-                title="Error"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => setErrorDialogOpen(false)}
-            />
         </div>
     );
 }

@@ -91,6 +91,12 @@ function ViewStationsComponent() {
     });
   }, []);
 
+  const handleDetailsRecords = (id) => {
+    console.log('Showing details for schedule with ID:', id);
+    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
+    navigate(`/station/details/${id}`);
+  };
+
   return (
     <div>
       <EnhancedTableComponent
@@ -100,6 +106,7 @@ function ViewStationsComponent() {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
+        onViewRecord={handleDetailsRecords}
       />
 
       <CustomizableDialog

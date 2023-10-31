@@ -23,11 +23,11 @@ class StationService {
         return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
     }
 
-    getScheduleById(id){
+    getStationById(id){
         return this.axiosInstance.get(`${STATIONS_API_BASE_URL}/${id}`);
     }
 
-    updateSchedule(id, stationData) {
+    updateStation(id, stationData) {
         return this.axiosInstance.put(`${STATIONS_API_BASE_URL}/${id}`, stationData);
     }
 

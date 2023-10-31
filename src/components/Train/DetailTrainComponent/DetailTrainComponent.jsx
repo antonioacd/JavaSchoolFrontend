@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Duration } from "luxon";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import stationService from '../../../services/StationService';
+import { validateDate } from '@mui/x-date-pickers/internals';
 
 dayjs.extend(duration);
 
@@ -22,18 +23,20 @@ function DetailTrainComponent() {
     const { id } = useParams();
 
     const [state, setState] = useState({
-        "id": 0,
-        "departureStation": {
-            "id": "",
-            "name": ""
+        id: 0,
+        departureStation: {
+            id: "",
+            name: "",
+            city: ""
         },
-        "arrivalStation": {
-            "id": "",
-            "name": ""
+        arrivalStation: {
+            id: "",
+            name: "",
+            city: ""
         },
-        "trainNumber": "",
-        "duration": "",
-        "seats": ""
+        trainNumber: "",
+        duration: "",
+        seats: ""
     });
 
     const navigate = useNavigate();
@@ -44,6 +47,8 @@ function DetailTrainComponent() {
     const [isEditable, setIsEditable] = useState(false);
     const [departureStationList, setDepartureStationList] = useState([]);
     const [arrivalStationList, setArrivalStationList] = useState([]);
+    const [savedState, setSavedState] = useState([]);
+    const [parsedDuration, setParsedDuration] = useState([]);
 
     useEffect(() => {
         trainService.getTrainById(id)
@@ -51,6 +56,8 @@ function DetailTrainComponent() {
                 if (response.status === 200) {
                     const trainData = response.data;
                     setState(trainData);
+                    setSavedState(trainData);
+                    setParsedDuration(durationToMinutes(trainData.duration));
                 } else {
                     console.error("Error fetching train data.");
                 }
@@ -152,33 +159,65 @@ function DetailTrainComponent() {
         }
       };
 
-    const saveTrain = (event) => {
+      const saveTrain = (event) => {
         event.preventDefault();
         if (isEditable) {
             const error = checkState();
-
+    
             if (error) {
                 setDialogMessage('Error adding train. Please try again.');
                 setErrorDialogOpen(true);
             } else {
-                console.log("State", state);
-                trainService.updateTrain(state.id, state);
-                setDialogMessage('Train updated successfully');
-                setSuccessDialogOpen(true);
+                trainService.updateTrain(state.id, state)
+                    .then((response) => {
+                        if (response.status === 200) { // Verificar el estado de la respuesta
+                            setDialogMessage('Train updated successfully');
+                            setSuccessDialogOpen(true);
+                        } else {
+                            setDialogMessage('Error updating train. Please try again.'); // Mensaje de error genérico
+                            setErrorDialogOpen(true);
+                        }
+                    })
+                    .catch((error) => {
+                        setDialogMessage(error.message); // Mostrar el mensaje de error
+                        setErrorDialogOpen(true);
+                    });
             }
         }
     };
-
+    
     function checkState() {
         return "";
     }
 
+    const changeSeatsHandler = (event) => {
+      setState({ ...state, seats: event.target.value });
+    };
+  
+    const changeTrainNumberHandler = (event) => {
+      setState({ ...state, trainNumber: event.target.value });
+    };
+  
+    const changeDurationHandler = (event) => {
+      setState({...state, duration: minutesToDuration(event.target.value)});
+      setParsedDuration(event.target.value);
+    };
+
     function durationToMinutes(durationISO) {
+        if(!durationISO){
+          return;
+        }
+
         const duration = Duration.fromISO(durationISO);
         return duration.as('minutes');
     }
 
     function minutesToDuration(timeInMinutes) {
+
+        if(!timeInMinutes){
+          return;
+        }
+
         const minutes = parseInt(timeInMinutes);
         const newDuration = Duration.fromObject({ minutes });
         return newDuration.toISO();
@@ -186,12 +225,15 @@ function DetailTrainComponent() {
 
     function handleEditButton(){
         setIsEditable(!isEditable)
-        getAllStations();
+
+        if(isEditable){
+          setState(savedState);
+        }
     }
 
     return (
-        <div className="container border border-primary rounded p-3">
-            
+      <div className="full-screen">
+        <div className='container-custom-mid'>
             <div className="mb-4 d-flex justify-content-between align-items-center">
                 <h1 className="">Train Details</h1>
                 <IconButton
@@ -211,43 +253,24 @@ function DetailTrainComponent() {
                         disabled={true}
                     />
                 </div>
-
-                {!isEditable &&
-                    <div className='col'>
-                    <TextField
-                        label="DepartureStation"
-                        variant="outlined"
-                        value={state.departureStation.name}
-                        disabled={!isEditable}
-                    />
-                </div>
-                }
-                {!isEditable &&
-                <div className='col'>
-                    <TextField
-                        label="ArrivalStation"
-                        variant="outlined"
-                        value={state.arrivalStation.name}
-                        disabled={!isEditable}
-                    />
-                </div>
-                }
-                {isEditable &&
-                    <div className="col">
+                <div className="col">
                     <ComboBoxStations
                       options={departureStationList}
                       onSelect={changeDepartureStationHandler}
-                      label={"Departure Station"} />
-                  </div>
-                }
-                {isEditable &&
+                      label={"Departure Station"}
+                      disabled={!isEditable}
+                      defaultValue={state.departureStation}
+                      />
+                </div>
                   <div className="col">
                     <ComboBoxStations
                       options={arrivalStationList}
                       onSelect={changeArrivalStationHandler}
-                      label={"Arrival Station"} />
+                      label={"Arrival Station"} 
+                      defaultValue={state.arrivalStation}
+                      disabled={!isEditable}
+                      />
                   </div>
-                }
             </div>
             <div className='row mt-4'>
                 <div className='col'>
@@ -256,6 +279,7 @@ function DetailTrainComponent() {
                         variant="outlined"
                         value={state.trainNumber}
                         disabled={!isEditable}
+                        onChange={changeTrainNumberHandler}
                     />
                 </div>
                 <div className='col'>
@@ -264,14 +288,16 @@ function DetailTrainComponent() {
                         variant="outlined"
                         value={state.seats}
                         disabled={!isEditable}
+                        onChange={changeSeatsHandler}
                     />
                 </div>
                 <div className='col'>
                     <TextField
                         label="Duration in minutes"
                         variant="outlined"
-                        value={durationToMinutes(state.duration)}
+                        value={parsedDuration}
                         disabled={!isEditable}
+                        onChange={changeDurationHandler}
                     />
                 </div>
             </div>
@@ -305,6 +331,7 @@ function DetailTrainComponent() {
                 showCancelButton={false}
                 onAgree={() => setErrorDialogOpen(false)}
             />
+          </div>  
         </div>
     );
 }
