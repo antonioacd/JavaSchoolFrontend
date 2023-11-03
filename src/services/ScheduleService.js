@@ -39,20 +39,18 @@ class ScheduleService {
         return this.axiosInstance.delete(`${SCHEDULES_API_BASE_URL}/${id}`);
     }
 
-    getSchedulesWithFilter(departureStation, arrivalStation, date) {
+    getSchedulesWithFilter(departureCity, arrivalCity) {
         const params = new URLSearchParams();
-        if (departureStation) {
-            params.append('departureStation', departureStation);
+        if (departureCity) {
+            params.append('departureCity', departureCity);
         }
-        if (arrivalStation) {
-            params.append('arrivalStation', arrivalStation);
+        if (arrivalCity) {
+            params.append('arrivalCity', arrivalCity);
         }
-        if (date) {
-            params.append('departureDate', date);
-        }
-
-        return this.axiosInstance.get( SCHEDULES_API_BASE_URL +'/search', { params });
+    
+        return this.axiosInstance.get(SCHEDULES_API_BASE_URL + '/search', { params });
     }
+    
 
 }
 

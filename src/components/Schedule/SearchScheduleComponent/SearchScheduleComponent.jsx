@@ -66,7 +66,7 @@ function SearchScheduleComponent() {
   const searchSchedules = () => {
     const { departureStation, arrivalStation, date } = state;
     
-    scheduleService.getSchedulesWithFilter(departureStation, arrivalStation, date.format('YYYY-MM-DD'))
+    scheduleService.getSchedulesWithFilter(departureStation, arrivalStation)
         .then((res) => {
             const filteredSchedules = res.data;
 
