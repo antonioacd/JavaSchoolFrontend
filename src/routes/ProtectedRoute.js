@@ -7,11 +7,11 @@ const ProtectedRoute = ({
     redirectPath= '/login'
 }) => {
 
-    const token = localStorage.getItem('token'); // O desde las cookies
+    const accessToken = localStorage.getItem('accessToken');
 
-    console.log(token);
+    console.log(accessToken);
     
-    if (!token) {
+    if (!accessToken) {
         return <Navigate to={redirectPath} replace />
     }
 

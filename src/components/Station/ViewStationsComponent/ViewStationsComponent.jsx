@@ -99,37 +99,39 @@ function ViewStationsComponent() {
 
   return (
     <div>
-      <EnhancedTableComponent
-        data={data}
-        title="Stations"
-        columns={columns}
-        rowsPerPageOptions={rowsPerPageOptions}
-        onAddRecord={handleAddRecord}
-        onDeleteRecords={handleDeleteRecords}
-        onViewRecord={handleDetailsRecords}
-      />
+      <div className="full-screen">
+        <EnhancedTableComponent
+          data={data}
+          title="Stations"
+          columns={columns}
+          rowsPerPageOptions={rowsPerPageOptions}
+          onAddRecord={handleAddRecord}
+          onDeleteRecords={handleDeleteRecords}
+          onViewRecord={handleDetailsRecords}
+        />
 
-      <CustomizableDialog
-        type='warning'
-        open={isDeleteDialogOpen}
-        title="Are you sure you want to delete the selected records?"
-        content="This action will permanently delete the selected records."
-        agreeButtonLabel="Yes, delete"
-        cancelButtonLabel='Cancel'
-        showCancelButton={true}
-        onCancel={handleCancelDelete}
-        onAgree={handleConfirmDelete}
-      />
+        <CustomizableDialog
+          type='warning'
+          open={isDeleteDialogOpen}
+          title="Are you sure you want to delete the selected records?"
+          content="This action will permanently delete the selected records."
+          agreeButtonLabel="Yes, delete"
+          cancelButtonLabel='Cancel'
+          showCancelButton={true}
+          onCancel={handleCancelDelete}
+          onAgree={handleConfirmDelete}
+        />
 
-      <CustomizableDialog
-        type='error'
-        open={isErrorDialogOpen}
-        title="Deletion Error"
-        content={errorDialogMessage}
-        agreeButtonLabel="OK"
-        showCancelButton={false}
-        onAgree={handleDismissError}
-      />
+        <CustomizableDialog
+          type='error'
+          open={isErrorDialogOpen}
+          title="Deletion Error"
+          content={errorDialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={handleDismissError}
+        />
+      </div>
     </div>
   );
 }

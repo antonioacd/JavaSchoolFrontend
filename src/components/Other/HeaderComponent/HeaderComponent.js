@@ -29,6 +29,10 @@ const Header = () => {
         navigate("/login");
     };
 
+    const handleRegister = () => {
+        navigate("/register");
+    };
+
     return (
         <React.Fragment>
             <AppBar className='bg-primary'>
@@ -53,7 +57,7 @@ const Header = () => {
                                 ))}
                             </Tabs>
                             <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>
-                            <Button sx={{ marginLeft: '10px' }} variant='contained'>Sing Up</Button>
+                            <Button sx={{ marginLeft: '10px' }} variant='contained' onClick={handleRegister}>Sing Up</Button>
                         </>
                     )}
                 </Toolbar>

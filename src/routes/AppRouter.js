@@ -15,6 +15,7 @@ import ProtectedRoute from './ProtectedRoute';
 import DetailSchedulePage from '../pages/Schedule/DetailSchedulePage';
 import DetailTrainPage from '../pages/Train/DetailTrainPage';
 import DetailStationPage from '../pages/Station/DetailStationPage';
+import RegisterPage from '../pages/RegisterPage';
 
 
 const AppRouter = () => {
@@ -23,7 +24,12 @@ const AppRouter = () => {
             <Header/>
             <div style={{marginTop: '60px'}}>
                 <Routes>
-                    {/* Login */}
+                    {/* Login and Register*/}
+
+                    <Route 
+                        path="/register"
+                        element={<RegisterPage/>}
+                    />
 
                     <Route 
                         path="/login"

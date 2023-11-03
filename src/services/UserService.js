@@ -17,6 +17,13 @@ class UserService {
             password: password
         });
     }
+
+    register(email, password) {
+        return axios.post("http://localhost:8080/api/auth/register", {
+            email: email,
+            password: password
+        });
+    }
 }
 
 const userService = new UserService();

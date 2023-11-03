@@ -11,7 +11,7 @@ class TrainService {
 
         // Agregar un interceptor para incluir el token en las solicitudes
         this.axiosInstance.interceptors.request.use((config) => {
-            const token = localStorage.getItem('token'); // Obtén el token desde localStorage
+            const token = localStorage.getItem('accessToken'); // Obtén el token desde localStorage
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
