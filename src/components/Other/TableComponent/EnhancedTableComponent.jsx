@@ -18,11 +18,12 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import VisibilityIcon from '@mui/icons-material/Visibility'; // Import the visibility icon
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import FilterListIcon from '@mui/icons-material/FilterList'; // Importa el icono de filtro
 import { visuallyHidden } from '@mui/utils';
 import '../../SharedCSS.css';
 
-function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord }) {
+function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord, onFilterClick }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState(columns[0].id);
   const [selected, setSelected] = useState([]);
@@ -87,7 +88,7 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
   }, [data, page, rowsPerPage, order, orderBy]);
 
   return (
-    <Box sx={{ width: '80%', margin: '0 auto', mt: 4}}>
+    <Box sx={{ width: '80%', margin: '0 auto', mt: 4 }}>
       <Paper sx={{ borderRadius: '20px' }}>
         <Toolbar
           sx={{
@@ -122,16 +123,26 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
           {selected.length > 0 ? (
             <Tooltip title="Delete" onClick={() => onDeleteRecords(selected)}>
               <IconButton className='bg-danger'>
-                <DeleteIcon className='text-white'/>
+                <DeleteIcon className='text-white' />
               </IconButton>
             </Tooltip>
           ) : (
-            <Tooltip title="Add Record" onClick={onAddRecord}>
-              <IconButton className='bg-primary'>
-                <AddIcon className='text-white'/>
-              </IconButton>
-            </Tooltip>
+            <>
+              <Tooltip title="Filter" onClick={onFilterClick}>
+                <IconButton className='bg-secondary' sx={{ mr: 1 }}>
+                  <FilterListIcon className='text-white' />
+                </IconButton>
+              </Tooltip>
+              {onFilterClick && (
+              <Tooltip title="Add Record" onClick={onAddRecord}>
+                <IconButton className='bg-primary'>
+                  <AddIcon className='text-white' />
+                </IconButton>
+              </Tooltip>
+              )}
+            </>
           )}
+
         </Toolbar>
         <TableContainer>
           <Table>
@@ -251,7 +262,8 @@ EnhancedTableComponent.propTypes = {
   rowsPerPageOptions: PropTypes.array.isRequired,
   onAddRecord: PropTypes.func.isRequired,
   onDeleteRecords: PropTypes.func.isRequired,
-  onViewRecord: PropTypes.func.isRequired, // Add the prop type for viewing a record
+  onViewRecord: PropTypes.func.isRequired,
+  onFilterClick: PropTypes.func,
 };
 
 export default EnhancedTableComponent;

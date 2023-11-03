@@ -39,6 +39,18 @@ class TrainService {
         return this.axiosInstance.delete(`${TRAINS_API_BASE_URL}/${id}`);
     }
 
+    getTrainsWithDepartureStationAndArrivalStation(departureStation, arrivalStation) {
+        const params = new URLSearchParams();
+        if (departureStation) {
+            params.append('departureStation', departureStation);
+        }
+        if (arrivalStation) {
+            params.append('arrivalStation', arrivalStation);
+        }
+    
+        return this.axiosInstance.get(TRAINS_API_BASE_URL + '/searchByDepartureStationAndArrivalStation', { params });
+    }
+
 }
 
 const trainService = new TrainService();

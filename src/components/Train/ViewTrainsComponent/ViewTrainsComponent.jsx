@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComponent';
 import { useNavigate } from 'react-router-dom';
 import trainService from '../../../services/TrainService';
-import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import dayjs from 'dayjs';
+import TrainFilterDialogComponent from '../../Other/DialogsComponent/TrainFilterDialogComponent/TrainFilterDialogComponent';
+import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import stationService from '../../../services/StationService';
 
 function ViewTrainsComponent() {
   const [data, setData] = useState([]);
@@ -11,33 +13,39 @@ function ViewTrainsComponent() {
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [errorDialogMessage, setErrorDialogMessage] = useState('');
+  const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [filterData, setFilterData] = useState({
+    departureStation: null,
+    arrivalStation: null,
+  });
+  const [selectedDepartureStation, setSelectedDepartureStation] = useState(null);
+  const [selectedArrivalStation, setSelectedArrivalStation] = useState(null);
 
   useEffect(() => {
-    const trains = [];
-
     trainService.getTrains().then((res) => {
-      setData(res.data);
-
-      const trainsInfo = res.data;
-
-      trainsInfo.forEach(trainInfo => {
-
-
-        const train = {
-          id: trainInfo.id,
-          departureStation: trainInfo.departureStation.name,
-          arrivalStation: trainInfo.arrivalStation.name,
-          trainNumber: trainInfo.trainNumber,
-          trainSeats: trainInfo.seats,
-          duration: formatDuration(trainInfo.duration)
-        }
-
-        trains.push(train);
-      });
-
-      setData(trains);
+      setData(convertDataToTrains(res.data));
     });
   }, []);
+
+  function convertDataToTrains(data) {
+    const trains = [];
+    const trainsInfo = data;
+
+    trainsInfo.forEach((trainInfo) => {
+      const train = {
+        id: trainInfo.id,
+        departureStation: trainInfo.departureStation.name,
+        arrivalStation: trainInfo.arrivalStation.name,
+        trainNumber: trainInfo.trainNumber,
+        trainSeats: trainInfo.seats,
+        duration: formatDuration(trainInfo.duration),
+      };
+
+      trains.push(train);
+    });
+
+    return trains;
+  }
 
   function formatDuration(durationString) {
     const duration = dayjs.duration(durationString);
@@ -53,13 +61,13 @@ function ViewTrainsComponent() {
     { id: 'trainNumber', numeric: false, disablePadding: false, label: 'Train Number' },
     { id: 'trainSeats', numeric: false, disablePadding: false, label: 'Train Seats' },
     { id: 'duration', numeric: false, disablePadding: false, label: 'Duration' },
-    { id: 'view', numeric: false, disablePadding: false, label: 'Details' }
+    { id: 'view', numeric: false, disablePadding: false, label: 'Details' },
   ];
 
   const rowsPerPageOptions = [5, 10, 25];
 
   const handleAddRecord = () => {
-    navigate("/train/create");
+    navigate('/train/create');
   };
 
   const handleDeleteRecords = (selectedIds) => {
@@ -80,7 +88,7 @@ function ViewTrainsComponent() {
       }
 
       if (failedDeletions.length === 0) {
-        const newData = data.filter(item => !selectedIds.includes(item.id));
+        const newData = data.filter((item) => !selectedIds.includes(item.id));
         setData(newData);
         setDeleteDialogOpen(false);
         window.location.reload();
@@ -106,37 +114,76 @@ function ViewTrainsComponent() {
   };
 
   const handleDetailsRecords = (id) => {
-    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
     navigate(`/train/details/${id}`);
+  };
+
+  const handleFilter = () => {
+    setFilterDialogOpen(true);
+  };
+
+  const handleApplyFilter = (departureStation, arrivalStation) => {
+    setSelectedDepartureStation(departureStation);
+    setSelectedArrivalStation(arrivalStation);
+
+    console.log("stations: ", departureStation);
+
+    if (departureStation && arrivalStation) {
+      trainService
+        .getTrainsWithDepartureStationAndArrivalStation(departureStation.name, arrivalStation.name)
+        .then((res) => {
+          const filteredSchedules = res.data;
+
+          if (filteredSchedules.length === 0) {
+            setErrorDialogMessage('No results');
+            setErrorDialogOpen(true);
+          } else {
+            setData(convertDataToTrains(filteredSchedules));
+          }
+        })
+        .catch((error) => {
+          console.log('Error al buscar', error);
+        });
+    }
+
+    setFilterDialogOpen(false);
   };
 
   return (
     <div>
       <div className="full-screen">
-      <EnhancedTableComponent
-        data={data}
-        title="Trains"
-        columns={columns}
-        rowsPerPageOptions={rowsPerPageOptions}
-        onAddRecord={handleAddRecord}
-        onDeleteRecords={handleDeleteRecords}
-        onViewRecord={handleDetailsRecords}
-      />
+        <EnhancedTableComponent
+          data={data}
+          title="Trains"
+          columns={columns}
+          rowsPerPageOptions={rowsPerPageOptions}
+          onAddRecord={handleAddRecord}
+          onDeleteRecords={handleDeleteRecords}
+          onViewRecord={handleDetailsRecords}
+          onFilterClick={handleFilter}
+        />
       </div>
+
+      <TrainFilterDialogComponent
+        title="Train filters"
+        open={isFilterDialogOpen}
+        onAgree={handleApplyFilter}
+        onCancel={() => setFilterDialogOpen(false)}
+      />
+
       <CustomizableDialog
-        type='warning'
+        type="warning"
         open={isDeleteDialogOpen}
         title="Are you sure you want to delete the selected records?"
         content="This action will permanently delete the selected records."
         agreeButtonLabel="Yes, delete"
-        cancelButtonLabel='Cancel'
+        cancelButtonLabel="Cancel"
         showCancelButton={true}
         onCancel={handleCancelDelete}
         onAgree={handleConfirmDelete}
       />
 
       <CustomizableDialog
-        type='error'
+        type="error"
         open={isErrorDialogOpen}
         title="Deletion Error"
         content={errorDialogMessage}

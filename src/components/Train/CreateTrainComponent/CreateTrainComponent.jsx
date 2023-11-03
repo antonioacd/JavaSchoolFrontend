@@ -35,19 +35,19 @@ function CreateTrainComponent() {
   useEffect(() => {
     console.log("Obtiene las de salida");
     getDepartureStationList();
-}, []);
+  }, []);
 
   useEffect(() => {
     console.log("Obtiene las de llegada");
     getArrivalStationList();
-}, [state.departureStation]);
+  }, [state.departureStation]);
 
-useEffect(() => {
-    console.log("Obtiene las de salida");
-    getDepartureStationList();
-}, [state.arrivalStation]);
+  useEffect(() => {
+      console.log("Obtiene las de salida");
+      getDepartureStationList();
+  }, [state.arrivalStation]);
 
-function getArrivalStationList() {
+  function getArrivalStationList() {
     stationService.getStations()
       .then((response) => {
         const stations = response.data;
