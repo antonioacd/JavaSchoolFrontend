@@ -3,6 +3,7 @@ import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComp
 import { useNavigate } from 'react-router-dom';
 import scheduleService from '../../../services/ScheduleService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import ScheduleFilterDialogComponent from '../../Other/DialogsComponent/ScheduleFilterDialogComponent/ScheduleFilterDialogComponent';
 
 function ViewSchedulesComponent() {
   const [data, setData] = useState([]);
@@ -10,6 +11,10 @@ function ViewSchedulesComponent() {
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [errorDialogMessage, setErrorDialogMessage] = useState('');
+  const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [selectedTrain, setSelectedTrain] = useState(null);
+  const [filterApplied, setFilterApplied] = useState(false);
+  const [allSchedules, setAllSchedules] = useState([]);
 
   useEffect(() => {
     const schedules = [];
@@ -19,23 +24,9 @@ function ViewSchedulesComponent() {
 
       const schedulesInfo = res.data;
 
-      schedulesInfo.forEach(scheduleInfo => {
-        // Convertir las fechas a objetos Date
-        const departureDate = scheduleInfo.departureTime.substring(0, 10) + "    " + scheduleInfo.departureTime.substring(11, 19);
-        const arrivalDate = scheduleInfo.arrivalTime.substring(0, 10) + "    " + scheduleInfo.arrivalTime.substring(11, 19);
+      setAllSchedules(schedulesInfo);
 
-        const schedule = {
-          id: scheduleInfo.id,
-          departureTime: departureDate,
-          arrivalTime: arrivalDate,
-          trainNumber: scheduleInfo.train.trainNumber,
-          occupiedSeats: scheduleInfo.occupiedSeats,
-        };
-
-        schedules.push(schedule);
-      });
-
-      setData(schedules);
+      setData(convertDataToSchedules(schedulesInfo));
     });
   }, []);
 
@@ -105,6 +96,64 @@ function ViewSchedulesComponent() {
     navigate(`/schedule/details/${id}`);
   };
 
+  const handleApplyFilter = (train) => {
+    setSelectedTrain(train);
+
+      scheduleService.getschedulesByTrainNumber(train.trainNumber)
+        .then((res) => {
+          const filteredSchedules = res.data;
+
+          if (filteredSchedules.length === 0) {
+            setErrorDialogMessage('No results');
+            setErrorDialogOpen(true);
+          } else {
+            setData(convertDataToSchedules(filteredSchedules));
+            setFilterApplied(true);
+          }
+        })
+        .catch((error) => {
+          console.log('Error al buscar', error);
+        });
+
+    setFilterDialogOpen(false);
+
+    
+
+  };
+
+  function convertDataToSchedules(data) {
+    const schedules = [];
+    const schedulesInfo = data;
+
+    schedulesInfo.forEach((scheduleInfo) => {
+
+      const departureDate = scheduleInfo.departureTime.substring(0, 10) + "    " + scheduleInfo.departureTime.substring(11, 19);
+      const arrivalDate = scheduleInfo.arrivalTime.substring(0, 10) + "    " + scheduleInfo.arrivalTime.substring(11, 19);
+
+      const schedule = {
+        id: scheduleInfo.id,
+        departureTime: departureDate,
+        arrivalTime: arrivalDate,
+        trainNumber: scheduleInfo.train.trainNumber,
+        occupiedSeats: scheduleInfo.occupiedSeats,
+      };
+
+      schedules.push(schedule);
+    });
+
+    return schedules;
+  }
+
+  const handleFilter = () => {
+
+    if(filterApplied){
+      setFilterApplied(false);
+      setData(convertDataToSchedules(allSchedules));
+    }else{
+      setFilterDialogOpen(true);
+    }
+
+  };
 
   return (
     <div>
@@ -117,8 +166,17 @@ function ViewSchedulesComponent() {
             onAddRecord={handleAddRecord}
             onDeleteRecords={handleDeleteRecords}
             onViewRecord={handleDetailsRecords}
+            onFilterClick={handleFilter}
+            isFilterApplied={filterApplied}
           />
       </div>
+
+        <ScheduleFilterDialogComponent
+          title="Schedule filters"
+          open={isFilterDialogOpen}
+          onAgree={handleApplyFilter}
+          onCancel={() => setFilterDialogOpen(false)}
+        />
 
         <CustomizableDialog
           type='warning'

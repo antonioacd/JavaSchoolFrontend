@@ -23,7 +23,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'; // Importa el icono
 import { visuallyHidden } from '@mui/utils';
 import '../../SharedCSS.css';
 
-function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord, onFilterClick }) {
+function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAddRecord, onDeleteRecords, onViewRecord, onFilterClick, isFilterApplied }) {
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState(columns[0].id);
   const [selected, setSelected] = useState([]);
@@ -129,17 +129,15 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
           ) : (
             <>
               <Tooltip title="Filter" onClick={onFilterClick}>
-                <IconButton className='bg-secondary' sx={{ mr: 1 }}>
+                <IconButton className={`${isFilterApplied ? 'bg-danger' : 'bg-primary'}`} sx={{ mr: 1 }}>
                   <FilterListIcon className='text-white' />
                 </IconButton>
               </Tooltip>
-              {onFilterClick && (
               <Tooltip title="Add Record" onClick={onAddRecord}>
                 <IconButton className='bg-primary'>
                   <AddIcon className='text-white' />
                 </IconButton>
               </Tooltip>
-              )}
             </>
           )}
 

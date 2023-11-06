@@ -39,6 +39,15 @@ class StationService {
         return this.axiosInstance.delete(`${STATIONS_API_BASE_URL}/${id}`);
     }
 
+    getStationsByCity(city) {
+        const params = new URLSearchParams();
+        if (city) {
+            params.append('city', city);
+        }
+
+        return this.axiosInstance.get(STATIONS_API_BASE_URL + '/search', { params });
+    }
+
 }
 
 const stationService = new StationService();

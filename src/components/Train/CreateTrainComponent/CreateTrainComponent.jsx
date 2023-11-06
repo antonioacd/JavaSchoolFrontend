@@ -177,7 +177,7 @@ function CreateTrainComponent() {
 
   const handleSuccessDialogClose = () => {
     setSuccessDialogOpen(false);
-    navigate("/");
+    window.location.reload();
   };
 
   const handleErrorDialogClose = () => {

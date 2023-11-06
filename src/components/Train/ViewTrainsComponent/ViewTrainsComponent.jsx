@@ -5,7 +5,6 @@ import trainService from '../../../services/TrainService';
 import dayjs from 'dayjs';
 import TrainFilterDialogComponent from '../../Other/DialogsComponent/TrainFilterDialogComponent/TrainFilterDialogComponent';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-import stationService from '../../../services/StationService';
 
 function ViewTrainsComponent() {
   const [data, setData] = useState([]);
@@ -14,10 +13,6 @@ function ViewTrainsComponent() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [errorDialogMessage, setErrorDialogMessage] = useState('');
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [filterData, setFilterData] = useState({
-    departureStation: null,
-    arrivalStation: null,
-  });
   const [selectedDepartureStation, setSelectedDepartureStation] = useState(null);
   const [selectedArrivalStation, setSelectedArrivalStation] = useState(null);
 
@@ -125,25 +120,21 @@ function ViewTrainsComponent() {
     setSelectedDepartureStation(departureStation);
     setSelectedArrivalStation(arrivalStation);
 
-    console.log("stations: ", departureStation);
-
-    if (departureStation && arrivalStation) {
       trainService
         .getTrainsWithDepartureStationAndArrivalStation(departureStation.name, arrivalStation.name)
         .then((res) => {
-          const filteredSchedules = res.data;
+          const filteredTrains = res.data;
 
-          if (filteredSchedules.length === 0) {
+          if (filteredTrains.length === 0) {
             setErrorDialogMessage('No results');
             setErrorDialogOpen(true);
           } else {
-            setData(convertDataToTrains(filteredSchedules));
+            setData(convertDataToTrains(filteredTrains));
           }
         })
         .catch((error) => {
           console.log('Error al buscar', error);
         });
-    }
 
     setFilterDialogOpen(false);
   };
