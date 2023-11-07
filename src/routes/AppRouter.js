@@ -16,6 +16,8 @@ import DetailSchedulePage from '../pages/Schedule/DetailSchedulePage';
 import DetailTrainPage from '../pages/Train/DetailTrainPage';
 import DetailStationPage from '../pages/Station/DetailStationPage';
 import RegisterPage from '../pages/RegisterPage';
+import ProfilePage from '../pages/ProfilePage';
+import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
 
 
 const AppRouter = () => {
@@ -53,6 +55,10 @@ const AppRouter = () => {
                         <Route 
                             path="/user/create"
                             element={<CreateUserPage/>}
+                        />
+                        <Route 
+                            path="/profile"
+                            element={<ProfilePage/>}
                         />
 
                         {/* Station */}
@@ -102,6 +108,13 @@ const AppRouter = () => {
                         <Route 
                             path="/schedule/details/:id"
                             element={<DetailSchedulePage />}
+                        />
+
+                        {/* Ticket */}
+
+                        <Route 
+                            path="/ticket/buy/:scheduleId"
+                            element={<CreateTicketPage/>}
                         />
 
                     </Route>

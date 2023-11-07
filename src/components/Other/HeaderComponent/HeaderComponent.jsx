@@ -14,6 +14,7 @@ const PAGES = [
     { name: "Trains", route: "/train/view" },
     { name: "Stations", route: "/station/view" },
     { name: "Searcher", route: "/schedule/search" },
+    { name: "Users", route: "/user/view" },
 ];
 
 const Header = () => {
@@ -27,17 +28,23 @@ const Header = () => {
     useEffect(() => {
         const email = localStorage.getItem('email');
 
+        console.log("Entra", email);
+
         if(email){
             userService.getUserByEmail(email)
             .then((response) => {
                 console.log("Entra",response.data);
             })
             .catch((error) => {
+                console.log("Entra eror");
                 console.log(error);
             });
         }
-    }, []);
+    }, [token]);
 
+    const handleProfileClick = () => {
+        navigate("/profile");
+    };
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
@@ -73,7 +80,7 @@ const Header = () => {
                                 indicatorColor='primary'
                             >
                                 {PAGES.map((page, index) => {
-                                    if (userRole === 'USER') {
+                                    if (userRole === 'USE') {
                                         if (page.name === 'Searcher') {
                                             return <Tab key={index} label={page.name} />;
                                         }
@@ -83,7 +90,7 @@ const Header = () => {
                                 })}
                             </Tabs>
                             {token ? (
-                                <AccountCircleIcon sx={{ fontSize: 32, color: 'white', marginLeft: 'auto' }} />
+                                <AccountCircleIcon sx={{ fontSize: 32, color: 'white', marginLeft: 'auto' }} onClick={handleProfileClick} />
                             ) : (
                                 <>
                                     <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>

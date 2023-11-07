@@ -1,5 +1,6 @@
 import React from 'react';
 import './SearchItemScheduleComponent.css';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Component that displays the details of a train schedule.
@@ -7,8 +8,16 @@ import './SearchItemScheduleComponent.css';
  * @returns {JSX.Element} - The visual representation of the schedule details.
  */
 function SearchItemScheduleComponent({ schedule }) {
+
+  const navigate = useNavigate();
+
+  const handleScheduleClick = (scheduleId) => {
+    console.log("Scheduleid: ",scheduleId);
+    navigate(`/ticket/buy/${scheduleId}`);
+  };
+
   return (
-    <div className="schedule-item">
+    <div className="schedule-item" onClick={() => handleScheduleClick(schedule.id)}>
       <div className="departure">
         <p>Departure</p>
         <h3>{schedule.train.departureStation.name}</h3>

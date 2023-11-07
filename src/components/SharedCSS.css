@@ -5,7 +5,6 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  
 }
 
 /* Clase para el contenedor personalizado con bordes redondeados */
@@ -40,6 +39,38 @@
 }
 
 .container-custom-mid {
+  margin-top: 5vh;
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  border-radius: 20px;
+  background-color: white; /* Color de fondo blanco */
+  padding: 30px; /* Añade un espacio interior al contenedor */
+}
+
+.container-custom-bordered-center {
+  margin-top: 2vh;
+  text-align: center;
+  width: 100%;
+  border-radius: 20px;
+  border: 2px solid;
+  border-color: rgb(220, 220, 220);
+  background-color: white; /* Color de fondo blanco */
+  padding: 30px; /* Añade un espacio interior al contenedor */
+}
+
+.container-custom-bordered-left {
+  margin-top: 2vh;
+  text-align: left;
+  width: 100%;
+  border-radius: 20px;
+  border: 2px solid;
+  border-color: rgb(220, 220, 220);
+  background-color: white; /* Color de fondo blanco */
+  padding: 30px; /* Añade un espacio interior al contenedor */
+}
+
+.container-custom-mid-left {
   margin-top: 5vh;
   text-align: center;
   max-width: 800px;

@@ -31,7 +31,7 @@ class TicketService {
     }
 
     createTicket(ticketData) {
-        return this.axiosInstance.post('', ticketData);
+        return this.axiosInstance.post(TICKETS_API_BASE_URL, ticketData);
     }
 
     deleteTicket(id) {

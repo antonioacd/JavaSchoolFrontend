@@ -20,7 +20,7 @@ class ScheduleService {
     }
 
     getSchedules(){
-        return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
+        return this.axiosInstance.get();
     }
 
     getScheduleById(id){
@@ -32,7 +32,7 @@ class ScheduleService {
     }
 
     createSchedule(scheduleData) {
-        return this.axiosInstance.post('', scheduleData); // Utiliza this.axiosInstance en lugar de axios
+        return this.axiosInstance.post('', scheduleData);
     }
 
     deleteSchedule(id) {

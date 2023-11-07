@@ -260,6 +260,7 @@ function CreateTrainComponent() {
             <TextField
               id="outlined-basic"
               label="Number of seats"
+              type='number'
               variant="outlined"
               value={state.seats}
               onChange={changeSeatsHandler}
@@ -269,6 +270,7 @@ function CreateTrainComponent() {
             <TextField
               id="outlined-basic"
               label="Duration in minutes"
+              type='number'
               variant="outlined"
               value={updatedDuration}
               onChange={changeDurationHandler}

@@ -20,7 +20,7 @@ class UserService {
     }
 
     getUsers(){
-        return axios.get(USERS_API_BASE_URL);
+        return this.axiosInstance.get(USERS_API_BASE_URL);
     }
 
     getUserById(id){
@@ -28,11 +28,7 @@ class UserService {
     }
 
     getUserByEmail(email){
-        return this.axiosInstance.get(`${USERS_API_BASE_URL}/${email}`);
-    }
-
-    createUser(userData) {
-        return axios.post(USERS_API_BASE_URL, userData);
+        return this.axiosInstance.get(`${USERS_API_BASE_URL}/email/${email}`);
     }
 
     login(email, password) {
