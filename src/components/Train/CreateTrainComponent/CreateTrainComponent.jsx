@@ -9,6 +9,9 @@ import { TextField } from '@mui/material';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import '../../SharedCSS.css';
 
+/**
+ * Component for creating a new train record.
+ */
 function CreateTrainComponent() {
   const [state, setState] = useState({
     seats: '',
@@ -47,6 +50,9 @@ function CreateTrainComponent() {
       getDepartureStationList();
   }, [state.arrivalStation]);
 
+  /**
+   * Fetch and set the list of arrival stations based on the selected departure station.
+   */
   function getArrivalStationList() {
     stationService.getStations()
       .then((response) => {
@@ -65,6 +71,9 @@ function CreateTrainComponent() {
       });
   }
 
+  /**
+   * Fetch and set the list of departure stations based on the selected arrival station.
+   */
   function getDepartureStationList() {
     stationService.getStations()
       .then((response) => {
@@ -83,6 +92,10 @@ function CreateTrainComponent() {
       });
   }
 
+  /**
+   * Handler for changing the selected departure station.
+   * @param {object} selectedDepartureStation - The selected departure station.
+   */
   const changeDepartureStationHandler = (selectedDepartureStation) => {
     if (selectedDepartureStation === null) {
       return;
@@ -94,6 +107,10 @@ function CreateTrainComponent() {
     });
   };
 
+  /**
+   * Handler for changing the selected arrival station.
+   * @param {object} selectedArrivalStation - The selected arrival station.
+   */
   const changeArrivalStationHandler = (selectedArrivalStation) => {
     if (selectedArrivalStation === null) {
       return;
@@ -105,10 +122,18 @@ function CreateTrainComponent() {
     });
   };
 
+  /**
+   * Handler for changing the number of seats.
+   * @param {object} event - The event object representing the input change.
+   */
   const changeSeatsHandler = (event) => {
     setState({ ...state, seats: event.target.value });
   };
 
+  /**
+   * Handler for changing the train number.
+   * @param {object} event - The event object representing the input change.
+   */
   const changeTrainNumberHandler = (event) => {
     setState({ ...state, trainNumber: event.target.value });
   };
@@ -118,6 +143,10 @@ function CreateTrainComponent() {
     setState({ ...state, duration: formattedDuration });
   }, [updatedDuration]);
 
+  /**
+   * Handler for changing the duration in minutes.
+   * @param {object} event - The event object representing the input change.
+   */
   const changeDurationHandler = (event) => {
     const { value } = event.target;
 
@@ -128,6 +157,10 @@ function CreateTrainComponent() {
     setUpdatedDuration(value);
   };
 
+  /**
+   * Format the updated duration and update the state.
+   * @returns {string} The formatted duration in ISO format.
+   */
   function durationFormatter() {
     if (updatedDuration === '') {
       return '';
@@ -138,10 +171,17 @@ function CreateTrainComponent() {
     return newDuration.toISO();
   }
 
+  /**
+   * Cancel and navigate back to the previous page.
+   */
   function cancel() {
     navigate("/");
   }
 
+  /**
+   * Save the train record.
+   * @param {object} event - The event object representing the form submission.
+   */
   const saveTrain = (event) => {
     event.preventDefault();
     const error = checkState();
@@ -167,6 +207,10 @@ function CreateTrainComponent() {
     }
   }
 
+  /**
+   * Check if the form state is valid.
+   * @returns {string} An error message or an empty string if the state is valid.
+   */
   function checkState() {
     if (state.seats === "") {
       return "Please fill in all fields.";
@@ -175,11 +219,17 @@ function CreateTrainComponent() {
     return "";
   }
 
+  /**
+   * Handler for closing the success dialog.
+   */
   const handleSuccessDialogClose = () => {
     setSuccessDialogOpen(false);
     window.location.reload();
   };
 
+  /**
+   * Handler for closing the error dialog.
+   */
   const handleErrorDialogClose = () => {
     setErrorDialogOpen(false);
   };
@@ -275,7 +325,6 @@ function CreateTrainComponent() {
       </div>
     </div>
   );
-
 }
 
 export default CreateTrainComponent;

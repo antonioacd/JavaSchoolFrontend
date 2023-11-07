@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import stationService from '../../../services/StationService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 
+/**
+ * Component for viewing and managing station records.
+ */
 function ViewStationsComponent() {
   const [data, setData] = useState([]);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -13,6 +16,7 @@ function ViewStationsComponent() {
 
   const navigate = useNavigate();
 
+  // Define the columns for the table.
   const columns = [
     { id: 'id', numeric: false, disablePadding: false, label: 'Id' },
     { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
@@ -22,15 +26,25 @@ function ViewStationsComponent() {
 
   const rowsPerPageOptions = [5, 10, 25];
 
+  /**
+   * Handler for adding a new station record.
+   */
   const handleAddRecord = () => {
     navigate('/station/create');
   };
 
+  /**
+   * Handler for deleting selected station records.
+   * @param {Array} selectedIds - An array of selected station IDs to delete.
+   */
   const handleDeleteRecords = (selectedIds) => {
     setSelectedIds(selectedIds);
     setDeleteDialogOpen(true);
   };
 
+  /**
+   * Handler for confirming the deletion of selected station records.
+   */
   const handleConfirmDelete = async () => {
     const failedDeletions = [];
 
@@ -60,10 +74,16 @@ function ViewStationsComponent() {
     }
   };
 
+  /**
+   * Handler for canceling the delete confirmation dialog.
+   */
   const handleCancelDelete = () => {
     setDeleteDialogOpen(false);
   };
 
+  /**
+   * Handler for dismissing the error dialog.
+   */
   const handleDismissError = () => {
     setErrorDialogOpen(false);
     window.location.reload();
@@ -72,28 +92,37 @@ function ViewStationsComponent() {
   useEffect(() => {
     const stations = [];
 
-    stationService.getStations().then(res => {
-      setData(res.data);
+    // Fetch stations and populate the data.
+    stationService.getStations()
+      .then(res => {
+        setData(res.data);
 
-      const stationsInfo = res.data;
+        const stationsInfo = res.data;
 
-      stationsInfo.forEach(stationInfo => {
-        const station = {
-          id: stationInfo.id,
-          name: stationInfo.name,
-          city: stationInfo.city,
-        };
+        stationsInfo.forEach(stationInfo => {
+          const station = {
+            id: stationInfo.id,
+            name: stationInfo.name,
+            city: stationInfo.city,
+          };
 
-        stations.push(station);
+          stations.push(station);
+        });
+
+        setData(stations);
+      })
+      .catch(error => {
+        console.error('Error fetching stations:', error);
       });
-
-      setData(stations);
-    });
   }, []);
 
+  /**
+   * Handler for viewing details of a station record.
+   * @param {string} id - The ID of the station to view details.
+   */
   const handleDetailsRecords = (id) => {
-    console.log('Showing details for schedule with ID:', id);
-    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
+    console.log('Showing details for station with ID:', id);
+    // You can navigate to the new page and pass the ID as part of the URL
     navigate(`/station/details/${id}`);
   };
 
@@ -125,7 +154,7 @@ function ViewStationsComponent() {
         <CustomizableDialog
           type='error'
           open={isErrorDialogOpen}
-          title="Deletion Error"
+          title="Error"
           content={errorDialogMessage}
           agreeButtonLabel="OK"
           showCancelButton={false}

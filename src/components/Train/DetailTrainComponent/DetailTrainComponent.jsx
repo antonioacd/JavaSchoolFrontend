@@ -18,8 +18,11 @@ import { validateDate } from '@mui/x-date-pickers/internals';
 
 dayjs.extend(duration);
 
+/**
+ * Component to display and edit train details.
+ */
 function DetailTrainComponent() {
-    // Obtén el ID de la URL
+    // Get the ID from the URL
     const { id } = useParams();
 
     const [state, setState] = useState({
@@ -51,6 +54,7 @@ function DetailTrainComponent() {
     const [parsedDuration, setParsedDuration] = useState([]);
 
     useEffect(() => {
+        // Fetch train data when the component mounts
         trainService.getTrainById(id)
             .then((response) => {
                 if (response.status === 200) {
@@ -65,18 +69,21 @@ function DetailTrainComponent() {
             .catch((error) => {
                 console.error("Error fetching train data:", error);
             });
-    }, []);
+    }, [id]);
 
     useEffect(() => {
-        console.log("Obtiene las de llegada");
+        console.log("Getting arrival stations");
         getArrivalStationList();
     }, [state.departureStation]);
 
     useEffect(() => {
-        console.log("Obtiene las de salida");
+        console.log("Getting departure stations");
         getDepartureStationList();
     }, [state.arrivalStation]);
 
+    /**
+     * Fetch the list of arrival stations based on the selected departure station.
+     */
     function getArrivalStationList() {
         stationService.getStations()
           .then((response) => {
@@ -95,7 +102,10 @@ function DetailTrainComponent() {
           });
       }
 
-      function getDepartureStationList() {
+    /**
+     * Fetch the list of departure stations based on the selected arrival station.
+     */
+    function getDepartureStationList() {
         stationService.getStations()
           .then((response) => {
             const stations = response.data;
@@ -113,8 +123,11 @@ function DetailTrainComponent() {
           });
       }
 
-      function getAllStations() {
-        console.log("Obtiene todas");
+    /**
+     * Fetch the list of all stations.
+     */
+    function getAllStations() {
+        console.log("Getting all stations");
         stationService.getStations()
           .then((response) => {
             const stations = response.data;
@@ -127,7 +140,11 @@ function DetailTrainComponent() {
           });
       }
 
-      const changeDepartureStationHandler = (selectedDepartureStation) => {
+    /**
+     * Handle the selection of the departure station.
+     * @param {Object} selectedDepartureStation - The selected departure station.
+     */
+    const changeDepartureStationHandler = (selectedDepartureStation) => {
         if (selectedDepartureStation === null) {
           return;
         }
@@ -141,9 +158,13 @@ function DetailTrainComponent() {
             setDialogMessage('You cannot select the same station as both departure and arrival.');
             setErrorDialogOpen(true);
         }
-      };
+    };
       
-      const changeArrivalStationHandler = (selectedArrivalStation) => {
+    /**
+     * Handle the selection of the arrival station.
+     * @param {Object} selectedArrivalStation - The selected arrival station.
+     */
+    const changeArrivalStationHandler = (selectedArrivalStation) => {
         if (selectedArrivalStation === null) {
           return;
         }
@@ -157,9 +178,13 @@ function DetailTrainComponent() {
             setDialogMessage('You cannot select the same station as both departure and arrival.');
             setErrorDialogOpen(true);
         }
-      };
+    };
 
-      const saveTrain = (event) => {
+    /**
+     * Save the updated train details.
+     * @param {Event} event - The form submission event.
+     */
+    const saveTrain = (event) => {
         event.preventDefault();
         if (isEditable) {
             const error = checkState();
@@ -170,41 +195,62 @@ function DetailTrainComponent() {
             } else {
                 trainService.updateTrain(state.id, state)
                     .then((response) => {
-                        if (response.status === 200) { // Verificar el estado de la respuesta
+                        if (response.status === 200) { // Check the response status
                             setDialogMessage('Train updated successfully');
                             setSuccessDialogOpen(true);
                         } else {
-                            setDialogMessage('Error updating train. Please try again.'); // Mensaje de error genérico
+                            setDialogMessage('Error updating train. Please try again.'); // Generic error message
                             setErrorDialogOpen(true);
                         }
                     })
                     .catch((error) => {
-                        setDialogMessage(error.message); // Mostrar el mensaje de error
+                        setDialogMessage(error.message); // Display the error message
                         setErrorDialogOpen(true);
                     });
             }
         }
     };
     
+    /**
+     * Check the validity of the state before saving.
+     * @returns {string} - An error message, if any, or an empty string if no error.
+     */
     function checkState() {
         return "";
     }
 
+    /**
+     * Handle the change of seats input.
+     * @param {Event} event - The input change event.
+     */
     const changeSeatsHandler = (event) => {
       setState({ ...state, seats: event.target.value });
     };
   
+    /**
+     * Handle the change of train number input.
+     * @param {Event} event - The input change event.
+     */
     const changeTrainNumberHandler = (event) => {
       setState({ ...state, trainNumber: event.target.value });
     };
   
+    /**
+     * Handle the change of duration input in minutes.
+     * @param {Event} event - The input change event.
+     */
     const changeDurationHandler = (event) => {
       setState({...state, duration: minutesToDuration(event.target.value)});
       setParsedDuration(event.target.value);
     };
 
+    /**
+     * Convert duration in ISO format to minutes.
+     * @param {string} durationISO - Duration in ISO format.
+     * @returns {number} - Duration in minutes.
+     */
     function durationToMinutes(durationISO) {
-        if(!durationISO){
+        if (!durationISO) {
           return;
         }
 
@@ -212,9 +258,13 @@ function DetailTrainComponent() {
         return duration.as('minutes');
     }
 
+    /**
+     * Convert minutes to duration in ISO format.
+     * @param {number} timeInMinutes - Duration in minutes.
+     * @returns {string} - Duration in ISO format.
+     */
     function minutesToDuration(timeInMinutes) {
-
-        if(!timeInMinutes){
+        if (!timeInMinutes) {
           return;
         }
 
@@ -223,10 +273,13 @@ function DetailTrainComponent() {
         return newDuration.toISO();
     }
 
-    function handleEditButton(){
+    /**
+     * Handle the edit button click to toggle edit mode.
+     */
+    function handleEditButton() {
         setIsEditable(!isEditable)
 
-        if(isEditable){
+        if (isEditable) {
           setState(savedState);
         }
     }
@@ -235,12 +288,12 @@ function DetailTrainComponent() {
       <div className="full-screen">
         <div className='container-custom-mid'>
             <div className="mb-4 d-flex justify-content-between align-items-center">
-                <h1 className="">Train Details</h1>
+                <h1>Train Details</h1>
                 <IconButton
                   className="bg-primary"
                   onClick={handleEditButton}
                 >
-                  <EditIcon className='text-white'/> {/* Agrega el ícono de lápiz aquí */}
+                  <EditIcon className='text-white'/>
                 </IconButton>
             </div>
 

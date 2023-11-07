@@ -1,10 +1,12 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Button, useMediaQuery } from '@mui/material';
 import TrainIcon from '@mui/icons-material/Train';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Icono de cuenta
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate desde React Router
+import { useNavigate } from 'react-router-dom';
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
-import { Login } from '@mui/icons-material';
+import { useEffect } from 'react';
+import userService from '../../../services/UserService';
 
 const PAGES = [
     { name: "Home", route: "/" },
@@ -18,6 +20,24 @@ const Header = () => {
     const [value, setValue] = useState(0);
     const isMatch = useMediaQuery('(max-width:960px)');
     const navigate = useNavigate();
+
+    const token = localStorage.getItem('accessToken'); // Obtiene el token del almacenamiento local
+    const userRole = "USER"; // Puedes obtener el rol del usuario de tu sistema de autenticación
+
+    useEffect(() => {
+        const email = localStorage.getItem('email');
+
+        if(email){
+            userService.getUserByEmail(email)
+            .then((response) => {
+                console.log("Entra",response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+    }, []);
+
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
@@ -52,12 +72,24 @@ const Header = () => {
                                 onChange={handleChangeTab}
                                 indicatorColor='primary'
                             >
-                                {PAGES.map((page, index) => (
-                                    <Tab key={index} label={page.name} />
-                                ))}
+                                {PAGES.map((page, index) => {
+                                    if (userRole === 'USER') {
+                                        if (page.name === 'Searcher') {
+                                            return <Tab key={index} label={page.name} />;
+                                        }
+                                    } else {
+                                        return <Tab key={index} label={page.name} />;
+                                    }
+                                })}
                             </Tabs>
-                            <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>
-                            <Button sx={{ marginLeft: '10px' }} variant='contained' onClick={handleRegister}>Sing Up</Button>
+                            {token ? (
+                                <AccountCircleIcon sx={{ fontSize: 32, color: 'white', marginLeft: 'auto' }} />
+                            ) : (
+                                <>
+                                    <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>
+                                    <Button sx={{ marginLeft: '10px' }} variant='contained' onClick={handleRegister}>Sign Up</Button>
+                                </>
+                            )}
                         </>
                     )}
                 </Toolbar>

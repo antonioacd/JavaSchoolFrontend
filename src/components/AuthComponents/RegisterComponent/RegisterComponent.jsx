@@ -4,11 +4,14 @@ import { TextField, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import userService from '../../../services/UserService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import PasswordMeterInput from '../../PasswordMeterInputComponent/PasswordMeterInput';
 
 function RegisterComponent() {
   const [state, setState] = useState({
+    name: '',
+    surname: '',
     email: '',
-    password: '',
+    password: ''
   });
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -16,6 +19,14 @@ function RegisterComponent() {
   const [dialogType, setDialogType] = useState('error');
 
   const navigate = useNavigate();
+
+  const changeNameHandler = (event) => {
+    setState({ ...state, name: event.target.value });
+  };
+
+  const changeSurnameHandler = (event) => {
+    setState({ ...state, surname: event.target.value });
+  };
 
   const changeEmailHandler = (event) => {
     setState({ ...state, email: event.target.value });
@@ -35,11 +46,14 @@ function RegisterComponent() {
     event.preventDefault();
     const error = checkState();
 
+    console.log("State: ", state)
+
+    
     if (error) {
       openDialog('error', error); // Open an error dialog
     } else {
       // Send the registration request to the backend
-      userService.register(state.email, state.password)
+      userService.register(state.name, state.surname, state.email, state.password)
         .then((response) => {
             console.log("data", response.data);
             navigate("/login");
@@ -83,6 +97,27 @@ function RegisterComponent() {
               <div className="row mt-4">
                 <TextField
                   id="outlined-basic"
+                  label="Name"
+                  variant="outlined"
+                  color="secondary"
+                  value={state.name}
+                  onChange={changeNameHandler}
+                />
+              </div>
+              <div className="row mt-4">
+                <TextField
+                  id="outlined-basic"
+                  label="Surname"
+                  variant="outlined"
+                  color="secondary"
+                  value={state.surname}
+                  onChange={changeSurnameHandler}
+                />
+              </div>
+              <div className="row mt-4">
+                <TextField
+                  id="outlined-basic"
+                  type='email'
                   label="Email"
                   variant="outlined"
                   color="secondary"
@@ -91,14 +126,7 @@ function RegisterComponent() {
                 />
               </div>
               <div className="row mt-4">
-                <TextField
-                  id="outlined-basic"
-                  label="Password"
-                  variant="outlined"
-                  color="secondary"
-                  value={state.password}
-                  onChange={changePasswordHandler}
-                />
+              <PasswordMeterInput value={state.password} onChange={changePasswordHandler} />
               </div>
               <div className="row mt-4 justify-content-center">
                 <Button

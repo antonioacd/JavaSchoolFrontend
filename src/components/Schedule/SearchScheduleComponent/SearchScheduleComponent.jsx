@@ -11,6 +11,9 @@ import scheduleService from '../../../services/ScheduleService';
 import SearchItemScheduleComponent from './SearchItemScheduleComponent/SearchItemScheduleComponent';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 
+/**
+ * Component for searching schedules based on departure station, arrival station, and date.
+ */
 function SearchScheduleComponent() {
   const [state, setState] = useState({
     "departureStation": "",
@@ -26,6 +29,7 @@ function SearchScheduleComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch the list of departure stations when the component mounts
     stationService.getStations().then((res) => {
       setDepartureStationList(res.data);
     });
@@ -35,6 +39,9 @@ function SearchScheduleComponent() {
     getStations();
   }, [state.departureStation]);
 
+  /**
+   * Fetch the list of arrival stations based on the selected departure station.
+   */
   function getStations() {
     stationService.getStations().then((res) => {
       const updatedArrivalStationList = res.data;
@@ -45,6 +52,10 @@ function SearchScheduleComponent() {
     });
   }
 
+  /**
+   * Handle the selection of a departure station.
+   * @param {object} selectedDepartureStation - The selected departure station.
+   */
   const changeDepartureStationHandler = (selectedDepartureStation) => {
     if (selectedDepartureStation === null) {
       return;
@@ -52,6 +63,10 @@ function SearchScheduleComponent() {
     setState({ ...state, departureStation: selectedDepartureStation.city });
   };
 
+  /**
+   * Handle the selection of an arrival station.
+   * @param {object} selectedArrivalStation - The selected arrival station.
+   */
   const changeArrivalStationHandler = (selectedArrivalStation) => {
     if (selectedArrivalStation === null) {
       return;
@@ -59,27 +74,35 @@ function SearchScheduleComponent() {
     setState({ ...state, arrivalStation: selectedArrivalStation.city });
   };
 
+  /**
+   * Handle the selection of a date.
+   * @param {object} newDate - The selected date.
+   */
   const changeDateHandler = (newDate) => {
     setState({ ...state, date: newDate });
   };
 
+  /**
+   * Search for schedules based on the selected criteria (departure station, arrival station, and date).
+   */
   const searchSchedules = () => {
     const { departureStation, arrivalStation, date } = state;
-    
-    scheduleService.getSchedulesByCitiesAndDate(departureStation, arrivalStation, date)
-        .then((res) => {
-            const filteredSchedules = res.data;
 
-            if (filteredSchedules.length === 0) {
-                setNoSchedulesDialogOpen(true);
-            } else {
-                setSchedules(filteredSchedules);
-            }
-        })
-        .catch((error) => {
-            console.log("Error al buscar", error);
-        });
-}
+    scheduleService
+      .getSchedulesByCitiesAndDate(departureStation, arrivalStation, date)
+      .then((res) => {
+        const filteredSchedules = res.data;
+
+        if (filteredSchedules.length === 0) {
+          setNoSchedulesDialogOpen(true);
+        } else {
+          setSchedules(filteredSchedules);
+        }
+      })
+      .catch((error) => {
+        console.log("Error while searching", error);
+      });
+  };
 
   return (
     <div>
@@ -118,26 +141,24 @@ function SearchScheduleComponent() {
               </button>
             </div>
           </div>
-            <div className='row mt-4'>
+          <div className='row mt-4'>
             {schedules.map((schedule, index) => (
               <SearchItemScheduleComponent key={index} schedule={schedule} />
             ))}
           </div>
-
         </div>
       </div>
-      
-        <CustomizableDialog
-            type='error'
-            open={isNoSchedulesDialogOpen}
-            title="No Schedules Found"
-            content="No schedules were found for the selected criteria."
-            agreeButtonLabel="OK"
-            showCancelButton={false}
-            onAgree={() => setNoSchedulesDialogOpen(false)}
-        />
+
+      <CustomizableDialog
+        type='error'
+        open={isNoSchedulesDialogOpen}
+        title="No Schedules Found"
+        content="No schedules were found for the selected criteria."
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={() => setNoSchedulesDialogOpen(false)}
+      />
     </div>
-    
   );
 }
 

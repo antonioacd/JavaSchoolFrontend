@@ -5,6 +5,9 @@ import scheduleService from '../../../services/ScheduleService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import ScheduleFilterDialogComponent from '../../Other/DialogsComponent/ScheduleFilterDialogComponent/ScheduleFilterDialogComponent';
 
+/**
+ * Component for viewing schedules with options for filtering and deleting.
+ */
 function ViewSchedulesComponent() {
   const [data, setData] = useState([]);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -16,16 +19,15 @@ function ViewSchedulesComponent() {
   const [filterApplied, setFilterApplied] = useState(false);
   const [allSchedules, setAllSchedules] = useState([]);
 
+  /**
+   * Load schedules and set initial data.
+   */
   useEffect(() => {
     const schedules = [];
 
     scheduleService.getSchedules().then((res) => {
-      setData(res.data);
-
       const schedulesInfo = res.data;
-
       setAllSchedules(schedulesInfo);
-
       setData(convertDataToSchedules(schedulesInfo));
     });
   }, []);
@@ -43,15 +45,25 @@ function ViewSchedulesComponent() {
 
   const rowsPerPageOptions = [5, 10, 25];
 
+  /**
+   * Handle adding a new schedule record.
+   */
   const handleAddRecord = () => {
     navigate('/schedule/create');
   };
 
+  /**
+   * Handle selecting schedules for deletion.
+   * @param {number[]} selectedIds - IDs of selected schedules.
+   */
   const handleDeleteRecords = (selectedIds) => {
     setSelectedIds(selectedIds);
     setDeleteDialogOpen(true);
   };
 
+  /**
+   * Handle confirming the deletion of selected schedules.
+   */
   const handleConfirmDelete = async () => {
     const failedDeletions = [];
 
@@ -81,52 +93,66 @@ function ViewSchedulesComponent() {
     }
   };
 
+  /**
+   * Handle canceling the deletion of selected schedules.
+   */
   const handleCancelDelete = () => {
     setDeleteDialogOpen(false);
   };
 
+  /**
+   * Handle dismissing error dialogs.
+   */
   const handleDismissError = () => {
     setErrorDialogOpen(false);
     window.location.reload();
   };
 
+  /**
+   * Handle viewing details for a specific schedule.
+   * @param {number} id - ID of the schedule to view.
+   */
   const handleDetailsRecords = (id) => {
     console.log('Showing details for schedule with ID:', id);
-    // Aquí puedes navegar a la nueva clase y pasar el ID como parte de la URL
+    // Navigate to the details page and pass the ID in the URL
     navigate(`/schedule/details/${id}`);
   };
 
+  /**
+   * Handle applying a filter to view schedules by a specific train number.
+   * @param {object} train - The selected train information.
+   */
   const handleApplyFilter = (train) => {
     setSelectedTrain(train);
 
-      scheduleService.getschedulesByTrainNumber(train.trainNumber)
-        .then((res) => {
-          const filteredSchedules = res.data;
+    scheduleService.getschedulesByTrainNumber(train.trainNumber)
+      .then((res) => {
+        const filteredSchedules = res.data;
 
-          if (filteredSchedules.length === 0) {
-            setErrorDialogMessage('No results');
-            setErrorDialogOpen(true);
-          } else {
-            setData(convertDataToSchedules(filteredSchedules));
-            setFilterApplied(true);
-          }
-        })
-        .catch((error) => {
-          console.log('Error al buscar', error);
-        });
+        if (filteredSchedules.length === 0) {
+          setErrorDialogMessage('No results');
+          setErrorDialogOpen(true);
+        } else {
+          setData(convertDataToSchedules(filteredSchedules));
+          setFilterApplied(true);
+        }
+      })
+      .catch((error) => {
+        console.log('Error while searching', error);
+      });
 
     setFilterDialogOpen(false);
-
-    
-
   };
 
+  /**
+   * Convert schedule data to a more user-friendly format.
+   * @param {Array} data - The schedule data to convert.
+   * @returns {Array} - Converted schedule data.
+   */
   function convertDataToSchedules(data) {
     const schedules = [];
-    const schedulesInfo = data;
 
-    schedulesInfo.forEach((scheduleInfo) => {
-
+    data.forEach((scheduleInfo) => {
       const departureDate = scheduleInfo.departureTime.substring(0, 10) + "    " + scheduleInfo.departureTime.substring(11, 19);
       const arrivalDate = scheduleInfo.arrivalTime.substring(0, 10) + "    " + scheduleInfo.arrivalTime.substring(11, 19);
 
@@ -144,61 +170,62 @@ function ViewSchedulesComponent() {
     return schedules;
   }
 
+  /**
+   * Handle filtering and resetting filters for the schedules.
+   */
   const handleFilter = () => {
-
-    if(filterApplied){
+    if (filterApplied) {
       setFilterApplied(false);
       setData(convertDataToSchedules(allSchedules));
-    }else{
+    } else {
       setFilterDialogOpen(true);
     }
-
   };
 
   return (
     <div>
       <div className="full-screen">
-          <EnhancedTableComponent
-            data={data}
-            title='Schedules'
-            columns={columns}
-            rowsPerPageOptions={rowsPerPageOptions}
-            onAddRecord={handleAddRecord}
-            onDeleteRecords={handleDeleteRecords}
-            onViewRecord={handleDetailsRecords}
-            onFilterClick={handleFilter}
-            isFilterApplied={filterApplied}
-          />
+        <EnhancedTableComponent
+          data={data}
+          title='Schedules'
+          columns={columns}
+          rowsPerPageOptions={rowsPerPageOptions}
+          onAddRecord={handleAddRecord}
+          onDeleteRecords={handleDeleteRecords}
+          onViewRecord={handleDetailsRecords}
+          onFilterClick={handleFilter}
+          isFilterApplied={filterApplied}
+        />
       </div>
 
-        <ScheduleFilterDialogComponent
-          title="Schedule filters"
-          open={isFilterDialogOpen}
-          onAgree={handleApplyFilter}
-          onCancel={() => setFilterDialogOpen(false)}
-        />
+      <ScheduleFilterDialogComponent
+        title="Schedule filters"
+        open={isFilterDialogOpen}
+        onAgree={handleApplyFilter}
+        onCancel={() => setFilterDialogOpen(false)}
+      />
 
-        <CustomizableDialog
-          type='warning'
-          open={isDeleteDialogOpen}
-          title="Are you sure you want to delete the selected records?"
-          content="This action will permanently delete the selected records."
-          agreeButtonLabel="Yes, delete"
-          cancelButtonLabel='Cancel'
-          showCancelButton={true}
-          onCancel={handleCancelDelete}
-          onAgree={handleConfirmDelete}
-        />
+      <CustomizableDialog
+        type='warning'
+        open={isDeleteDialogOpen}
+        title="Are you sure you want to delete the selected records?"
+        content="This action will permanently delete the selected records."
+        agreeButtonLabel="Yes, delete"
+        cancelButtonLabel='Cancel'
+        showCancelButton={true}
+        onCancel={handleCancelDelete}
+        onAgree={handleConfirmDelete}
+      />
 
-        <CustomizableDialog
-          type='error'
-          open={isErrorDialogOpen}
-          title="Deletion Error"
-          content={errorDialogMessage}
-          agreeButtonLabel="OK"
-          showCancelButton={false}
-          onAgree={handleDismissError}
-        />
+      <CustomizableDialog
+        type='error'
+        open={isErrorDialogOpen}
+        title="Deletion Error"
+        content={errorDialogMessage}
+        agreeButtonLabel="OK"
+        showCancelButton={false}
+        onAgree={handleDismissError}
+      />
     </div>
   );
 }

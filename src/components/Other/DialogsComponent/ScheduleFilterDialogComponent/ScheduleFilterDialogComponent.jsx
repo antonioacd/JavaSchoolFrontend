@@ -11,9 +11,23 @@ import trainService from '../../../../services/TrainService';
 import CustomizableDialog from '../../CustomizableDialog/CustomizableDialog';
 import ComboBoxTrains from '../../ComboBox/ComboBoxTrains';
 
+/**
+ * A dialog component for filtering schedules.
+ *
+ * @param {Object} props - Component props.
+ * @param {boolean} props.open - Whether the dialog is open.
+ * @param {string} props.type - Type of the dialog ('success', 'warning', 'error').
+ * @param {string} props.title - Title of the dialog.
+ * @param {string} props.content - Content of the dialog.
+ * @param {string} props.agreeButtonLabel - Label for the agree button.
+ * @param {boolean} props.showCancelButton - Whether to show the cancel button.
+ * @param {string} props.cancelButtonLabel - Label for the cancel button.
+ * @param {Function} props.onAgree - Callback when the agree button is clicked.
+ * @param {Function} props.onCancel - Callback when the cancel button is clicked.
+ */
 export default function ScheduleFilterDialogComponent({
   open = false,
-  type = 'success',
+  type = '',
   title = '',
   content = '',
   agreeButtonLabel = 'Agree',
@@ -23,9 +37,7 @@ export default function ScheduleFilterDialogComponent({
   onCancel,
 }) {
   const [state, setState] = useState({
-    train: {
-      id: '',
-    },
+    trainNumber: '', // Corrected property name
   });
 
   const [trainList, setTrainList] = useState([]);
@@ -38,6 +50,9 @@ export default function ScheduleFilterDialogComponent({
     console.log("trains:", trainList);
   }, [])
 
+  /**
+   * Fetches the list of trains and updates the state.
+   */
   function getTrainList() {
     trainService
       .getTrains()
@@ -51,6 +66,11 @@ export default function ScheduleFilterDialogComponent({
       });
   }
 
+  /**
+   * Handles the selection of a train in the ComboBox.
+   *
+   * @param {Object} selectedTrain - The selected train.
+   */
   const changeTrainHandler = (selectedTrain) => {
     if (selectedTrain === null) {
       return;
@@ -62,18 +82,29 @@ export default function ScheduleFilterDialogComponent({
     });
   };
 
+  /**
+   * Handles the click event for the agree button.
+   */
   const handleAgree = () => {
     if (onAgree) {
       onAgree(state.trainNumber, state.arrivalStation);
     }
   };
 
+  /**
+   * Handles the click event for the cancel button.
+   */
   const handleCancel = () => {
     if (onCancel) {
       onCancel();
     }
   };
 
+  /**
+   * Gets the corresponding icon based on the dialog type.
+   *
+   * @returns {JSX.Element} - The icon component.
+   */
   const getIcon = () => {
     switch (type) {
       case 'error':

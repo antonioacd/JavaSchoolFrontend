@@ -17,26 +17,29 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(duration);
 
+/**
+ * A component for displaying and editing schedule details.
+ */
 function DetailScheduleComponent() {
-    // Obtén el ID de la URL
+    // Get the ID from the URL
     const { id } = useParams();
 
     const [state, setState] = useState({
-        "id": 0,
-        "departureTime": "",
-        "arrivalTime": "",
-        "occupiedSeats": 0,
-        "train": {
-            "id": 0,
-            "departureStation": {
-                "name": ""
+        id: 0,
+        departureTime: "",
+        arrivalTime: "",
+        occupiedSeats: 0,
+        train: {
+            id: 0,
+            departureStation: {
+                name: ""
             },
-            "arrivalStation": {
-                "name": ""
+            arrivalStation: {
+                name: ""
             },
-            "trainNumber": "",
-            "duration": "",
-            "seats": ""
+            trainNumber: "",
+            duration: "",
+            seats: ""
         }
     });
 
@@ -49,8 +52,11 @@ function DetailScheduleComponent() {
     const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
     const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
-    const [isEditable, setIsEditable] = useState(false); // Nuevo estado para la edición
+    const [isEditable, setIsEditable] = useState(false); // New state for editing
 
+    /**
+     * Fetch schedule details and available trains when the component mounts.
+     */
     useEffect(() => {
         scheduleService.getScheduleById(id)
             .then((response) => {
@@ -79,32 +85,47 @@ function DetailScheduleComponent() {
             });
     }, []);
 
+    /**
+     * Calculate and update the arrival time when the selected train or departure time changes.
+     */
     useEffect(() => {
         const originalDate = state.departureTime;
         const ISOduration = state.train.duration;
 
-        console.log("fecha original: " + originalDate + " ISOduration: " + ISOduration);
+        console.log("Original date: " + originalDate + " ISO duration: " + ISOduration);
 
         const nuevaFecha = sumarDuracionAFecha(originalDate, ISOduration);
 
-        console.log("sumada" + nuevaFecha);
+        console.log("Summed date: " + nuevaFecha);
 
         setState({ ...state, arrivalTime: nuevaFecha });
     }, [state.train.id, state.departureTime]);
 
+    /**
+     * Add a duration to a date.
+     *
+     * @param {string} originalDate - The original date in ISO format.
+     * @param {string} ISOduration - The duration in ISO8601 format.
+     * @returns {string} - The new date in ISO format.
+     */
     function sumarDuracionAFecha(originalDate, ISOduration) {
-        // Parsea la fecha original en formato "YYYY-MM-DDTHH:mm"
+        // Parse the original date in "YYYY-MM-DDTHH:mm" format
         const fecha = dayjs.utc(originalDate);
-      
-        // Parsea la duración en formato ISO
+
+        // Parse the duration in ISO format
         const duracion = dayjs.duration(ISOduration);
-      
-        // Suma la duración a la fecha
+
+        // Add the duration to the date
         const nuevaFecha = fecha.add(duracion);
-      
+
         return nuevaFecha.format('YYYY-MM-DDTHH:mm');
     }
 
+    /**
+     * Handle the change of departure time.
+     *
+     * @param {object} newDate - The new departure time as a Date object.
+     */
     const changeDepartureTimeHandler = (newDate) => {
         if (isEditable) {
             const formattedDate = newDate.format("YYYY-MM-DDTHH:mm");
@@ -112,6 +133,11 @@ function DetailScheduleComponent() {
         }
     };
 
+    /**
+     * Handle the selection of a train.
+     *
+     * @param {object} selectedTrain - The selected train object.
+     */
     const changeTrainHandler = (selectedTrain) => {
         if (selectedTrain === null) {
             return;
@@ -120,6 +146,11 @@ function DetailScheduleComponent() {
         setState({ ...state, train: selectedTrain });
     };
 
+    /**
+     * Save the edited schedule and display success or error messages.
+     *
+     * @param {object} event - The click event.
+     */
     const saveSchedule = (event) => {
         event.preventDefault();
         if (isEditable) {
@@ -137,6 +168,11 @@ function DetailScheduleComponent() {
         }
     };
 
+    /**
+     * Check if the required fields are filled.
+     *
+     * @returns {string} - An error message if required fields are not filled, or an empty string if everything is filled.
+     */
     function checkState() {
         return "";
     }
@@ -147,10 +183,10 @@ function DetailScheduleComponent() {
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <h1 className="">Schedule Details</h1>
                     <IconButton
-                    className="bg-primary"
-                    onClick={() => setIsEditable(!isEditable)}
+                        className="bg-primary"
+                        onClick={() => setIsEditable(!isEditable)}
                     >
-                    <EditIcon className='text-white'/> {/* Agrega el ícono de lápiz aquí */}
+                        <EditIcon className='text-white'/> {/* Add edit icon here */}
                     </IconButton>
                 </div>
 

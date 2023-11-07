@@ -45,7 +45,7 @@ function LoginComponent() {
         .then((response) => {
           const accessToken = response.data.accessToken;
           localStorage.setItem('accessToken', accessToken);
-          console.log('accessToken: ', accessToken);
+          localStorage.setItem('email', state.email);
           navigate("/");
         })
         .catch((error) => {

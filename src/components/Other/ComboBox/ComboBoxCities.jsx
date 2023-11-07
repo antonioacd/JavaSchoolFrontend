@@ -7,6 +7,7 @@ function ComboBoxStations({ label, options, onSelect }) {
     <Autocomplete
       id="combo-box-demo"
       options={options}
+      sx={{ width: 222 }}
       getOptionLabel={(option) => option.city}
       renderInput={(params) => <TextField {...params} label={label} />}
       onChange={(event, value) => onSelect(value)}

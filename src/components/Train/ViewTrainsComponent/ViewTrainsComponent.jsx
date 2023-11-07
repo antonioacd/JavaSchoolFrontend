@@ -6,6 +6,9 @@ import dayjs from 'dayjs';
 import TrainFilterDialogComponent from '../../Other/DialogsComponent/TrainFilterDialogComponent/TrainFilterDialogComponent';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 
+/**
+ * Component to view and manage train records.
+ */
 function ViewTrainsComponent() {
   const [data, setData] = useState([]);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -15,13 +18,22 @@ function ViewTrainsComponent() {
   const [isFilterDialogOpen, setFilterDialogOpen] = useState(false);
   const [selectedDepartureStation, setSelectedDepartureStation] = useState(null);
   const [selectedArrivalStation, setSelectedArrivalStation] = useState(null);
+  const [filterApplied, setFilterApplied] = useState(false);
+  const [allTrains, setAllTrains] = useState([]);
 
   useEffect(() => {
+    // Fetch all trains when the component mounts
     trainService.getTrains().then((res) => {
       setData(convertDataToTrains(res.data));
+      setAllTrains(res.data);
     });
   }, []);
 
+  /**
+   * Convert raw data to a more user-friendly train format.
+   * @param {Array} data - Raw train data.
+   * @returns {Array} - Formatted train data.
+   */
   function convertDataToTrains(data) {
     const trains = [];
     const trainsInfo = data;
@@ -42,6 +54,11 @@ function ViewTrainsComponent() {
     return trains;
   }
 
+  /**
+   * Format duration string to a more readable format.
+   * @param {string} durationString - Duration in ISO format.
+   * @returns {string} - Formatted duration string.
+   */
   function formatDuration(durationString) {
     const duration = dayjs.duration(durationString);
     return `${duration.hours()} hours, ${duration.minutes()} mins`;
@@ -61,15 +78,25 @@ function ViewTrainsComponent() {
 
   const rowsPerPageOptions = [5, 10, 25];
 
+  /**
+   * Navigate to the train creation page.
+   */
   const handleAddRecord = () => {
     navigate('/train/create');
   };
 
+  /**
+   * Open the delete confirmation dialog when deleting records.
+   * @param {Array} selectedIds - Selected record IDs to delete.
+   */
   const handleDeleteRecords = (selectedIds) => {
     setSelectedIds(selectedIds);
     setDeleteDialogOpen(true);
   };
 
+  /**
+   * Confirm the deletion of selected records.
+   */
   const handleConfirmDelete = async () => {
     const failedDeletions = [];
 
@@ -99,42 +126,68 @@ function ViewTrainsComponent() {
     }
   };
 
+  /**
+   * Cancel the deletion operation.
+   */
   const handleCancelDelete = () => {
     setDeleteDialogOpen(false);
   };
 
+  /**
+   * Dismiss the error dialog and refresh the page.
+   */
   const handleDismissError = () => {
     setErrorDialogOpen(false);
     window.location.reload();
   };
 
+  /**
+   * Navigate to the details page of a selected train.
+   * @param {number} id - Train ID.
+   */
   const handleDetailsRecords = (id) => {
     navigate(`/train/details/${id}`);
   };
 
+  /**
+   * Open or close the filter dialog and reset the filter if needed.
+   */
   const handleFilter = () => {
-    setFilterDialogOpen(true);
+    if (filterApplied) {
+      setFilterApplied(false);
+      setData(convertDataToTrains(allTrains));
+      setSelectedDepartureStation(null);
+      setSelectedArrivalStation(null);
+    } else {
+      setFilterDialogOpen(true);
+    }
   };
 
+  /**
+   * Apply the selected filters to filter the train records.
+   * @param {Object} departureStation - Selected departure station.
+   * @param {Object} arrivalStation - Selected arrival station.
+   */
   const handleApplyFilter = (departureStation, arrivalStation) => {
     setSelectedDepartureStation(departureStation);
     setSelectedArrivalStation(arrivalStation);
 
-      trainService
-        .getTrainsWithDepartureStationAndArrivalStation(departureStation.name, arrivalStation.name)
-        .then((res) => {
-          const filteredTrains = res.data;
+    trainService
+      .getTrainsWithDepartureStationAndArrivalStation(departureStation.name, arrivalStation.name)
+      .then((res) => {
+        const filteredTrains = res.data;
 
-          if (filteredTrains.length === 0) {
-            setErrorDialogMessage('No results');
-            setErrorDialogOpen(true);
-          } else {
-            setData(convertDataToTrains(filteredTrains));
-          }
-        })
-        .catch((error) => {
-          console.log('Error al buscar', error);
-        });
+        if (filteredTrains.length === 0) {
+          setErrorDialogMessage('No results');
+          setErrorDialogOpen(true);
+        } else {
+          setData(convertDataToTrains(filteredTrains));
+          setFilterApplied(true);
+        }
+      })
+      .catch((error) => {
+        console.log('Error while searching', error);
+      });
 
     setFilterDialogOpen(false);
   };
@@ -151,6 +204,7 @@ function ViewTrainsComponent() {
           onDeleteRecords={handleDeleteRecords}
           onViewRecord={handleDetailsRecords}
           onFilterClick={handleFilter}
+          isFilterApplied={filterApplied}
         />
       </div>
 
@@ -176,7 +230,7 @@ function ViewTrainsComponent() {
       <CustomizableDialog
         type="error"
         open={isErrorDialogOpen}
-        title="Deletion Error"
+        title="No trains found"
         content={errorDialogMessage}
         agreeButtonLabel="OK"
         showCancelButton={false}

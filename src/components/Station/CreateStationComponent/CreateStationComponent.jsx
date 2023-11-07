@@ -5,6 +5,9 @@ import TextField from '@mui/material/TextField';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import '../../SharedCSS.css';
 
+/**
+ * Component for creating a new station.
+ */
 function CreateStationComponent() {
   const [state, setState] = useState({
     name: '',
@@ -17,14 +20,26 @@ function CreateStationComponent() {
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
 
+  /**
+   * Handle input change for the station name.
+   * @param {Object} event - The input change event.
+   */
   const changeNameHandler = (event) => {
     setState({ ...state, name: event.target.value });
   };
 
+  /**
+   * Handle input change for the station city.
+   * @param {Object} event - The input change event.
+   */
   const changeCityHandler = (event) => {
     setState({ ...state, city: event.target.value });
   };
 
+  /**
+   * Save the station data and handle the result.
+   * @param {Object} event - The form submission event.
+   */
   const saveStation = (event) => {
     event.preventDefault();
 
@@ -53,6 +68,10 @@ function CreateStationComponent() {
       });
   };
 
+  /**
+   * Check if the state has missing or empty fields.
+   * @returns {number} - 0 if valid, 1 if missing fields.
+   */
   function checkState() {
     if (state.name === '' || state.city === '') {
       setDialogMessage('Please fill in all fields');
@@ -102,7 +121,7 @@ function CreateStationComponent() {
             <button
               type="button"
               className="btn btn-secondary mt-2"
-              onClick={()=>window.location.reload()}
+              onClick={() => window.location.reload()}
             >
               Clear
             </button>
