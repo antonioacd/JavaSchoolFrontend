@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Typography, Button } from '@mui/material';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import userService from '../../../services/UserService';
 import ticketService from '../../../services/TicketService';
 import scheduleService from '../../../services/ScheduleService';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { Duration } from "luxon";
@@ -45,6 +44,7 @@ function BuyTicketComponent() {
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
+  const navigate = useNavigate();
   
   useEffect(() => {
     getSchedule();
@@ -124,12 +124,12 @@ function BuyTicketComponent() {
           setDialogMessage('Schedule added successfully');
           setSuccessDialogOpen(true);
         } else {
-          setDialogMessage('Error adding schedule. Please try again.');
+          setDialogMessage("You already have a ticket for this schedule");
           setErrorDialogOpen(true);
         }
       })
       .catch(error => {
-        setDialogMessage('Error adding schedule. Please try again.');
+        setDialogMessage("You already have a ticket for this schedule");
         setErrorDialogOpen(true);
       });
   };
@@ -189,13 +189,18 @@ function BuyTicketComponent() {
         </div>
 
         <div className="row mt-4 justify-content-center">
-          <Button
-            variant="contained"
-            color="primary"
+          <button
+            className='btn btn-primary'
             onClick={buyTicket}
           >
-            Buy Ticket
-          </Button>
+            BUY TICKET
+          </button>
+          <button
+            className='btn btn-secondary mt-2'
+            onClick={() => navigate("/schedule/search")}
+          >
+            SEARCH OTHER SCHEDULES
+          </button>
         </div>
 
         <CustomizableDialog

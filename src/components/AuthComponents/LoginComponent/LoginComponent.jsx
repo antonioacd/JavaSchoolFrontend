@@ -90,6 +90,7 @@ function LoginComponent() {
                   id="outlined-basic"
                   label="Password"
                   variant="outlined"
+                  type='password'
                   color="secondary"
                   value={state.password}
                   onChange={changePasswordHandler}
