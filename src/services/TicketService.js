@@ -22,6 +22,18 @@ class TicketService {
         return this.axiosInstance.get();
     }
 
+    getTicketsByUser(userId, scheduleId) {
+        const params = new URLSearchParams();
+        if (userId) {
+            params.append('userId', userId);
+        }
+        if (scheduleId) {
+            params.append('scheduleId', scheduleId);
+        }
+    
+        return this.axiosInstance.get(TICKETS_API_BASE_URL + '/searchTicketsByUserAndScheduleId', { params });
+    }
+
     getTicketById(id){
         return this.axiosInstance.get(`${TICKETS_API_BASE_URL}/${id}`);
     }
