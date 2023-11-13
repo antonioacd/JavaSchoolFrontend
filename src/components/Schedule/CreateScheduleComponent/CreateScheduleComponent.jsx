@@ -12,6 +12,7 @@ import duration from 'dayjs/plugin/duration';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import './CreateScheduleComponent.css';
 import '../../SharedCSS.css';
+import ticketService from '../../../services/TicketService';
 
 // Enable dayjs duration plugin
 dayjs.extend(duration);

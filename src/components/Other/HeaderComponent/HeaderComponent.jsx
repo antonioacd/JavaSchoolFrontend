@@ -15,6 +15,7 @@ const PAGES = [
     { name: "Stations", route: "/station/view" },
     { name: "Searcher", route: "/schedule/search" },
     { name: "Users", route: "/user/view" },
+    { name: "Tickets", route: "/ticket/view" },
 ];
 
 const Header = () => {

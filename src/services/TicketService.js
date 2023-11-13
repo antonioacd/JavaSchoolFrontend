@@ -47,7 +47,17 @@ class TicketService {
     }
 
     deleteTicket(id) {
+        console.log("Entra borrado")
         return this.axiosInstance.delete(`${TICKETS_API_BASE_URL}/${id}`);
+    }
+
+    getTicketsByScheduleId(scheduleId) {
+        const params = new URLSearchParams();
+        if (scheduleId) {
+            params.append('scheduleId', scheduleId);
+        }
+    
+        return this.axiosInstance.get(TICKETS_API_BASE_URL + '/search/' + scheduleId, { params });
     }
 
 }

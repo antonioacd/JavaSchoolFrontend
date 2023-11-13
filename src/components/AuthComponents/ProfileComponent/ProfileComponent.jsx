@@ -28,6 +28,11 @@ const UserProfile = () => {
 
   }, [user]);
 
+  const handleSignOut = () => {
+    localStorage.removeItem("accessToken");
+    window.location.reload();
+  }
+
   function getUser(){
     userService.getUserByEmail(localStorage.getItem('email'))
             .then((response) => {
@@ -49,7 +54,6 @@ const UserProfile = () => {
             .then((response) => {
                 if (response.status === 200) {
                     const ticketsData = response.data;
-                    console.log("Ticket Data",ticketsData);
                     setTickets(ticketsData);
                 } else {
                     console.error("Error fetching user data.");
@@ -59,14 +63,21 @@ const UserProfile = () => {
                 console.error("Error fetching user data:", error);
             });
   }
-
   
-
   return (
     <div className="full-screen">
       <div className="container-custom">
-        <div className="text-center">
-          <h1>Hi, {user.name} {user.surname} !!</h1>
+        <div className="text-center row">
+          <div className="col">
+            <h1>Hi, {user.name} {user.surname} !!</h1>
+          </div>
+          <div className="col">
+            <button 
+              className="btn btn-danger"
+              onClick={handleSignOut}
+            >Sign Out</button>
+          </div>
+          
           <hr />
           {tickets.length > 0 ? ( // Verifica si hay tickets
             <div className="row mt-4">

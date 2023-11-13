@@ -18,6 +18,7 @@ import DetailStationPage from '../pages/Station/DetailStationPage';
 import RegisterPage from '../pages/RegisterPage';
 import ProfilePage from '../pages/ProfilePage';
 import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
+import ViewTicketsPage from '../pages/Ticket/ViewTicketPage';
 
 
 const AppRouter = () => {
@@ -26,7 +27,7 @@ const AppRouter = () => {
             <Header/>
             <div style={{marginTop: '60px'}}>
                 <Routes>
-                    {/* Login and Register*/}
+                    {/* Login and Register */}
 
                     <Route 
                         path="/register"
@@ -39,6 +40,7 @@ const AppRouter = () => {
                     />
                     
                     {/* Home */}
+
                     <Route element={<ProtectedRoute/>}>
                         <Route 
                             path="/"
@@ -115,6 +117,10 @@ const AppRouter = () => {
                         <Route 
                             path="/ticket/buy/:scheduleId"
                             element={<CreateTicketPage/>}
+                        />
+                        <Route 
+                            path="/ticket/view"
+                            element={<ViewTicketsPage/>}
                         />
 
                     </Route>

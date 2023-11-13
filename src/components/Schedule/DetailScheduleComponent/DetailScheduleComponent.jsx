@@ -13,6 +13,8 @@ import scheduleService from '../../../services/ScheduleService';
 import trainService from '../../../services/TrainService';
 import EditIcon from '@mui/icons-material/Edit';
 import utc from 'dayjs/plugin/utc';
+import ticketService from '../../../services/TicketService';
+import ViewTicketsComponent from '../../Ticket/ViewTicketsComponent/ViewTicketsComponent';
 
 dayjs.extend(utc);
 dayjs.extend(duration);
@@ -43,21 +45,24 @@ function DetailScheduleComponent() {
         }
     });
 
-    const navigate = useNavigate();
-
-    const [selectedDepartureDate, setSelectedDepartureDate] = useState(dayjs());
-    const [selectedArrivalDate, setSelectedArrivalDate] = useState(dayjs());
     const [trainList, setTrainList] = useState([]);
 
     const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
     const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
-    const [isEditable, setIsEditable] = useState(false); // New state for editing
+    const [isEditable, setIsEditable] = useState(false);
+    const [ticketList, setTicketList] = useState([]);
 
     /**
      * Fetch schedule details and available trains when the component mounts.
      */
     useEffect(() => {
+        getSchedule();
+        getTrains();
+        getTickets();
+    }, []);
+
+    function getSchedule(){
         scheduleService.getScheduleById(id)
             .then((response) => {
                 if (response.status === 200) {
@@ -70,7 +75,9 @@ function DetailScheduleComponent() {
             .catch((error) => {
                 console.error("Error fetching schedule data:", error);
             });
+    }
 
+    function getTrains(){
         trainService.getTrains()
             .then((response) => {
                 if (response.status === 200) {
@@ -83,7 +90,25 @@ function DetailScheduleComponent() {
             .catch((error) => {
                 console.error("Error fetching trains data:", error);
             });
-    }, []);
+            getTickets();
+    }
+
+    function getTickets(){
+        ticketService.getTicketsByScheduleId(id)
+            .then(response => {
+              if (response.status === 200) {
+                console.log("Response, data",response.data);
+                setTicketList(response.data)
+              } else {
+                setDialogMessage('Error getting tickets.');
+                setErrorDialogOpen(true);
+              }
+            })
+            .catch(error => {
+              setDialogMessage('Error getting tickets.');
+              setErrorDialogOpen(true);
+            });
+    }
 
     /**
      * Calculate and update the arrival time when the selected train or departure time changes.
@@ -178,7 +203,7 @@ function DetailScheduleComponent() {
     }
 
     return (
-        <div className="full-screen">
+        <div className="full-screen row">
             <div className='container-custom-big'>
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <h1 className="">Schedule Details</h1>
@@ -304,6 +329,10 @@ function DetailScheduleComponent() {
                     onAgree={() => setErrorDialogOpen(false)}
                 />
             </div>
+            <div className='row'>
+                <ViewTicketsComponent initialData={ticketList} isMainPage={false}/>
+            </div>
+            
         </div>
     );
 }
