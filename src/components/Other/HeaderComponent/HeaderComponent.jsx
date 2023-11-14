@@ -1,45 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Tabs, Tab, Button, useMediaQuery } from '@mui/material';
 import TrainIcon from '@mui/icons-material/Train';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Icono de cuenta
-import { useState } from 'react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
-import { useEffect } from 'react';
 import userService from '../../../services/UserService';
 
 const PAGES = [
-    { name: "Home", route: "/" },
-    { name: "Schedules", route: "/schedule/view" },
-    { name: "Trains", route: "/train/view" },
-    { name: "Stations", route: "/station/view" },
-    { name: "Searcher", route: "/schedule/search" },
-    { name: "Users", route: "/user/view" },
-    { name: "Tickets", route: "/ticket/view" },
+    { id: 0, name: "Home", route: "/" },
+    { id: 1, name: "Searcher", route: "/schedule/search" },
+    { id: 2, name: "Schedules", route: "/schedule/view" },
+    { id: 3, name: "Trains", route: "/train/view" },
+    { id: 4, name: "Stations", route: "/station/view" },
+    { id: 5, name: "Users", route: "/user/view" },
+    { id: 6, name: "Tickets", route: "/ticket/view" },
 ];
+
+const adminPages = [0, 1, 2, 3, 4, 5, 6];
+const userPages = [0, 1];
 
 const Header = () => {
     const [value, setValue] = useState(0);
     const isMatch = useMediaQuery('(max-width:960px)');
     const navigate = useNavigate();
 
-    const token = localStorage.getItem('accessToken'); // Obtiene el token del almacenamiento local
-    const userRole = "USER"; // Puedes obtener el rol del usuario de tu sistema de autenticación
+    const token = localStorage.getItem('accessToken');
+    const [userRole, setUserRole] = useState('');
 
     useEffect(() => {
         const email = localStorage.getItem('email');
 
-        console.log("Entra", email);
-
-        if(email){
+        if (email) {
             userService.getUserByEmail(email)
-            .then((response) => {
-                console.log("Entra",response.data);
-            })
-            .catch((error) => {
-                console.log("Entra eror");
-                console.log(error);
-            });
+                .then((response) => {
+                    setUserRole(response.data.roles[0].name);
+                })
+                .catch((error) => {
+                    console.error("Error fetching user role:", error);
+                });
         }
     }, [token]);
 
@@ -49,7 +47,7 @@ const Header = () => {
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
-        const selectedPage = PAGES[newValue];
+        const selectedPage = PAGES.find((page) => page.id === newValue);
         navigate(selectedPage.route);
     };
 
@@ -80,15 +78,22 @@ const Header = () => {
                                 onChange={handleChangeTab}
                                 indicatorColor='primary'
                             >
-                                {PAGES.map((page, index) => {
-                                    if (userRole === 'USE') {
-                                        if (page.name === 'Searcher') {
-                                            return <Tab key={index} label={page.name} />;
+                                {token ? (
+                                    PAGES.map((page) => {
+                                        if (
+                                            (userRole === 'ADMIN' && adminPages.includes(page.id)) ||
+                                            (userRole === 'USER' && userPages.includes(page.id))
+                                        ) {
+                                            return <Tab key={page.route} label={page.name} />;
                                         }
-                                    } else {
-                                        return <Tab key={index} label={page.name} />;
-                                    }
-                                })}
+                                        return null;
+                                    })
+                                ) : (
+                                    userPages.map((pageId) => {
+                                        const page = PAGES.find((p) => p.id === pageId);
+                                        return <Tab key={page.route} label={page.name} />;
+                                    })
+                                )}
                             </Tabs>
                             {token ? (
                                 <AccountCircleIcon sx={{ fontSize: 32, color: 'white', marginLeft: 'auto' }} onClick={handleProfileClick} />
