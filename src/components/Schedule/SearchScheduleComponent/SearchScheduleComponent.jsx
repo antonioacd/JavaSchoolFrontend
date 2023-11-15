@@ -10,68 +10,112 @@ import stationService from '../../../services/StationService';
 import scheduleService from '../../../services/ScheduleService';
 import SearchItemScheduleComponent from './SearchItemScheduleComponent/SearchItemScheduleComponent';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
+import validator from 'validator';
 
 /**
  * Component for searching schedules based on departure station, arrival station, and date.
  */
 function SearchScheduleComponent() {
   const [state, setState] = useState({
-    "departureStation": "",
-    "arrivalStation": "",
-    "date": dayjs(),
+    departureStation: "",
+    arrivalStation: "",
+    date: dayjs(),
   });
 
   const [departureStationList, setDepartureStationList] = useState([]);
   const [arrivalStationList, setArrivalStationList] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [isNoSchedulesDialogOpen, setNoSchedulesDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('No schedules were found for the selected criteria.');
+
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the list of departure stations when the component mounts
-    stationService.getStations().then((res) => {
-      setDepartureStationList(res.data);
-    });
+    console.log("Obtiene las de salida");
+    getDepartureStationList();
   }, []);
 
   useEffect(() => {
-    getStations();
+    console.log("Obtiene las de llegada");
+    getArrivalStationList();
   }, [state.departureStation]);
 
+  useEffect(() => {
+      console.log("Obtiene las de salida");
+      getDepartureStationList();
+  }, [state.arrivalStation]);
+
   /**
-   * Fetch the list of arrival stations based on the selected departure station.
+   * Fetch and set the list of arrival stations based on the selected departure station.
    */
-  function getStations() {
-    stationService.getStations().then((res) => {
-      const updatedArrivalStationList = res.data;
-      const filteredArrivalStationList = updatedArrivalStationList.filter(
-        (station) => station.id !== state.departureStation.id
-      );
-      setArrivalStationList(filteredArrivalStationList);
-    });
+  function getArrivalStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const departureStationId = state.departureStation.id;
+        
+        const filteredStationList = stations.filter(
+          (station) => station.id !== departureStationId
+        );
+  
+        setArrivalStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
   }
 
   /**
-   * Handle the selection of a departure station.
+   * Fetch and set the list of departure stations based on the selected arrival station.
+   */
+  function getDepartureStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const arrivalStationId = state.arrivalStation.id;
+        
+        const filteredStationList = stations.filter(
+          (station) => station.id !== arrivalStationId
+        );
+  
+        setDepartureStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
+
+  /**
+   * Handler for changing the selected departure station.
    * @param {object} selectedDepartureStation - The selected departure station.
    */
   const changeDepartureStationHandler = (selectedDepartureStation) => {
     if (selectedDepartureStation === null) {
       return;
     }
-    setState({ ...state, departureStation: selectedDepartureStation.city });
+
+    setState({
+      ...state,
+      departureStation: selectedDepartureStation,
+    });
   };
 
   /**
-   * Handle the selection of an arrival station.
+   * Handler for changing the selected arrival station.
    * @param {object} selectedArrivalStation - The selected arrival station.
    */
   const changeArrivalStationHandler = (selectedArrivalStation) => {
     if (selectedArrivalStation === null) {
       return;
     }
-    setState({ ...state, arrivalStation: selectedArrivalStation.city });
+
+    setState({
+      ...state,
+      arrivalStation: selectedArrivalStation,
+    });
   };
 
   /**
@@ -88,21 +132,41 @@ function SearchScheduleComponent() {
   const searchSchedules = () => {
     const { departureStation, arrivalStation, date } = state;
 
-    scheduleService
-      .getSchedulesByCitiesAndDate(departureStation, arrivalStation, date)
-      .then((res) => {
-        const filteredSchedules = res.data;
+    const error = checkState();
 
-        if (filteredSchedules.length === 0) {
-          setNoSchedulesDialogOpen(true);
-        } else {
-          setSchedules(filteredSchedules);
-        }
-      })
-      .catch((error) => {
-        console.log("Error while searching", error);
-      });
+    if (error) {
+      setDialogMessage(error);
+      setErrorDialogOpen(true);
+    } else {
+      setDialogMessage('No schedules were found for the selected criteria.');
+      scheduleService
+        .getSchedulesByCitiesAndDate(departureStation, arrivalStation, date)
+        .then((res) => {
+          const filteredSchedules = res.data;
+
+          if (filteredSchedules.length === 0) {
+            setErrorDialogOpen(true);
+          } else {
+            setSchedules(filteredSchedules);
+          }
+        })
+        .catch((error) => {
+          console.log("Error while searching", error);
+        });
+      }
   };
+
+  function checkState() {
+
+    console.log("Departure: ",state.departureStation);
+    console.log("Arrival: ",state.arrivalStation);
+  
+    if (state.departureStation === "" || state.arrivalStation === "") {
+      return 'Please fill in all fields';
+    }
+  
+    return '';
+  }
 
   return (
     <div>
@@ -131,6 +195,7 @@ function SearchScheduleComponent() {
                   label="Date"
                   value={state.date}
                   onChange={changeDateHandler}
+                  disablePast={true}
                 />
               </LocalizationProvider>
             </div>
@@ -151,12 +216,12 @@ function SearchScheduleComponent() {
 
       <CustomizableDialog
         type='error'
-        open={isNoSchedulesDialogOpen}
-        title="No Schedules Found"
-        content="No schedules were found for the selected criteria."
+        open={isErrorDialogOpen}
+        title="Error"
+        content={dialogMessage}
         agreeButtonLabel="OK"
         showCancelButton={false}
-        onAgree={() => setNoSchedulesDialogOpen(false)}
+        onAgree={() => setErrorDialogOpen(false)}
       />
     </div>
   );

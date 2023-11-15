@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import KeyIcon from '@mui/icons-material/Key';
+import validator from 'validator';
 
-export default function PasswordMeterInput({value, onChange}) {
-  const minLength = 12;
+const PasswordMeterInput = ({ value, onChange, error, helperText }) => {
+  const minLength = 8;
 
   const getPasswordStrength = () => {
     if (value.length < 3) {
@@ -21,11 +22,38 @@ export default function PasswordMeterInput({value, onChange}) {
   };
 
   const passwordMeterInputStyle = {
-    width: '100%', // Ajusta el ancho al 100% para que sea igual que un TextField de Angular
+    width: '100%',
   };
 
-  const passwordStrength = getPasswordStrength();
   const hue = Math.min(value.length * 10, 120);
+
+  const validatePassword = (password) => {
+    if (validator.isEmpty(password)) {
+      console.log("error vacio");
+      return 'Password is required';
+    }
+
+    if (password.length < minLength) {
+      console.log("error longitud");
+      return `Password must be at least ${minLength} characters long`;
+    }
+
+    if (!validator.isStrongPassword(password, { minLength: 8, minLowercase: 0, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
+      console.log("error cosas");
+      return 'Password must contain at least 1 uppercase letter, 1 number, and 1 special character';
+    }
+
+    console.log("error ninguno");
+    return '';
+  };
+
+  const [passwordErrors, setPasswordErrors] = useState('');
+
+  useEffect(() => {
+    // Actualizar passwordErrors cada vez que cambie el valor
+    const error = validatePassword(value);
+    setPasswordErrors(error);
+  }, [value]);
 
   return (
     <Stack
@@ -34,7 +62,7 @@ export default function PasswordMeterInput({value, onChange}) {
       sx={{
         '--hue': hue,
         '--progress-color': `hsl(${hue} 80% 40%)`,
-        ...passwordMeterInputStyle // Nuevo color para la barra de progreso
+        ...passwordMeterInputStyle,
       }}
     >
       <TextField
@@ -44,7 +72,15 @@ export default function PasswordMeterInput({value, onChange}) {
           startAdornment: <KeyIcon />,
         }}
         value={value}
-        onChange={onChange}
+        onChange={(e) => {
+          const password = e.target.value;
+          onChange(e);
+          // Actualizar el estado con los errores de contraseña
+          const error = validatePassword(password);
+          setPasswordErrors(error);
+        }}
+        error={!!passwordErrors}
+        helperText={passwordErrors || helperText}
       />
       <LinearProgress
         variant="determinate"
@@ -52,17 +88,18 @@ export default function PasswordMeterInput({value, onChange}) {
         sx={{
           bgcolor: 'background.level3',
           '& .MuiLinearProgress-bar': {
-            backgroundColor: 'var(--progress-color)', // Cambia el color de la barra de progreso
+            backgroundColor: 'var(--progress-color)',
           },
         }}
       />
-
       <Typography
         variant="body-xs"
         sx={{ alignSelf: 'flex-end', color: `hsl(${hue} 80% 30%)` }}
       >
-        {passwordStrength}
+        {getPasswordStrength()}
       </Typography>
     </Stack>
   );
-}
+};
+
+export default PasswordMeterInput;

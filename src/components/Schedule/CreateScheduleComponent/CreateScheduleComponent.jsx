@@ -10,9 +10,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-import './CreateScheduleComponent.css';
-import '../../SharedCSS.css';
-import ticketService from '../../../services/TicketService';
+import validator from 'validator'; // Import validator
 
 // Enable dayjs duration plugin
 dayjs.extend(duration);
@@ -21,9 +19,12 @@ dayjs.extend(duration);
  * A component for creating a new schedule.
  */
 function CreateScheduleComponent() {
+
+  const defaultDepartureTime = dayjs().add(5, 'hour').format('YYYY-MM-DDTHH:mm');
+
   // State variables
   const [state, setState] = useState({
-    departureTime: '',
+    departureTime: defaultDepartureTime,
     arrivalTime: '',
     occupiedSeats: 0,
     train: {
@@ -38,6 +39,11 @@ function CreateScheduleComponent() {
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
+  const [errors, setErrors] = useState({
+    train: '',
+    departureTime: '',
+    arrivalTime: '',
+  }); // State for validation errors
 
   /**
    * Fetch the list of trains when the component mounts.
@@ -84,6 +90,7 @@ function CreateScheduleComponent() {
   const changeDepartureTimeHandler = (newDate) => {
     const formattedDate = newDate.format('YYYY-MM-DDTHH:mm');
     setState({ ...state, departureTime: formattedDate });
+    validateDepartureTime(formattedDate); // Validate departure time
   };
 
   /**
@@ -96,6 +103,7 @@ function CreateScheduleComponent() {
       return;
     }
     setState({ ...state, train: selectedTrain });
+    validateTrain(selectedTrain); // Validate train
   };
 
   /**
@@ -135,14 +143,39 @@ function CreateScheduleComponent() {
    */
   function checkState() {
     if (
-      state.train.id === '' ||
-      state.departureTime === '' ||
-      state.arrivalTime === ''
+      validator.isEmpty(state.train.id.toString()) || // Use validator to check if the ID is empty
+      validator.isEmpty(state.departureTime) ||
+      validator.isEmpty(state.arrivalTime)
     ) {
       return 'Please fill in all fields.';
     }
 
     return '';
+  }
+
+  /**
+   * Validate the departure time.
+   *
+   * @param {string} departureTime - The departure time to validate.
+   */
+  function validateDepartureTime(departureTime) {
+    const now = dayjs(); // Get the current date and time
+    const selectedDate = dayjs(departureTime);
+
+    const errorMessage = validator.isEmpty(departureTime) ? 'Departure time is required' : 
+      !selectedDate.isAfter(now) ? 'Departure time must be after the current date and time' : '';
+    
+    setErrors((prev) => ({ ...prev, departureTime: errorMessage }));
+  }
+
+  /**
+   * Validate the selected train.
+   *
+   * @param {object} selectedTrain - The selected train to validate.
+   */
+  function validateTrain(selectedTrain) {
+    const errorMessage = selectedTrain === null ? 'Train is required' : '';
+    setErrors((prev) => ({ ...prev, train: errorMessage }));
   }
 
   return (
@@ -157,6 +190,7 @@ function CreateScheduleComponent() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
                 label="Departure time"
+                disablePast={true}
                 value={dayjs(state.departureTime)}
                 onChange={changeDepartureTimeHandler}
               />
