@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StationService from '../../../services/StationService';
 import TextField from '@mui/material/TextField';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-import '../../SharedCSS.css';
+import validator from 'validator';
 
 /**
  * Component for creating a new station.
@@ -11,7 +11,7 @@ import '../../SharedCSS.css';
 function CreateStationComponent() {
   const [state, setState] = useState({
     name: '',
-    city: ''
+    city: '',
   });
 
   const navigate = useNavigate();
@@ -20,12 +20,19 @@ function CreateStationComponent() {
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
 
+  const [errors, setErrors] = useState({
+    name: '',
+    city: '',
+  });
+
   /**
    * Handle input change for the station name.
    * @param {Object} event - The input change event.
    */
   const changeNameHandler = (event) => {
-    setState({ ...state, name: event.target.value });
+    const name = event.target.value;
+    setState((prev) => ({ ...prev, name }));
+    validateName(name);
   };
 
   /**
@@ -33,7 +40,9 @@ function CreateStationComponent() {
    * @param {Object} event - The input change event.
    */
   const changeCityHandler = (event) => {
-    setState({ ...state, city: event.target.value });
+    const city = event.target.value;
+    setState((prev) => ({ ...prev, city }));
+    validateCity(city);
   };
 
   /**
@@ -45,7 +54,7 @@ function CreateStationComponent() {
 
     const stationData = {
       name: state.name,
-      city: state.city
+      city: state.city,
     };
 
     if (checkState() === 1) {
@@ -53,7 +62,7 @@ function CreateStationComponent() {
     }
 
     StationService.createStation(stationData)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           setDialogMessage('Station added successfully');
           setSuccessDialogOpen(true);
@@ -62,7 +71,7 @@ function CreateStationComponent() {
           setErrorDialogOpen(true);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         setDialogMessage('Error adding station. Please try again.');
         setErrorDialogOpen(true);
       });
@@ -73,19 +82,27 @@ function CreateStationComponent() {
    * @returns {number} - 0 if valid, 1 if missing fields.
    */
   function checkState() {
-    if (state.name === '' || state.city === '') {
-      setDialogMessage('Please fill in all fields');
-      setErrorDialogOpen(true);
+    if (validator.isEmpty(state.name) || validator.isEmpty(state.city)) {
+      validateName(state.name);
+      validateCity(state.city);
       return 1;
     }
     return 0;
   }
 
+  const validateName = (name) => {
+    setErrors((prev) => ({ ...prev, name: validator.isEmpty(name) ? 'Station Name is required' : '' }));
+  };
+
+  const validateCity = (city) => {
+    setErrors((prev) => ({ ...prev, city: validator.isEmpty(city) ? 'Station City is required' : '' }));
+  };
+
   return (
-    <div className='full-screen'>
+    <div className="full-screen">
       <div className="container-custom">
         <div className="row justify-content-center">
-          <h1 className='text-center'>Create Station</h1>
+          <h1 className="text-center">Create Station</h1>
         </div>
 
         <div className="card-body">
@@ -97,6 +114,8 @@ function CreateStationComponent() {
                 value={state.name}
                 onChange={changeNameHandler}
                 style={{ width: '100%' }}
+                error={!!errors.name}
+                helperText={errors.name}
               />
             </div>
             <div className="col">
@@ -106,30 +125,24 @@ function CreateStationComponent() {
                 value={state.city}
                 onChange={changeCityHandler}
                 style={{ width: '100%' }}
+                error={!!errors.city}
+                helperText={errors.city}
               />
             </div>
           </div>
 
           <div className="row mt-4 justify-content-center">
-            <button
-              type="button"
-              className="btn btn-primary mt-2"
-              onClick={saveStation}
-            >
+            <button type="button" className="btn btn-primary mt-2" onClick={saveStation}>
               Save station
             </button>
-            <button
-              type="button"
-              className="btn btn-secondary mt-2"
-              onClick={() => window.location.reload()}
-            >
+            <button type="button" className="btn btn-secondary mt-2" onClick={() => window.location.reload()}>
               Clear
             </button>
           </div>
         </div>
 
         <CustomizableDialog
-          type='success'
+          type="success"
           open={isSuccessDialogOpen}
           title="Success"
           content={dialogMessage}
@@ -141,7 +154,7 @@ function CreateStationComponent() {
           }}
         />
         <CustomizableDialog
-          type='error'
+          type="error"
           open={isErrorDialogOpen}
           title="Error"
           content={dialogMessage}

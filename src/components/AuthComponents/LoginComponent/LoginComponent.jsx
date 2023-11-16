@@ -55,32 +55,33 @@ function LoginComponent() {
 
   const login = (event) => {
     event.preventDefault();
-    const error = checkState();
 
-    if (error) {
-      openDialog('error', 'Login error', error);
-    } else {
-      userService
-        .login(state.email, state.password)
-        .then((response) => {
-          const accessToken = response.data.accessToken;
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('email', state.email);
-          navigate('/');
-        })
-        .catch((error) => {
-          openDialog('error', 'Login error', 'Check if the password and email are correct.');
-          console.log('Error: ', error);
-        });
+    if(checkState() === 1){
+      return;
     }
+
+    userService
+      .login(state.email, state.password)
+      .then((response) => {
+        const accessToken = response.data.accessToken;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('email', state.email);
+        navigate('/');
+      })
+      .catch((error) => {
+        openDialog('error', 'Login error', 'Check if the password and email are correct.');
+        console.log('Error: ', error);
+      });
   };
 
   function checkState() {
     if (validator.isEmpty(state.email) || validator.isEmpty(state.password)) {
-      return 'Please fill in all fields';
+      validateEmail(state.email);
+      validatePassword(state.password);
+      return 1;
     }
 
-    return '';
+    return 0;
   }
 
   const handleDialogClose = () => {

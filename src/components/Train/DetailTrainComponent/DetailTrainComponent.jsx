@@ -14,379 +14,341 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Duration } from "luxon";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
 import stationService from '../../../services/StationService';
-import { validateDate } from '@mui/x-date-pickers/internals';
+import validator from 'validator';
 
 dayjs.extend(duration);
 
-/**
- * Component to display and edit train details.
- */
 function DetailTrainComponent() {
-    // Get the ID from the URL
-    const { id } = useParams();
+  const { id } = useParams();
 
-    const [state, setState] = useState({
-        id: 0,
-        departureStation: {
-            id: "",
-            name: "",
-            city: ""
-        },
-        arrivalStation: {
-            id: "",
-            name: "",
-            city: ""
-        },
-        trainNumber: "",
-        duration: "",
-        seats: ""
-    });
+  const [state, setState] = useState({
+    id: 0,
+    departureStation: {
+      id: "",
+      name: "",
+      city: ""
+    },
+    arrivalStation: {
+      id: "",
+      name: "",
+      city: ""
+    },
+    trainNumber: "",
+    duration: "",
+    seats: ""
+  });
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
-    const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
-    const [dialogMessage, setDialogMessage] = useState('');
-    const [isEditable, setIsEditable] = useState(false);
-    const [departureStationList, setDepartureStationList] = useState([]);
-    const [arrivalStationList, setArrivalStationList] = useState([]);
-    const [savedState, setSavedState] = useState([]);
-    const [parsedDuration, setParsedDuration] = useState([]);
+  const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
+  const [isEditable, setIsEditable] = useState(false);
+  const [departureStationList, setDepartureStationList] = useState([]);
+  const [arrivalStationList, setArrivalStationList] = useState([]);
+  const [savedState, setSavedState] = useState([]);
+  const [parsedDuration, setParsedDuration] = useState([]);
+  const [errors, setErrors] = useState({});
 
-    useEffect(() => {
-        // Fetch train data when the component mounts
-        trainService.getTrainById(id)
-            .then((response) => {
-                if (response.status === 200) {
-                    const trainData = response.data;
-                    setState(trainData);
-                    setSavedState(trainData);
-                    setParsedDuration(durationToMinutes(trainData.duration));
-                } else {
-                    console.error("Error fetching train data.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching train data:", error);
-            });
-    }, [id]);
-
-    useEffect(() => {
-        console.log("Getting arrival stations");
-        getArrivalStationList();
-    }, [state.departureStation]);
-
-    useEffect(() => {
-        console.log("Getting departure stations");
-        getDepartureStationList();
-    }, [state.arrivalStation]);
-
-    /**
-     * Fetch the list of arrival stations based on the selected departure station.
-     */
-    function getArrivalStationList() {
-        stationService.getStations()
-          .then((response) => {
-            const stations = response.data;
-            const departureStationId = state.departureStation.id;
-            
-            const filteredStationList = stations.filter(
-              (station) => station.id !== departureStationId
-            );
-      
-            setArrivalStationList(filteredStationList);
-          })
-          .catch((error) => {
-            setDialogMessage(error);
-            setErrorDialogOpen(true);
-          });
-      }
-
-    /**
-     * Fetch the list of departure stations based on the selected arrival station.
-     */
-    function getDepartureStationList() {
-        stationService.getStations()
-          .then((response) => {
-            const stations = response.data;
-            const arrivalStationId = state.arrivalStation.id;
-            
-            const filteredStationList = stations.filter(
-              (station) => station.id !== arrivalStationId
-            );
-      
-            setDepartureStationList(filteredStationList);
-          })
-          .catch((error) => {
-            setDialogMessage(error);
-            setErrorDialogOpen(true);
-          });
-      }
-
-    /**
-     * Fetch the list of all stations.
-     */
-    function getAllStations() {
-        console.log("Getting all stations");
-        stationService.getStations()
-          .then((response) => {
-            const stations = response.data;
-            setDepartureStationList(stations);
-            setArrivalStationList(stations);
-          })
-          .catch((error) => {
-            setDialogMessage(error);
-            setErrorDialogOpen(true);
-          });
-      }
-
-    /**
-     * Handle the selection of the departure station.
-     * @param {Object} selectedDepartureStation - The selected departure station.
-     */
-    const changeDepartureStationHandler = (selectedDepartureStation) => {
-        if (selectedDepartureStation === null) {
-          return;
-        }
-      
-        if (selectedDepartureStation.id !== state.arrivalStation.id) {
-          setState({
-            ...state,
-            departureStation: selectedDepartureStation,
-          });
+  useEffect(() => {
+    trainService.getTrainById(id)
+      .then((response) => {
+        if (response.status === 200) {
+          const trainData = response.data;
+          setState(trainData);
+          setSavedState(trainData);
+          setParsedDuration(durationToMinutes(trainData.duration));
         } else {
-            setDialogMessage('You cannot select the same station as both departure and arrival.');
-            setErrorDialogOpen(true);
+          console.error("Error fetching train data.");
         }
-    };
-      
-    /**
-     * Handle the selection of the arrival station.
-     * @param {Object} selectedArrivalStation - The selected arrival station.
-     */
-    const changeArrivalStationHandler = (selectedArrivalStation) => {
-        if (selectedArrivalStation === null) {
-          return;
-        }
-      
-        if (selectedArrivalStation.id !== state.departureStation.id) {
-          setState({
-            ...state,
-            arrivalStation: selectedArrivalStation,
-          });
-        } else {
-            setDialogMessage('You cannot select the same station as both departure and arrival.');
-            setErrorDialogOpen(true);
-        }
-    };
+      })
+      .catch((error) => {
+        console.error("Error fetching train data:", error);
+      });
+  }, [id]);
 
-    /**
-     * Save the updated train details.
-     * @param {Event} event - The form submission event.
-     */
-    const saveTrain = (event) => {
-        event.preventDefault();
-        if (isEditable) {
-            const error = checkState();
-    
-            if (error) {
-                setDialogMessage('Error adding train. Please try again.');
-                setErrorDialogOpen(true);
+  useEffect(() => {
+    getArrivalStationList();
+  }, [state.departureStation]);
+
+  useEffect(() => {
+    getDepartureStationList();
+  }, [state.arrivalStation]);
+
+  function getArrivalStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const departureStationId = state.departureStation.id;
+
+        const filteredStationList = stations.filter(
+          (station) => station.id !== departureStationId
+        );
+
+        setArrivalStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
+
+  function getDepartureStationList() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        const arrivalStationId = state.arrivalStation.id;
+
+        const filteredStationList = stations.filter(
+          (station) => station.id !== arrivalStationId
+        );
+
+        setDepartureStationList(filteredStationList);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
+
+  function getAllStations() {
+    stationService.getStations()
+      .then((response) => {
+        const stations = response.data;
+        setDepartureStationList(stations);
+        setArrivalStationList(stations);
+      })
+      .catch((error) => {
+        setDialogMessage(error);
+        setErrorDialogOpen(true);
+      });
+  }
+
+  const changeDepartureStationHandler = (selectedDepartureStation) => {
+    if (selectedDepartureStation === null) {
+      return;
+    }
+
+    if (selectedDepartureStation.id !== state.arrivalStation.id) {
+      setState({
+        ...state,
+        departureStation: selectedDepartureStation,
+      });
+    } else {
+      setDialogMessage('You cannot select the same station as both departure and arrival.');
+      setErrorDialogOpen(true);
+    }
+  };
+
+  const changeArrivalStationHandler = (selectedArrivalStation) => {
+    if (selectedArrivalStation === null) {
+      return;
+    }
+
+    if (selectedArrivalStation.id !== state.departureStation.id) {
+      setState({
+        ...state,
+        arrivalStation: selectedArrivalStation,
+      });
+    } else {
+      setDialogMessage('You cannot select the same station as both departure and arrival.');
+      setErrorDialogOpen(true);
+    }
+  };
+
+  const saveTrain = (event) => {
+    event.preventDefault();
+    if (isEditable) {
+      const error = checkState();
+
+      if (error) {
+        return;
+      } else {
+        trainService.updateTrain(state.id, state)
+          .then((response) => {
+            if (response.status === 200) {
+              setDialogMessage('Train updated successfully');
+              setSuccessDialogOpen(true);
             } else {
-                trainService.updateTrain(state.id, state)
-                    .then((response) => {
-                        if (response.status === 200) { // Check the response status
-                            setDialogMessage('Train updated successfully');
-                            setSuccessDialogOpen(true);
-                        } else {
-                            setDialogMessage('Error updating train. Please try again.'); // Generic error message
-                            setErrorDialogOpen(true);
-                        }
-                    })
-                    .catch((error) => {
-                        setDialogMessage(error.message); // Display the error message
-                        setErrorDialogOpen(true);
-                    });
+              setDialogMessage('Error updating train. Please try again.');
+              setErrorDialogOpen(true);
             }
-        }
-    };
-    
-    /**
-     * Check the validity of the state before saving.
-     * @returns {string} - An error message, if any, or an empty string if no error.
-     */
-    function checkState() {
-        return "";
+          })
+          .catch((error) => {
+            setDialogMessage(error.message);
+            setErrorDialogOpen(true);
+          });
+      }
     }
+  };
 
-    /**
-     * Handle the change of seats input.
-     * @param {Event} event - The input change event.
-     */
-    const changeSeatsHandler = (event) => {
-      setState({ ...state, seats: event.target.value });
-    };
-  
-    /**
-     * Handle the change of train number input.
-     * @param {Event} event - The input change event.
-     */
-    const changeTrainNumberHandler = (event) => {
-      setState({ ...state, trainNumber: event.target.value });
-    };
-  
-    /**
-     * Handle the change of duration input in minutes.
-     * @param {Event} event - The input change event.
-     */
-    const changeDurationHandler = (event) => {
-      setState({...state, duration: minutesToDuration(event.target.value)});
-      setParsedDuration(event.target.value);
+  const checkState = () => {
+    const validationErrors = {
+      departureStation: validator.isEmpty(String(state.departureStation?.id)) ? 'This field is required' : null,
+      arrivalStation: validator.isEmpty(String(state.arrivalStation?.id)) ? 'This field is required' : null,
+      trainNumber: validator.isEmpty(String(state.trainNumber)) ? 'This field is required' : null,
+      seats: validator.isEmpty(String(state.seats)) ? 'This field is required' : null,
+      duration: validator.isEmpty(String(state.duration)) ? 'This field is required' : null,
     };
 
-    /**
-     * Convert duration in ISO format to minutes.
-     * @param {string} durationISO - Duration in ISO format.
-     * @returns {number} - Duration in minutes.
-     */
-    function durationToMinutes(durationISO) {
-        if (!durationISO) {
-          return;
-        }
+    setErrors(validationErrors);
 
-        const duration = Duration.fromISO(durationISO);
-        return duration.as('minutes');
+    return Object.values(validationErrors).some((error) => error !== null);
+  };
+
+  const changeSeatsHandler = (event) => {
+    setState({ ...state, seats: event.target.value });
+  };
+
+  const changeTrainNumberHandler = (event) => {
+    setState({ ...state, trainNumber: event.target.value });
+  };
+
+  const changeDurationHandler = (event) => {
+    setState({ ...state, duration: minutesToDuration(event.target.value) });
+    setParsedDuration(event.target.value);
+  };
+
+  function durationToMinutes(durationISO) {
+    if (!durationISO) {
+      return;
     }
 
-    /**
-     * Convert minutes to duration in ISO format.
-     * @param {number} timeInMinutes - Duration in minutes.
-     * @returns {string} - Duration in ISO format.
-     */
-    function minutesToDuration(timeInMinutes) {
-        if (!timeInMinutes) {
-          return;
-        }
+    const duration = Duration.fromISO(durationISO);
+    return duration.as('minutes');
+  }
 
-        const minutes = parseInt(timeInMinutes);
-        const newDuration = Duration.fromObject({ minutes });
-        return newDuration.toISO();
+  function minutesToDuration(timeInMinutes) {
+    if (!timeInMinutes) {
+      return;
     }
 
-    /**
-     * Handle the edit button click to toggle edit mode.
-     */
-    function handleEditButton() {
-        setIsEditable(!isEditable)
+    const minutes = parseInt(timeInMinutes);
+    const newDuration = Duration.fromObject({ minutes });
+    return newDuration.toISO();
+  }
 
-        if (isEditable) {
-          setState(savedState);
-        }
+  const handleEditButton = () => {
+    setIsEditable(!isEditable);
+
+    if (isEditable) {
+      setState(savedState);
     }
+  };
 
-    return (
-      <div className="full-screen">
-        <div className='container-custom-mid'>
-            <div className="mb-4 d-flex justify-content-between align-items-center">
-                <h1>Train Details</h1>
-                <IconButton
-                  className="bg-primary"
-                  onClick={handleEditButton}
-                >
-                  <EditIcon className='text-white'/>
-                </IconButton>
-            </div>
-
-            <div className="row mt-4">
-                <div className='col'>
-                    <TextField
-                        label="Id"
-                        variant="outlined"
-                        value={state.id}
-                        disabled={true}
-                    />
-                </div>
-                <div className="col">
-                    <ComboBoxStations
-                      options={departureStationList}
-                      onSelect={changeDepartureStationHandler}
-                      label={"Departure Station"}
-                      disabled={!isEditable}
-                      defaultValue={state.departureStation}
-                      />
-                </div>
-                  <div className="col">
-                    <ComboBoxStations
-                      options={arrivalStationList}
-                      onSelect={changeArrivalStationHandler}
-                      label={"Arrival Station"} 
-                      defaultValue={state.arrivalStation}
-                      disabled={!isEditable}
-                      />
-                  </div>
-            </div>
-            <div className='row mt-4'>
-                <div className='col'>
-                    <TextField
-                        label="Train Number"
-                        variant="outlined"
-                        value={state.trainNumber}
-                        disabled={!isEditable}
-                        onChange={changeTrainNumberHandler}
-                    />
-                </div>
-                <div className='col'>
-                    <TextField
-                        label="Seats"
-                        variant="outlined"
-                        value={state.seats}
-                        disabled={!isEditable}
-                        onChange={changeSeatsHandler}
-                    />
-                </div>
-                <div className='col'>
-                    <TextField
-                        label="Duration in minutes"
-                        variant="outlined"
-                        value={parsedDuration}
-                        disabled={!isEditable}
-                        onChange={changeDurationHandler}
-                    />
-                </div>
-            </div>
-
-            <div className="row mt-4 justify-content-between">
-                {isEditable ? (
-                    <button type="button" className="btn btn-primary" onClick={saveTrain}>
-                        Save train
-                    </button>
-                ) : null}
-            </div>
-
-            <CustomizableDialog
-                type='success'
-                open={isSuccessDialogOpen}
-                title="Success"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => {
-                    setSuccessDialogOpen(false);
-                    window.location.reload();
-                }}
-            />
-            <CustomizableDialog
-                type='error'
-                open={isErrorDialogOpen}
-                title="Error"
-                content={dialogMessage}
-                agreeButtonLabel="OK"
-                showCancelButton={false}
-                onAgree={() => setErrorDialogOpen(false)}
-            />
-          </div>  
+  return (
+    <div className="full-screen">
+      <div className='container-custom-mid'>
+        <div className="mb-4 d-flex justify-content-between align-items-center">
+          <h1>Train Details</h1>
+          <IconButton
+            className="bg-primary"
+            onClick={handleEditButton}
+          >
+            <EditIcon className='text-white'/>
+          </IconButton>
         </div>
-    );
+
+        <div className="row mt-4">
+          <div className='col'>
+            <TextField
+              label="Id"
+              variant="outlined"
+              value={state.id}
+              disabled={true}
+            />
+          </div>
+          <div className="col">
+            <ComboBoxStations
+              options={departureStationList}
+              onSelect={changeDepartureStationHandler}
+              label={"Departure Station"}
+              disabled={!isEditable}
+              defaultValue={state.departureStation}
+              error={errors.departureStation}
+            />
+          </div>
+          <div className="col">
+            <ComboBoxStations
+              options={arrivalStationList}
+              onSelect={changeArrivalStationHandler}
+              label={"Arrival Station"}
+              defaultValue={state.arrivalStation}
+              disabled={!isEditable}
+              error={errors.arrivalStation}
+            />
+          </div>
+        </div>
+        <div className='row mt-4'>
+          <div className='col'>
+            <TextField
+              label="Train Number"
+              variant="outlined"
+              value={state.trainNumber}
+              disabled={!isEditable}
+              onChange={changeTrainNumberHandler}
+              error={errors.trainNumber}
+              helperText={errors.trainNumber}
+            />
+          </div>
+          <div className='col'>
+            <TextField
+              label="Seats"
+              variant="outlined"
+              type='number'
+              value={state.seats}
+              disabled={!isEditable}
+              onChange={changeSeatsHandler}
+              error={errors.seats}
+              helperText={errors.seats}
+            />
+          </div>
+          <div className='col'>
+            <TextField
+              label="Duration in minutes"
+              variant="outlined"
+              type='number'
+              value={parsedDuration}
+              disabled={!isEditable}
+              onChange={changeDurationHandler}
+              error={errors.duration}
+              helperText={errors.duration}
+            />
+          </div>
+        </div>
+
+        <div className="row mt-4 justify-content-between">
+          {isEditable ? (
+            <button type="button" className="btn btn-primary" onClick={saveTrain}>
+              Save train
+            </button>
+          ) : null}
+        </div>
+
+        <CustomizableDialog
+          type='success'
+          open={isSuccessDialogOpen}
+          title="Success"
+          content={dialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={() => {
+            setSuccessDialogOpen(false);
+            window.location.reload();
+          }}
+        />
+        <CustomizableDialog
+          type='error'
+          open={isErrorDialogOpen}
+          title="Error"
+          content={dialogMessage}
+          agreeButtonLabel="OK"
+          showCancelButton={false}
+          onAgree={() => setErrorDialogOpen(false)}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default DetailTrainComponent;

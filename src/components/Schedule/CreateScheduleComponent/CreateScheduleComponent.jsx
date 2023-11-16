@@ -28,7 +28,7 @@ function CreateScheduleComponent() {
     arrivalTime: '',
     occupiedSeats: 0,
     train: {
-      id: 0,
+      id: '',
       duration: '',
     },
   });
@@ -90,7 +90,6 @@ function CreateScheduleComponent() {
   const changeDepartureTimeHandler = (newDate) => {
     const formattedDate = newDate.format('YYYY-MM-DDTHH:mm');
     setState({ ...state, departureTime: formattedDate });
-    validateDepartureTime(formattedDate); // Validate departure time
   };
 
   /**
@@ -103,7 +102,6 @@ function CreateScheduleComponent() {
       return;
     }
     setState({ ...state, train: selectedTrain });
-    validateTrain(selectedTrain); // Validate train
   };
 
   /**
@@ -116,8 +114,7 @@ function CreateScheduleComponent() {
     const error = checkState();
 
     if (error) {
-      setDialogMessage('Error adding schedule. Please try again.');
-      setErrorDialogOpen(true);
+      return;
     } else {
       ScheduleService.createSchedule(state)
         .then(response => {
@@ -142,40 +139,15 @@ function CreateScheduleComponent() {
    * @returns {string} - An error message if required fields are not filled, or an empty string if everything is filled.
    */
   function checkState() {
-    if (
-      validator.isEmpty(state.train.id.toString()) || // Use validator to check if the ID is empty
-      validator.isEmpty(state.departureTime) ||
-      validator.isEmpty(state.arrivalTime)
-    ) {
-      return 'Please fill in all fields.';
-    }
+    const validationErrors = {
+      train: validator.isEmpty(String(state.train?.id)) ? 'Train is required' : '',
+      departureTime: validator.isEmpty(String(state.departureTime)) ? 'Departure time is required' : '',
+      arrivalTime: validator.isEmpty(String(state.arrivalTime)) ? 'Arrival time is required' : '',
+    };
 
-    return '';
-  }
+    setErrors(validationErrors);
 
-  /**
-   * Validate the departure time.
-   *
-   * @param {string} departureTime - The departure time to validate.
-   */
-  function validateDepartureTime(departureTime) {
-    const now = dayjs(); // Get the current date and time
-    const selectedDate = dayjs(departureTime);
-
-    const errorMessage = validator.isEmpty(departureTime) ? 'Departure time is required' : 
-      !selectedDate.isAfter(now) ? 'Departure time must be after the current date and time' : '';
-    
-    setErrors((prev) => ({ ...prev, departureTime: errorMessage }));
-  }
-
-  /**
-   * Validate the selected train.
-   *
-   * @param {object} selectedTrain - The selected train to validate.
-   */
-  function validateTrain(selectedTrain) {
-    const errorMessage = selectedTrain === null ? 'Train is required' : '';
-    setErrors((prev) => ({ ...prev, train: errorMessage }));
+    return Object.values(validationErrors).filter(Boolean).join(' ');
   }
 
   return (
@@ -193,6 +165,8 @@ function CreateScheduleComponent() {
                 disablePast={true}
                 value={dayjs(state.departureTime)}
                 onChange={changeDepartureTimeHandler}
+                error={errors.departureTime ? true : false}
+                helperText={errors.departureTime}
               />
             </LocalizationProvider>
           </div>
@@ -202,6 +176,7 @@ function CreateScheduleComponent() {
               label="Train"
               options={trainList}
               onSelect={changeTrainHandler}
+              error={errors.train}
             />
           </div>
         </div>

@@ -1,5 +1,7 @@
+// CreateTrainComponent.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import validator from 'validator';
 import TrainService from '../../../services/TrainService';
 import stationService from '../../../services/StationService';
 import "./CreateTrainComponent.css";
@@ -9,9 +11,6 @@ import { TextField } from '@mui/material';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import '../../SharedCSS.css';
 
-/**
- * Component for creating a new train record.
- */
 function CreateTrainComponent() {
   const [state, setState] = useState({
     seats: '',
@@ -35,6 +34,8 @@ function CreateTrainComponent() {
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     console.log("Obtiene las de salida");
     getDepartureStationList();
@@ -46,23 +47,20 @@ function CreateTrainComponent() {
   }, [state.departureStation]);
 
   useEffect(() => {
-      console.log("Obtiene las de salida");
-      getDepartureStationList();
+    console.log("Obtiene las de salida");
+    getDepartureStationList();
   }, [state.arrivalStation]);
 
-  /**
-   * Fetch and set the list of arrival stations based on the selected departure station.
-   */
   function getArrivalStationList() {
     stationService.getStations()
       .then((response) => {
         const stations = response.data;
         const departureStationId = state.departureStation.id;
-        
+
         const filteredStationList = stations.filter(
           (station) => station.id !== departureStationId
         );
-  
+
         setArrivalStationList(filteredStationList);
       })
       .catch((error) => {
@@ -71,19 +69,16 @@ function CreateTrainComponent() {
       });
   }
 
-  /**
-   * Fetch and set the list of departure stations based on the selected arrival station.
-   */
   function getDepartureStationList() {
     stationService.getStations()
       .then((response) => {
         const stations = response.data;
         const arrivalStationId = state.arrivalStation.id;
-        
+
         const filteredStationList = stations.filter(
           (station) => station.id !== arrivalStationId
         );
-  
+
         setDepartureStationList(filteredStationList);
       })
       .catch((error) => {
@@ -92,14 +87,19 @@ function CreateTrainComponent() {
       });
   }
 
-  /**
-   * Handler for changing the selected departure station.
-   * @param {object} selectedDepartureStation - The selected departure station.
-   */
   const changeDepartureStationHandler = (selectedDepartureStation) => {
-    if (selectedDepartureStation === null) {
+    if (!selectedDepartureStation) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        departureStation: true,
+      }));
       return;
     }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      departureStation: false,
+    }));
 
     setState({
       ...state,
@@ -107,14 +107,19 @@ function CreateTrainComponent() {
     });
   };
 
-  /**
-   * Handler for changing the selected arrival station.
-   * @param {object} selectedArrivalStation - The selected arrival station.
-   */
   const changeArrivalStationHandler = (selectedArrivalStation) => {
-    if (selectedArrivalStation === null) {
+    if (!selectedArrivalStation) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        arrivalStation: true,
+      }));
       return;
     }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      arrivalStation: false,
+    }));
 
     setState({
       ...state,
@@ -122,18 +127,10 @@ function CreateTrainComponent() {
     });
   };
 
-  /**
-   * Handler for changing the number of seats.
-   * @param {object} event - The event object representing the input change.
-   */
   const changeSeatsHandler = (event) => {
     setState({ ...state, seats: event.target.value });
   };
 
-  /**
-   * Handler for changing the train number.
-   * @param {object} event - The event object representing the input change.
-   */
   const changeTrainNumberHandler = (event) => {
     setState({ ...state, trainNumber: event.target.value });
   };
@@ -143,10 +140,6 @@ function CreateTrainComponent() {
     setState({ ...state, duration: formattedDuration });
   }, [updatedDuration]);
 
-  /**
-   * Handler for changing the duration in minutes.
-   * @param {object} event - The event object representing the input change.
-   */
   const changeDurationHandler = (event) => {
     const { value } = event.target;
 
@@ -157,10 +150,6 @@ function CreateTrainComponent() {
     setUpdatedDuration(value);
   };
 
-  /**
-   * Format the updated duration and update the state.
-   * @returns {string} The formatted duration in ISO format.
-   */
   function durationFormatter() {
     if (updatedDuration === '') {
       return '';
@@ -171,24 +160,16 @@ function CreateTrainComponent() {
     return newDuration.toISO();
   }
 
-  /**
-   * Cancel and navigate back to the previous page.
-   */
   function cancel() {
     navigate("/");
   }
 
-  /**
-   * Save the train record.
-   * @param {object} event - The event object representing the form submission.
-   */
   const saveTrain = (event) => {
     event.preventDefault();
-    const error = checkState();
+    const errors = checkState();
 
-    if (error) {
-      setDialogMessage('Error adding train. Please try again.');
-      setErrorDialogOpen(true);
+    if (errors) {
+      return;
     } else {
       TrainService.createTrain(state)
         .then(response => {
@@ -207,29 +188,25 @@ function CreateTrainComponent() {
     }
   }
 
-  /**
-   * Check if the form state is valid.
-   * @returns {string} An error message or an empty string if the state is valid.
-   */
   function checkState() {
-    if (state.seats === "") {
-      return "Please fill in all fields.";
-    }
-
-    return "";
+    const validationErrors = {
+      seats: validator.isEmpty(String(state.seats)) ? 'This field is required' : null,
+      duration: validator.isEmpty(String(state.duration)) ? 'This field is required' : null,
+      departureStation: validator.isEmpty(String(state.departureStation?.id)) ? 'This field is required' : null,
+      arrivalStation: validator.isEmpty(String(state.arrivalStation?.id)) ? 'This field is required' : null,
+      trainNumber: validator.isEmpty(String(state.trainNumber)) ? 'This field is required' : null,
+    };
+  
+    setErrors(validationErrors);
+  
+    return Object.values(validationErrors).some((error) => error !== null);
   }
 
-  /**
-   * Handler for closing the success dialog.
-   */
   const handleSuccessDialogClose = () => {
     setSuccessDialogOpen(false);
     window.location.reload();
   };
 
-  /**
-   * Handler for closing the error dialog.
-   */
   const handleErrorDialogClose = () => {
     setErrorDialogOpen(false);
   };
@@ -246,13 +223,17 @@ function CreateTrainComponent() {
             <ComboBoxStations
               options={departureStationList}
               onSelect={changeDepartureStationHandler}
-              label={"Departure Station"} />
+              label={"Departure Station"}
+              error={errors.departureStation}
+            />
           </div>
           <div className="col">
             <ComboBoxStations
               options={arrivalStationList}
               onSelect={changeArrivalStationHandler}
-              label={"Arrival Station"} />
+              label={"Arrival Station"}
+              error={errors.arrivalStation}
+            />
           </div>
         </div>
         <div className="row mt-4 justify-content-center">
@@ -264,6 +245,8 @@ function CreateTrainComponent() {
               variant="outlined"
               value={state.seats}
               onChange={changeSeatsHandler}
+              error={errors.seats}
+              helperText={errors.seats}
             />
           </div>
           <div className="col">
@@ -274,6 +257,8 @@ function CreateTrainComponent() {
               variant="outlined"
               value={updatedDuration}
               onChange={changeDurationHandler}
+              error={errors.duration}
+              helperText={errors.duration}
             />
           </div>
         </div>
@@ -285,6 +270,8 @@ function CreateTrainComponent() {
             variant="outlined"
             value={state.trainNumber}
             onChange={changeTrainNumberHandler}
+            error={errors.trainNumber}
+            helperText={errors.trainNumber}
           />
         </div>
 
@@ -299,7 +286,7 @@ function CreateTrainComponent() {
           <button
             type="button"
             className="btn btn-secondary mt-2"
-            onClick={()=>window.location.reload()}
+            onClick={() => window.location.reload()}
           >
             Clear
           </button>

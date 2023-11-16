@@ -1,5 +1,3 @@
-// RegisterComponent.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button } from '@mui/material';
@@ -62,22 +60,23 @@ function RegisterComponent() {
 
   const register = (event) => {
     event.preventDefault();
-    const error = checkState();
 
-    if (error) {
-      openDialog('error', error);
-    } else {
-      userService
-        .register(state.name, state.surname, state.email, state.password)
-        .then((response) => {
-          console.log('data', response.data);
-          navigate('/login');
-        })
-        .catch((error) => {
-          openDialog('error', 'Registration error');
-          console.log('Error: ', error);
-        });
+    const passwordError = validatePassword(state.password);
+
+    if (checkState() === 1 || passwordError) {
+      return;
     }
+
+    userService
+      .register(state.name, state.surname, state.email, state.password)
+      .then((response) => {
+        console.log('data', response.data);
+        openDialog('success', 'Registration succesfully');
+        navigate('/login');
+      })
+      .catch((error) => {
+        openDialog('error', 'Registration error');
+      });
   };
 
   function checkState() {
@@ -87,13 +86,16 @@ function RegisterComponent() {
       validator.isEmpty(state.email) ||
       validator.isEmpty(state.password) ||
       !validator.isEmail(state.email) ||
-      state.password.length < 8 ||
       !validator.isStrongPassword(state.password, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1 })
     ) {
-      return 'Please fill in all fields correctly';
+      validateEmail(state.email);
+      validateName(state.name);
+      validateSurname(state.surname);
+      validatePassword(state.password);
+      return 1;
     }
 
-    return '';
+    return 0;
   }
 
   const validateName = (name) => {

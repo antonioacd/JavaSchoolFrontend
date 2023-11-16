@@ -17,8 +17,8 @@ import validator from 'validator';
  */
 function SearchScheduleComponent() {
   const [state, setState] = useState({
-    departureStation: "",
-    arrivalStation: "",
+    departureStation: {id: ''},
+    arrivalStation: {id: ''},
     date: dayjs(),
   });
 
@@ -27,6 +27,7 @@ function SearchScheduleComponent() {
   const [schedules, setSchedules] = useState([]);
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('No schedules were found for the selected criteria.');
+  const [errors, setErrors] = useState({});
 
 
   const navigate = useNavigate();
@@ -135,8 +136,7 @@ function SearchScheduleComponent() {
     const error = checkState();
 
     if (error) {
-      setDialogMessage(error);
-      setErrorDialogOpen(true);
+      return;
     } else {
       setDialogMessage('No schedules were found for the selected criteria.');
       scheduleService
@@ -157,15 +157,14 @@ function SearchScheduleComponent() {
   };
 
   function checkState() {
-
-    console.log("Departure: ",state.departureStation);
-    console.log("Arrival: ",state.arrivalStation);
+    const validationErrors = {
+      departureStation: validator.isEmpty(String(state.departureStation?.id)) ? 'This field is required' : null,
+      arrivalStation: validator.isEmpty(String(state.arrivalStation?.id)) ? 'This field is required' : null,
+    };
   
-    if (state.departureStation === "" || state.arrivalStation === "") {
-      return 'Please fill in all fields';
-    }
+    setErrors(validationErrors);
   
-    return '';
+    return Object.values(validationErrors).some((error) => error !== null);
   }
 
   return (
@@ -178,6 +177,7 @@ function SearchScheduleComponent() {
                 label="Departure Station"
                 options={departureStationList}
                 onSelect={changeDepartureStationHandler}
+                error={errors.departureStation}
               />
             </div>
 
@@ -186,6 +186,7 @@ function SearchScheduleComponent() {
                 label="Arrival Station"
                 options={arrivalStationList}
                 onSelect={changeArrivalStationHandler}
+                error={errors.arrivalStation}
               />
             </div>
 

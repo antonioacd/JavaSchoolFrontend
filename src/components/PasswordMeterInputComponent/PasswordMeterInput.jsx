@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -21,50 +21,38 @@ const PasswordMeterInput = ({ value, onChange, error, helperText }) => {
     }
   };
 
-  const passwordMeterInputStyle = {
-    width: '100%',
-  };
-
-  const hue = Math.min(value.length * 10, 120);
-
   const validatePassword = (password) => {
     if (validator.isEmpty(password)) {
-      console.log("error vacio");
       return 'Password is required';
     }
 
     if (password.length < minLength) {
-      console.log("error longitud");
       return `Password must be at least ${minLength} characters long`;
     }
 
     if (!validator.isStrongPassword(password, { minLength: 8, minLowercase: 0, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
-      console.log("error cosas");
       return 'Password must contain at least 1 uppercase letter, 1 number, and 1 special character';
     }
 
-    console.log("error ninguno");
     return '';
   };
 
   const [passwordErrors, setPasswordErrors] = useState('');
+  const [hue, setHue] = useState(0);
 
-  useEffect(() => {
-    // Actualizar passwordErrors cada vez que cambie el valor
-    const error = validatePassword(value);
+  const handlePasswordChange = (e) => {
+    const password = e.target.value;
+    onChange(e);
+    const error = validatePassword(password);
     setPasswordErrors(error);
-  }, [value]);
+
+    // Calcular el color de la barra lineal
+    const newHue = Math.min(password.length * 10, 120);
+    setHue(newHue);
+  };
 
   return (
-    <Stack
-      spacing={0.5}
-      padding={0}
-      sx={{
-        '--hue': hue,
-        '--progress-color': `hsl(${hue} 80% 40%)`,
-        ...passwordMeterInputStyle,
-      }}
-    >
+    <Stack spacing={0.5} padding={0} sx={{ '--hue': hue }}>
       <TextField
         type="password"
         placeholder=" Password"
@@ -72,14 +60,8 @@ const PasswordMeterInput = ({ value, onChange, error, helperText }) => {
           startAdornment: <KeyIcon />,
         }}
         value={value}
-        onChange={(e) => {
-          const password = e.target.value;
-          onChange(e);
-          // Actualizar el estado con los errores de contraseña
-          const error = validatePassword(password);
-          setPasswordErrors(error);
-        }}
-        error={!!passwordErrors}
+        onChange={handlePasswordChange}
+        error={!!passwordErrors || error}
         helperText={passwordErrors || helperText}
       />
       <LinearProgress
@@ -88,7 +70,7 @@ const PasswordMeterInput = ({ value, onChange, error, helperText }) => {
         sx={{
           bgcolor: 'background.level3',
           '& .MuiLinearProgress-bar': {
-            backgroundColor: 'var(--progress-color)',
+            backgroundColor: `hsl(${hue} 80% 30%)`, // Usar el color calculado
           },
         }}
       />
