@@ -17,8 +17,8 @@ import validator from 'validator';
  */
 function SearchScheduleComponent() {
   const [state, setState] = useState({
-    departureStation: {id: ''},
-    arrivalStation: {id: ''},
+    departureStation: {id: '', city: ''},
+    arrivalStation: {id: '', city: ''},
     date: dayjs(),
   });
 
@@ -54,6 +54,7 @@ function SearchScheduleComponent() {
     stationService.getStations()
       .then((response) => {
         const stations = response.data;
+        
         const departureStationId = state.departureStation.id;
         
         const filteredStationList = stations.filter(
@@ -140,10 +141,11 @@ function SearchScheduleComponent() {
     } else {
       setDialogMessage('No schedules were found for the selected criteria.');
       scheduleService
-        .getSchedulesByCitiesAndDate(departureStation, arrivalStation, date)
+        .getSchedulesByCitiesAndDate(departureStation.city, arrivalStation.city, date)
         .then((res) => {
           const filteredSchedules = res.data;
-
+          console.log("Encontradas", res.data)
+          console.log("State", state)
           if (filteredSchedules.length === 0) {
             setErrorDialogOpen(true);
           } else {
