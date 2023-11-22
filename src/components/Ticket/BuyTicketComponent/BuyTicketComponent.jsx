@@ -138,7 +138,7 @@ function BuyTicketComponent() {
 
   return (
     <div className="full-screen">
-      <div className='container-custom-mid'>
+      <div className='container-custom-extra-big'>
         <div className='text-left'>
             <h5>Schedule Info</h5>
         </div>

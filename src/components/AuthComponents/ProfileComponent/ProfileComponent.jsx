@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Importa Link de React Router
+import { Link } from "react-router-dom";
 import TicketItemComponent from "./TicketItemComponent/TicketItemComponent";
 import userService from "../../../services/UserService";
 import ticketService from "../../../services/TicketService";
+import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
 const UserProfile = () => {
   const [user, setUser] = useState({
@@ -17,15 +19,11 @@ const UserProfile = () => {
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
-    
     getUser();
-
   }, []);
 
   useEffect(() => {
-    
     getTickets();
-
   }, [user]);
 
   const handleSignOut = () => {
@@ -33,55 +31,59 @@ const UserProfile = () => {
     window.location.reload();
   }
 
-  function getUser(){
+  function getUser() {
     userService.getUserByEmail(localStorage.getItem('email'))
-            .then((response) => {
-                if (response.status === 200) {
-                    const userData = response.data;
-                    setUser(userData);
-                } else {
-                    console.error("Error fetching user data.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching user data:", error);
-            });
+      .then((response) => {
+        if (response.status === 200) {
+          const userData = response.data;
+          setUser(userData);
+        } else {
+          console.error("Error fetching user data.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
   }
 
-  function getTickets(){
-    ticketService.getTicketsByUser(user.id
-    )
-            .then((response) => {
-                if (response.status === 200) {
-                    const ticketsData = response.data;
-                    setTickets(ticketsData);
-                } else {
-                    console.error("Error fetching user data.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching user data:", error);
-            });
+  function getTickets() {
+    ticketService.getTicketsByUser(user.id)
+      .then((response) => {
+        if (response.status === 200) {
+          const ticketsData = response.data;
+          setTickets(ticketsData);
+        } else {
+          console.error("Error fetching user data.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
   }
-  
+
   return (
     <div className="full-screen">
-      <div className="container-custom">
+      <div className="container-custom-big">
         <div className="text-center row">
           <div className="col">
             <h1>Hi, {user.name} {user.surname} !!</h1>
           </div>
-          <div className="col">
-            <button 
+          <div className="col-auto d-flex justify-content-between align-items-center">
+            <Link to="/manage-accounts" className="btn btn-secondary me-2">
+              <ManageAccountsIcon />
+              <span className="d-none d-sm-inline">Settings</span>
+            </Link>
+            <button
               className="btn btn-danger"
               onClick={handleSignOut}
-            >Sign Out</button>
+            >
+              <LogoutIcon />
+              <span className="d-none d-sm-inline">Log Out</span>
+            </button>
           </div>
-          
-          <hr />
-          {tickets.length > 0 ? ( // Verifica si hay tickets
+          {tickets.length > 0 ? (
             <div className="row mt-4">
-              <h4>There are your tickets.</h4>
+              <h4>These are your next travels.</h4>
               {tickets.map((ticket, index) => (
                 <TicketItemComponent key={index} ticket={ticket} />
               ))}
@@ -89,12 +91,11 @@ const UserProfile = () => {
           ) : (
             <div>
               <h4>There are no schedule trips yet.</h4>
-                <Link to="/schedule/search" className="btn btn-primary">
-                  Search for Trips
-                </Link>
+              <Link to="/schedule/search" className="btn btn-primary">
+                Search for Trips
+              </Link>
             </div>
           )}
-          
         </div>
       </div>
     </div>

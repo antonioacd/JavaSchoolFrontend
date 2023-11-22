@@ -5,6 +5,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
 import userService from '../../../services/UserService';
+import './HeaderComponent.css';
 
 const PAGES = [
     { id: 0, name: "Home", route: "/" },
@@ -96,7 +97,10 @@ const Header = () => {
                                 )}
                             </Tabs>
                             {token ? (
-                                <AccountCircleIcon sx={{ fontSize: 32, color: 'white', marginLeft: 'auto' }} onClick={handleProfileClick} />
+                                <AccountCircleIcon
+                                className="profile-icon"
+                                onClick={handleProfileClick}
+                                />
                             ) : (
                                 <>
                                     <Button sx={{ marginLeft: 'auto' }} variant='contained' onClick={handleLogin}>Login</Button>

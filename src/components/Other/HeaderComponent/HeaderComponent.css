@@ -1,0 +1,12 @@
+/* Asumiendo que tienes un archivo de estilos externo, por ejemplo, styles.css */
+.profile-icon {
+    font-size: 60px;
+    color: white;
+    margin-left: auto;
+    cursor: pointer;
+  }
+  
+  .profile-icon:hover {
+    color: #abb7c2; /* Cambia el color al pasar el ratón */
+  }
+  

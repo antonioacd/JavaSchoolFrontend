@@ -144,8 +144,6 @@ function SearchScheduleComponent() {
         .getSchedulesByCitiesAndDate(departureStation.city, arrivalStation.city, date)
         .then((res) => {
           const filteredSchedules = res.data;
-          console.log("Encontradas", res.data)
-          console.log("State", state)
           if (filteredSchedules.length === 0) {
             setErrorDialogOpen(true);
           } else {
