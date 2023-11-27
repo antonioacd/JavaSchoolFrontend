@@ -19,6 +19,7 @@ import RegisterPage from '../pages/RegisterPage';
 import ProfilePage from '../pages/ProfilePage';
 import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
 import ViewTicketsPage from '../pages/Ticket/ViewTicketPage';
+import ErrorPage from '../pages/ErrorPage';
 
 
 const AppRouter = () => {
@@ -37,6 +38,11 @@ const AppRouter = () => {
                     <Route 
                         path="/login"
                         element={<LoginPage/>}
+                    />
+
+                    <Route 
+                        path="*"
+                        element={<ErrorPage/>}
                     />
                     
                     {/* Home */}
