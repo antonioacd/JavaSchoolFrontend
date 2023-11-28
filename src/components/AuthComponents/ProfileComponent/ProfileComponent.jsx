@@ -69,10 +69,6 @@ const UserProfile = () => {
             <h1>Hi, {user.name} {user.surname} !!</h1>
           </div>
           <div className="col-auto d-flex justify-content-between align-items-center">
-            <Link to="/manage-accounts" className="btn btn-secondary me-2">
-              <ManageAccountsIcon />
-              <span className="d-none d-sm-inline">Settings</span>
-            </Link>
             <button
               className="btn btn-danger"
               onClick={handleSignOut}
