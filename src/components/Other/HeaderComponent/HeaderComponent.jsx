@@ -82,8 +82,8 @@ const Header = () => {
                                 {token ? (
                                     PAGES.map((page) => {
                                         if (
-                                            (userRole === 'ADMIN' && adminPages.includes(page.id)) ||
-                                            (userRole === 'USER' && userPages.includes(page.id))
+                                            (userRole === 'ROLE_ADMIN' && adminPages.includes(page.id)) ||
+                                            (userRole === 'ROLE_USER' && userPages.includes(page.id))
                                         ) {
                                             return <Tab key={page.route} label={page.name} />;
                                         }
