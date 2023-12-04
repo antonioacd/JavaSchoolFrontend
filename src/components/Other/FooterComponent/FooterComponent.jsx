@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
+import './FooterComponent.css';  // Import your CSS file
 
 class FooterComponent extends Component {
-    
-    constructor(props){
-        super(props)
-        this.state = {
-        }
-    }
     
     render() {
         return (
             <div>
-                <footer className='footer'>
-                    <span className='text-muted'>All Rights Reserved 2023 @JavaGuides</span>
-
-                </footer>
+                <div className='footer'>
+                    <div className='text'>
+                        All Rights Reserved 2023 @AntonioCabelloDelgado | 
+                        <a href="http://localhost:8000" target="_blank" rel="noopener noreferrer"> View Detailed Documentation</a>
+                    </div>
+                </div>
             </div>
         );
     }

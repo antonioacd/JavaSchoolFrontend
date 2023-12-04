@@ -1,0 +1,16 @@
+/* Estilos para el footer */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Estilos para el texto dentro del footer */
+.text {
+    font-size: 14px;
+    color: #ffffffbd;
+}

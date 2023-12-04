@@ -3,6 +3,7 @@ import { IconButton, div } from '@mui/material';
 import dayjs from 'dayjs';
 import "./TicketItemComponent.css";
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import duration from 'dayjs/plugin/duration';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
@@ -84,62 +85,94 @@ function TicketItemComponent({ ticket }) {
     return `${duration.hours()} hours, ${duration.minutes()} mins`;
   }
 
+  const handleDownloadPDF = async () => {
+    const ticketComponent = document.getElementById(`ticket-component-${ticket.id}`);
+  
+    try {
+      const canvas = await html2canvas(ticketComponent);
+      const imgData = canvas.toDataURL('image/png');
+  
+      const pdf = new jsPDF();
+      const imgWidth = 180;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      // Establecer formato para el título
+      pdf.setFontSize(20);  // Aumenta el tamaño del título
+      pdf.setFont('bold');
+      const title = "Ticket Confirmation";
+      const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+      const titleX = (pdf.internal.pageSize.width - titleWidth) / 2;  // Centra el título
+      pdf.text(title, titleX, 20);
+  
+      // Agregar imagen con ajuste de tamaño
+      pdf.addImage(imgData, 'PNG', 15, 30, imgWidth, imgHeight);
+  
+      // Contenido adicional
+      pdf.setFontSize(13);
+      pdf.text("Thank you for choosing our service.", 20, 135); // Ajusta la coordenada Y según tus necesidades
+      pdf.text("Please arrive early to complete check-in procedures.", 20, 145);
+      pdf.text("Remember not to consume food during the journey.", 20, 155);
+      pdf.text("Your cooperation is appreciated. Have a safe journey!", 20, 165);
 
-  const handleDownloadPDF = () => {
-    const pdf = new jsPDF();
-  
-    // Configuración para el título principal centrado y en negrita
-    pdf.setFontSize(18);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(90, 20, 'RAILWAY TRANSPORT COMPANY Ticket', { align: 'center' });
-    pdf.setFont('helvetica', 'normal');
-  
-    // Configuración para la información
-    pdf.setFontSize(12);
-  
-    // Departure Station
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(20, 40, 'Departure Station:');
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(70, 40, ticket.schedule.train.departureStation.name);
-  
-    // Departure City
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(20, 50, 'Departure City:');
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(70, 50, ticket.schedule.train.departureStation.city);
-  
-    // Departure Time
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(20, 60, 'Departure Time:');
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(70, 60, ticket.schedule.departureTime.substring(11, 16));
-  
-    // Repite el mismo patrón para otros campos...
-  
-    // Guardar el PDF como un archivo descargable
-    pdf.save('ticket.pdf');
+      // Precauciones antes del viaje
+      pdf.text("Precautions before your journey:", 20, 185);
+      pdf.text("- Arrive at least 30 minutes before departure for check-in.", 20, 195);
+      pdf.text("- Avoid eating inside the train.", 20, 205);
+      pdf.text("- Follow safety guidelines provided by our staff.", 20, 215);
+
+      // Copiright y firma
+      pdf.text("© 2023 Railway Transport Company. All rights reserved.", 20, 280);
+
+      pdf.save(`ticket_${ticket.id}_${ticket.user.name}_${ticket.user.surname}.pdf`);
+    } catch (error) {
+      console.error('Error capturing ticket image:', error);
+    }
   };
   
-  
-  
-
   return (
     <div className="main-2">
-      <div className="ticket-main-2">
+      <div className="mb-2 buttons-2"> 
+        <div className="mr-2">
+          <IconButton className='bg-danger' onClick={() => handleDeleteTicket(ticket.id)}>
+            <DeleteIcon className="text-white"/>
+          </IconButton>
+        </div>
+        <div className="ml-2">
+          <IconButton className='bg-primary ml-2' onClick={handleDownloadPDF}>
+            <ArrowCircleDownIcon className="text-white ml-2"></ArrowCircleDownIcon>
+          </IconButton>
+        </div>
+      </div>
+      <div id={`ticket-component-${ticket.id}`} className="col ticket-main-2">
         <div className='ticket-container-2'>
             <div className="row">
-                <div className='col cell-2 header'>RAILWAY TRANSPORT COMPANY</div>
+                <div className='col cell-2 header-2'>RAILWAY TRANSPORT COMPANY</div>
             </div>
             <div className="row">
+            <div className="col cell-2">
+              <div className='info-item-2'>Passenger</div>
+              <div className='info-detail-2'>{ticket.user.name} {ticket.user.surname}</div>
+            </div>
+          </div>
+            <div className="row">
                 <div className="col cell-2">
-                  <div className='info-item-2'>{ticket.schedule.train.departureStation.name}</div>
-                  <div className='info-detail-2'>{ticket.schedule.train.departureStation.city} - {ticket.schedule.departureTime.substring(11, 16)}</div>
+                  <div className='info-item-2'>Departure</div>
+                  <div className='info-detail-2'>{ticket.schedule.train.departureStation.name}</div>
                 </div>
                 <div className="col cell-2">
-                  <div className='info-item-2'>{ticket.schedule.train.arrivalStation.name}</div>
-                  <div className='info-detail-2'>{ticket.schedule.train.arrivalStation.city} - {ticket.schedule.arrivalTime.substring(11, 16)}</div>
+                  <div className='info-item-2'>Arrive</div>
+                  <div className='info-detail-2'>{ticket.schedule.train.arrivalStation.name}</div>
                 </div>
+            </div>
+            <div className="row">
+              <div className="col cell">
+                <div className='info-item'>Date</div>
+                <div className='info-detail'>{ticket.schedule.departureTime.substring(0, 10)}</div>
+              </div>
+              <div className="col cell">
+                <div className='info-item'>Time</div>
+                <div className='info-detail'>{ticket.schedule.arrivalTime.substring(11, 16)}</div>
+              </div>
             </div>
             <div className="row">
                 <div className="col cell-2">
@@ -161,33 +194,21 @@ function TicketItemComponent({ ticket }) {
                   <div className='info-detail-2'>{ticket.seatNumber}/{ticket.schedule.train.seats}</div>
                 </div>
                 <div className="col cell-2">
-                  <div className='info-item-2'>Occupied Seats</div>
-                  <div className='info-detail-2'>{ticket.schedule.occupiedSeats}</div>
+                  <div className='info-item-2'>Locator</div>
+                  <div className='info-detail-2'>{ticket.id}</div>
                 </div>
             </div>
-          </div>
-          </div>
-          <div className="row mt-2 buttons-2"> 
-            <div className="col">
-              <IconButton className='bg-danger' onClick={() => handleDeleteTicket(ticket.id)}>
-                <DeleteIcon className="text-white"/>
-              </IconButton>
-            </div>
-            <div className="col">
-              <IconButton className='bg-primary ml-2' onClick={handleDownloadPDF}>
-                <ArrowCircleDownIcon className="text-white ml-2"></ArrowCircleDownIcon>
-              </IconButton>
-            </div>
-          </div>
+        </div>
+      </div>
             {/* Success and error dialog components */}
 
         <CustomizableDialog
             type='warning'
             open={isDeleteDialogOpen}
-            title="Are you sure you want to delete the selected records?"
-            content="This action will permanently delete the selected records."
-            agreeButtonLabel="Yes, delete"
-            cancelButtonLabel='Cancel'
+            title="Are you sure you want to cancel your ticket?"
+            content="This action will permanently delete the selected ticket."
+            agreeButtonLabel="Yes"
+            cancelButtonLabel='No'
             showCancelButton={true}
             onCancel={handleCancelDelete}
             onAgree={handleConfirmDelete}

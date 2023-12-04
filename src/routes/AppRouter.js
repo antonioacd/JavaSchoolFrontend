@@ -20,12 +20,14 @@ import ProfilePage from '../pages/ProfilePage';
 import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
 import ViewTicketsPage from '../pages/Ticket/ViewTicketPage';
 import ErrorPage from '../pages/ErrorPage';
+import FooterComponent from '../components/Other/FooterComponent/FooterComponent';
 
 
 const AppRouter = () => {
     return (
         <Router>
             <Header/>
+            <FooterComponent/>
             <div style={{marginTop: '60px'}}>
                 <Routes>
                     {/* Login and Register */}

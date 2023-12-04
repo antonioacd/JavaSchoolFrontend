@@ -3,6 +3,13 @@
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.buttons-2 > div:first-child {
+    margin-right: 10px; /* Ajusta el valor según la separación deseada */
 }
 
 .cell-2 {
@@ -12,7 +19,8 @@
 }
 
 .main-2 {
-    width: 90%;
+    margin-top: 10px;
+    width: 70%;
     padding: 20px;
     margin-left: auto;
     margin-right: auto;
@@ -37,6 +45,7 @@
     margin-left: auto;
     margin-right: auto;
     border: solid;
+    border-color: #0a69c2;
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.8);
 }
