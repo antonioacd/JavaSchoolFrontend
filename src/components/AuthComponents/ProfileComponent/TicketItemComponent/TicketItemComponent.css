@@ -1,0 +1,62 @@
+
+.buttons-2 {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cell-2 {
+    border: solid 1px;
+    margin: 2px;
+    text-transform: uppercase;
+}
+
+.main-2 {
+    width: 90%;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgb(220, 220, 220);
+    border-radius: 20px;
+}
+
+.info-item-2 {
+    font: 400 13px/1.2 "Arial Rounded", sans-serif; /* Peso de la fuente 400 (normal), tamaño 18px, interlineado 1.2 */
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.info-detail-2 {
+    font: 600 16px/1 "Jura", sans-serif; /* Peso de la fuente 600 (semi-negrita), tamaño 20px, interlineado 1 */
+    letter-spacing: 1px;
+    margin: 4px 0;
+}
+
+.ticket-main-2 {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.ticket-container-2 {
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 10px;
+}
+
+.header-2 {
+    font: 900 22px "Montserrat", sans-serif;
+    padding: 5px 0 5px 20px;
+    letter-spacing: 6px;
+    background: #0a69c2;
+    color: rgb(255, 255, 255);
+    margin: 2px;
+    text-transform: uppercase;
+}
+
+
+

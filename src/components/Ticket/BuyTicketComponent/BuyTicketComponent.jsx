@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button } from '@mui/material';
+import "./BuyTicketComponent.css";
+import { div, Button } from '@mui/material';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import userService from '../../../services/UserService';
 import ticketService from '../../../services/TicketService';
@@ -9,6 +10,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { Duration } from "luxon";
 dayjs.extend(duration);
+
 
 function BuyTicketComponent() {
 
@@ -137,58 +139,55 @@ function BuyTicketComponent() {
   const ticketIsValid = true; // Reemplaza con la lógica real para validar el ticket.
 
   return (
-    <div className="full-screen">
-      <div className='container-custom-extra-big'>
-        <div className='text-left'>
-            <h5>Schedule Info</h5>
-        </div>
-             
-        <div className='container-custom-bordered-center'>
-            <div className="row">
-                <div className="col">
-                    <Typography variant="h6">{schedule.train.departureStation.name}</Typography>
-                    <Typography>{schedule.train.departureStation.city} - {schedule.departureTime.substring(11, 16)}</Typography>
-                </div>
-                <div className="col arrow">
-                    <p>➔</p>
-                </div>
-                <div className="col">
-                    <Typography variant="h6">{schedule.train.arrivalStation.name}</Typography>
-                    <Typography>{schedule.train.arrivalStation.city} - {schedule.arrivalTime.substring(11, 16)}</Typography>
-                </div>
+    <div className='main'>
+      <div className='ticket-main'>
+        <div className='ticket-container'>
+          <div className="row">
+              <div className='col header'>RAILWAY TRANSPORT COMPANY</div>
+          </div>
+          <div className="row">
+            <div className="col cell">
+              <div className='info-item'>PASSENGER</div>
+              <div className='info-detail'>ANTONIO CABELLO</div>
             </div>
-            <div className="row mt-4 justify-content-center">
-                <div className="col">
-                    <Typography variant="h6">Duration</Typography>
-                    <Typography>{formatDuration(schedule.train.duration)}</Typography>
-                </div>
-                <div className="col">
-                <Typography variant="h6">Number</Typography>
-                    <Typography>{schedule.train.trainNumber}</Typography>
-                </div>
-                <div className="col">
-                <Typography variant="h6">Seats</Typography>
-                <Typography>{schedule.train.seats}</Typography>
-                </div>
+          </div>
+          <div className="row">
+            <div className="col cell">
+              <div className='info-item'>DEPART</div>
+              <div className='info-detail'>{schedule.train.departureStation.name}</div>
             </div>
-        </div>
-
-        <div className='mt-2'>
-            <h5>User Info</h5>
-        </div>
-
-        <div className='container-custom-bordered-center'>
-            <div className="row">
-                <div className="col">
-                    <Typography variant="h6">{user.name} {user.surname}</Typography>
-                </div>
-                <div className="col">
-                    <Typography variant="h6">{user.email}</Typography>
-                </div>
+            <div className="col cell">
+              <div className='info-item'>ARRIVE</div>
+              <div className='info-detail'>{schedule.train.arrivalStation.name}</div>
             </div>
+          </div>
+          <div className="row">
+            <div className="col cell">
+              <div className='info-item'>DATE</div>
+              <div className='info-detail'>{schedule.departureTime.substring(0, 10)}</div>
+            </div>
+            <div className="col cell">
+              <div className='info-item'>TIME</div>
+              <div className='info-detail'>{schedule.arrivalTime.substring(11, 16)}</div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col cell">
+              <div className='info-item'>DURATION</div>
+              <div className='info-detail'>{formatDuration(schedule.train.duration)}</div>
+            </div>
+            <div className="col cell">
+              <div className='info-item'>NUMBER</div>
+              <div  className='info-detail'>{schedule.train.trainNumber}</div>
+            </div>
+            <div className="col cell">
+              <div className='info-item'>SEATS</div>
+              <div className='info-detail'>{schedule.train.seats}</div>
+            </div>
+          </div>
         </div>
-
-        <div className="row mt-4 justify-content-center">
+      </div>
+        <div className="row mt-4 buttons">
           <button
             className='btn btn-primary'
             onClick={buyTicket}
@@ -202,7 +201,7 @@ function BuyTicketComponent() {
             SEARCH OTHER SCHEDULES
           </button>
         </div>
-
+  
         <CustomizableDialog
           type='success'
           open={isSuccessDialogOpen}
@@ -212,7 +211,7 @@ function BuyTicketComponent() {
           showCancelButton={false}
           onAgree={handleSuccessDialogClose}
         />
-
+  
         <CustomizableDialog
           type='error'
           open={isErrorDialogOpen}
@@ -223,8 +222,8 @@ function BuyTicketComponent() {
           onAgree={handleErrorDialogClose}
         />
       </div>
-    </div>
   );
+  
 }
 
 export default BuyTicketComponent;
