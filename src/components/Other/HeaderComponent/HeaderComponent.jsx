@@ -7,6 +7,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
 import DrawerComponent from '../DrawerComponent/DrawerComponent';
@@ -16,15 +17,16 @@ import './HeaderComponent.css';
 const PAGES = [
     { id: 0, name: "Home", route: "/", icon: <HomeIcon /> },
     { id: 1, name: "Searcher", route: "/schedule/search", icon: <TravelExploreIcon /> },
-    { id: 2, name: "Schedules", route: "/schedule/view", icon: <CalendarMonthIcon /> },
-    { id: 3, name: "Trains", route: "/train/view", icon: <TrainIcon /> },
-    { id: 4, name: "Stations", route: "/station/view", icon: <LocationOnIcon /> },
-    { id: 5, name: "Users", route: "/user/view", icon: <GroupIcon /> },
-    { id: 6, name: "Tickets", route: "/ticket/view", icon: <ConfirmationNumberIcon /> },
+    { id: 2, name: "Today travels", route: "/schedule/today", icon: <HourglassTopIcon /> },
+    { id: 3, name: "Schedules", route: "/schedule/view", icon: <CalendarMonthIcon /> },
+    { id: 4, name: "Trains", route: "/train/view", icon: <TrainIcon /> },
+    { id: 5, name: "Stations", route: "/station/view", icon: <LocationOnIcon /> },
+    { id: 6, name: "Users", route: "/user/view", icon: <GroupIcon /> },
+    { id: 7, name: "Tickets", route: "/ticket/view", icon: <ConfirmationNumberIcon /> },
 ];
 
 const adminPages = [0, 1, 2, 3, 4, 5, 6];
-const userPages = [0, 1];
+const userPages = [0, 1, 2];
 
 const Header = () => {
     const [value, setValue] = useState(0);

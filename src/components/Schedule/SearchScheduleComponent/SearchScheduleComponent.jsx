@@ -11,6 +11,7 @@ import scheduleService from '../../../services/ScheduleService';
 import SearchItemScheduleComponent from './SearchItemScheduleComponent/SearchItemScheduleComponent';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import validator from 'validator';
+import { ConstructionOutlined } from '@mui/icons-material';
 
 /**
  * Component for searching schedules based on departure station, arrival station, and date.
@@ -139,6 +140,7 @@ function SearchScheduleComponent() {
     if (error) {
       return;
     } else {
+      console.log(date);
       setDialogMessage('No schedules were found for the selected criteria.');
       scheduleService
         .getSchedulesByCitiesAndDate(departureStation.city, arrivalStation.city, date)

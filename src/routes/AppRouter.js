@@ -21,6 +21,7 @@ import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
 import ViewTicketsPage from '../pages/Ticket/ViewTicketPage';
 import ErrorPage from '../pages/ErrorPage';
 import FooterComponent from '../components/Other/FooterComponent/FooterComponent';
+import TodaySchedulesPage from '../pages/Schedule/TodaySchedulesPage';
 
 
 const AppRouter = () => {
@@ -110,6 +111,10 @@ const AppRouter = () => {
                         <Route 
                             path="/schedule/search"
                             element={<SearchSchedulePage/>}
+                        />
+                        <Route 
+                            path="/schedule/today"
+                            element={<TodaySchedulesPage/>}
                         />
                         <Route 
                             path="/schedule/view"
