@@ -7,13 +7,29 @@
 }
 .search-button:hover {
     background-color:rgb(23, 62, 146);
-        border-color: grey;
-        border-radius: 20px;
+    border-color: grey;
+    border-radius: 20px;
 }
 
 .search-button:active {
     background-color:darkgray;
-        border-color: grey;
-        border-radius: 20px;
+    border-color: grey;
+    border-radius: 20px;
 }
-    
+
+.page-container {
+    overflow: hidden;
+    background-image: url('/public/back-searcher.jpg'); /* Ajusta la ruta según la ubicación de tu imagen */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    background-attachment: fixed;
+}
+
+.full-screen-searcher {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }

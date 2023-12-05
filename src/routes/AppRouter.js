@@ -6,7 +6,7 @@ import CreateStationPage from '../pages/Station/CreateStationPage';
 import SearchSchedulePage from '../pages/Schedule/SearchSchedulePage';
 import CreateUserPage from '../pages/User/CreateUserPage';
 import ViewUsersPage from '../pages/User/ViewUsersPage';
-import HomePage from '../pages/HomePage';
+import HomePage from '../pages/Home/HomePage';
 import ViewTrainsPage from '../pages/Train/ViewTrainsPage';
 import ViewSchedulesPage from '../pages/Schedule/ViewSchedulesPage';
 import ViewStationsPage from '../pages/Station/ViewStationsPage';

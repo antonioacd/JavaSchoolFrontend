@@ -5,6 +5,7 @@ import "./TicketItemComponent.css";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import duration from 'dayjs/plugin/duration';
+import QRCode from 'qrcode.react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import { Duration } from "luxon";
@@ -103,7 +104,7 @@ function TicketItemComponent({ ticket }) {
       const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (pdf.internal.pageSize.width - titleWidth) / 2;  // Centra el título
       pdf.text(title, titleX, 20);
-  
+
       // Agregar imagen con ajuste de tamaño
       pdf.addImage(imgData, 'PNG', 15, 30, imgWidth, imgHeight);
   
@@ -165,13 +166,13 @@ function TicketItemComponent({ ticket }) {
                 </div>
             </div>
             <div className="row">
-              <div className="col cell">
-                <div className='info-item'>Date</div>
-                <div className='info-detail'>{ticket.schedule.departureTime.substring(0, 10)}</div>
+              <div className="col cell-2">
+                <div className='info-item-2'>Date</div>
+                <div className='info-detail-2'>{ticket.schedule.departureTime.substring(0, 10)}</div>
               </div>
-              <div className="col cell">
-                <div className='info-item'>Time</div>
-                <div className='info-detail'>{ticket.schedule.arrivalTime.substring(11, 16)}</div>
+              <div className="col cell-2">
+                <div className='info-item-2'>Time</div>
+                <div className='info-detail-2'>{ticket.schedule.arrivalTime.substring(11, 16)}</div>
               </div>
             </div>
             <div className="row">

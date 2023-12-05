@@ -168,8 +168,8 @@ function SearchScheduleComponent() {
   }
 
   return (
-    <div>
-      <div className="full-screen">
+    <div className='page-container'>
+      <div className="full-screen-searcher">
         <div className='row container-custom-big'>
           <div className="row">
             <div className="col">

@@ -128,11 +128,16 @@ function EnhancedTableComponent({ data, title, columns, rowsPerPageOptions, onAd
             </Tooltip>
           ) : (
             <>
-              <Tooltip title="Filter" onClick={onFilterClick}>
-                <IconButton className={`${isFilterApplied ? 'bg-danger' : 'bg-primary'}`} sx={{ mr: 1 }}>
-                  <FilterListIcon className='text-white' />
-                </IconButton>
-              </Tooltip>
+              {onFilterClick && (
+                <Tooltip title="Filter" onClick={onFilterClick}>
+                  <IconButton
+                    className={`${isFilterApplied ? 'bg-danger' : 'bg-primary'}`}
+                    sx={{ mr: 1 }}
+                  >
+                    <FilterListIcon className="text-white" />
+                  </IconButton>
+                </Tooltip>
+              )}
               <Tooltip title="Add Record" onClick={onAddRecord}>
                 <IconButton className='bg-primary'>
                   <AddIcon className='text-white' />

@@ -220,7 +220,7 @@ function ViewSchedulesComponent() {
       <CustomizableDialog
         type='error'
         open={isErrorDialogOpen}
-        title="Deletion Error"
+        title="Error"
         content={errorDialogMessage}
         agreeButtonLabel="OK"
         showCancelButton={false}
