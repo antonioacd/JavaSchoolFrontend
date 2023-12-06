@@ -19,13 +19,9 @@ function ViewTicketsComponent({ initialData, isMainPage }) {
 
   useEffect(() => {
     if (!main) {
-      console.log("pasa de todos", main);
       setData(dataToTickets(initialData));
-      console.log("Tickets de la schedule: ",initialData);
       return;
     }
-
-    console.log("coge todos", main);
     fetchTicketData();
   }, [initialData]);
 

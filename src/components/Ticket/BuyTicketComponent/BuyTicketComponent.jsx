@@ -149,7 +149,7 @@ function BuyTicketComponent() {
           <div className="row">
             <div className="col cell">
               <div className='info-item'>PASSENGER</div>
-              <div className='info-detail'>ANTONIO CABELLO</div>
+              <div className='info-detail'>{user.name} {user.surname}</div>
             </div>
           </div>
           <div className="row">
