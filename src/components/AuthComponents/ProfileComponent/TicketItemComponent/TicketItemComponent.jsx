@@ -172,7 +172,7 @@ function TicketItemComponent({ ticket }) {
               </div>
               <div className="col cell-2">
                 <div className='info-item-2'>Time</div>
-                <div className='info-detail-2'>{ticket.schedule.arrivalTime.substring(11, 16)}</div>
+                <div className='info-detail-2'>{ticket.schedule.departureTime.substring(11, 16)}</div>
               </div>
             </div>
             <div className="row">

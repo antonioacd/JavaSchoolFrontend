@@ -131,7 +131,7 @@ function BuyTicketComponent() {
         }
       })
       .catch(error => {
-        setDialogMessage("You already have a ticket for this schedule");
+        setDialogMessage(error.response.data);
         setErrorDialogOpen(true);
       });
   };
@@ -169,7 +169,7 @@ function BuyTicketComponent() {
             </div>
             <div className="col cell">
               <div className='info-item'>TIME</div>
-              <div className='info-detail'>{schedule.arrivalTime.substring(11, 16)}</div>
+              <div className='info-detail'>{schedule.departureTime.substring(11, 16)}</div>
             </div>
           </div>
           <div className="row">
