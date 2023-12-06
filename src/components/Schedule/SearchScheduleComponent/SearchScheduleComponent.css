@@ -23,12 +23,12 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 100vh;
+    min-height: 90vh;
     background-attachment: fixed;
 }
 
 .full-screen-searcher {
-    min-height: 100vh;
+    min-height: 90vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;

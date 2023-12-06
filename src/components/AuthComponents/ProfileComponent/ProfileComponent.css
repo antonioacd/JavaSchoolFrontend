@@ -1,0 +1,11 @@
+.full-screen-profile {
+    background-image: url('/public/back-searcher.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-attachment: fixed;
+}

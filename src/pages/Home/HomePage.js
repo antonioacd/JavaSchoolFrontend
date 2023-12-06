@@ -1,5 +1,6 @@
 import React from "react";
 import "./HomePage.css";
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
@@ -12,12 +13,13 @@ function HomePage() {
 
     return (
         <div className="container-background">
+            <div className="title">Uncover the magic of train travel, where the journey is as captivating as the destination</div>
             <button
                 type="button"
                 className="btn btn-primary button"
                 onClick={handleSearchSchedulesClick}
             >
-                Search Schedules
+                <SearchIcon style={{ marginRight: 8 }} /> Plan Your Journey
             </button>
         </div>
     );

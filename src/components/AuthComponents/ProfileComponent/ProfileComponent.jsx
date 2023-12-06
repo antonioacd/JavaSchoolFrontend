@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TicketItemComponent from "./TicketItemComponent/TicketItemComponent";
+import "./ProfileComponent.css";
 import userService from "../../../services/UserService";
 import ticketService from "../../../services/TicketService";
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -62,7 +63,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="full-screen">
+    <div className="full-screen-profile">
       <div className="container-custom-big">
         <div className="text-center row">
           <div className="col">

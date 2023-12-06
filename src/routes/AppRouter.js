@@ -19,7 +19,7 @@ import RegisterPage from '../pages/RegisterPage';
 import ProfilePage from '../pages/ProfilePage';
 import CreateTicketPage from '../pages/Ticket/CreateTicketPage';
 import ViewTicketsPage from '../pages/Ticket/ViewTicketPage';
-import ErrorPage from '../pages/ErrorPage';
+import ErrorPage from '../pages/Error/ErrorPage';
 import FooterComponent from '../components/Other/FooterComponent/FooterComponent';
 import TodaySchedulesPage from '../pages/Schedule/TodaySchedulesPage';
 

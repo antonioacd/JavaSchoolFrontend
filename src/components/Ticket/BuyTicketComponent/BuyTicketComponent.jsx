@@ -139,7 +139,8 @@ function BuyTicketComponent() {
   const ticketIsValid = true; // Reemplaza con la lógica real para validar el ticket.
 
   return (
-    <div className='main'>
+    <div className='background'>
+      <div className='main'>
       <div className='ticket-main'>
         <div className='ticket-container'>
           <div className="row">
@@ -222,6 +223,8 @@ function BuyTicketComponent() {
           onAgree={handleErrorDialogClose}
         />
       </div>
+    </div>
+    
   );
   
 }

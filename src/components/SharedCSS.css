@@ -1,7 +1,10 @@
 /* Clase para el fondo rojo en pantalla completa */
 .full-screen {
-  background-color: rgb(220, 220, 220);
-  min-height: 100vh;
+  background-image: url('/public/back-searcher.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 90vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
