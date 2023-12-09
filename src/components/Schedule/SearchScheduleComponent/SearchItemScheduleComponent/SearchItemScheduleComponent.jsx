@@ -12,7 +12,6 @@ function SearchItemScheduleComponent({ schedule }) {
   const navigate = useNavigate();
 
   const handleScheduleClick = (scheduleId) => {
-    console.log("Scheduleid: ", scheduleId);
     navigate(`/ticket/buy/${scheduleId}`);
   };
 

@@ -33,7 +33,8 @@ function TodaySchedulesComponent() {
         setSchedules(filteredSchedules);
       })
       .catch((error) => {
-        console.log("Error while searching", error);
+        setDialogMessage('Network error');
+        setErrorDialogOpen(true);
       });
   };
 

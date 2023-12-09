@@ -121,8 +121,6 @@ function ViewStationsComponent() {
    * @param {string} id - The ID of the station to view details.
    */
   const handleDetailsRecords = (id) => {
-    console.log('Showing details for station with ID:', id);
-    // You can navigate to the new page and pass the ID as part of the URL
     navigate(`/station/details/${id}`);
   };
 

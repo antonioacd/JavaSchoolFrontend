@@ -47,7 +47,6 @@ export default function ScheduleFilterDialogComponent({
 
   useEffect(() => {
     getTrainList();
-    console.log("trains:", trainList);
   }, [])
 
   /**

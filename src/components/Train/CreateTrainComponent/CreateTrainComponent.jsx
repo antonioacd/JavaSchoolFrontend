@@ -37,17 +37,14 @@ function CreateTrainComponent() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    console.log("Obtiene las de salida");
     getDepartureStationList();
   }, []);
 
   useEffect(() => {
-    console.log("Obtiene las de llegada");
     getArrivalStationList();
   }, [state.departureStation]);
 
   useEffect(() => {
-    console.log("Obtiene las de salida");
     getDepartureStationList();
   }, [state.arrivalStation]);
 

@@ -70,7 +70,6 @@ function LoginComponent() {
       })
       .catch((error) => {
         openDialog('error', 'Login error', 'Check if the password and email are correct.');
-        console.log('Error: ', error);
       });
   };
 

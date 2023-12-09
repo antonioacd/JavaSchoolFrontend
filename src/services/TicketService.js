@@ -47,7 +47,6 @@ class TicketService {
     }
 
     deleteTicket(id) {
-        console.log("Entra borrado")
         return this.axiosInstance.delete(`${TICKETS_API_BASE_URL}/${id}`);
     }
 

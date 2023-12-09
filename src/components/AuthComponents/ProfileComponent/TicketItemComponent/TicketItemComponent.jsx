@@ -17,7 +17,6 @@ dayjs.extend(duration);
 function TicketItemComponent({ ticket }) {
 
   const handleTicketClick = (ticketId) => {
-    console.log("Ticketid: ",ticketId);
   };
 
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -32,17 +31,10 @@ function TicketItemComponent({ ticket }) {
     setDeleteDialogOpen(true);
   };
 
-  useEffect(() => {
-    
-    console.log("Ticket; daFDS",ticket);
-
-  }, []);
-
   /**
    * Handle confirming the deletion of selected schedules.
    */
   const handleConfirmDelete = () => {
-    console.log("ticket siuu",ticketId);
     ticketService.deleteTicket(ticketId)
       .then(response => {
         if (response.status === 200) {

@@ -113,8 +113,6 @@ function ViewSchedulesComponent() {
    * @param {number} id - ID of the schedule to view.
    */
   const handleDetailsRecords = (id) => {
-    console.log('Showing details for schedule with ID:', id);
-    // Navigate to the details page and pass the ID in the URL
     navigate(`/schedule/details/${id}`);
   };
 
@@ -138,7 +136,8 @@ function ViewSchedulesComponent() {
         }
       })
       .catch((error) => {
-        console.log('Error while searching', error);
+        setErrorDialogMessage('Network error');
+        setErrorDialogOpen(true);
       });
 
     setFilterDialogOpen(false);

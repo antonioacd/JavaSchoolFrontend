@@ -119,7 +119,6 @@ function BuyTicketComponent() {
   };
 
   const buyTicket = () => {
-    console.log(ticket);
     ticketService.createTicket(ticket)
     .then(response => {
         if (response.status === 200) {

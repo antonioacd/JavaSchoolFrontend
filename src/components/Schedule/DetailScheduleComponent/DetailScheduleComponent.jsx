@@ -97,7 +97,6 @@ function DetailScheduleComponent() {
         ticketService.getTicketsByScheduleId(id)
             .then(response => {
               if (response.status === 200) {
-                console.log("Response, data",response.data);
                 setTicketList(response.data)
               } else {
                 setDialogMessage('Error getting tickets.');
@@ -117,11 +116,7 @@ function DetailScheduleComponent() {
         const originalDate = state.departureTime;
         const ISOduration = state.train.duration;
 
-        console.log("Original date: " + originalDate + " ISO duration: " + ISOduration);
-
         const nuevaFecha = sumarDuracionAFecha(originalDate, ISOduration);
-
-        console.log("Summed date: " + nuevaFecha);
 
         setState({ ...state, arrivalTime: nuevaFecha });
     }, [state.train.id, state.departureTime]);
@@ -185,7 +180,6 @@ function DetailScheduleComponent() {
                 setDialogMessage('Error adding schedule. Please try again.');
                 setErrorDialogOpen(true);
             } else {
-                console.log("State", state);
                 scheduleService.updateSchedule(state.id, state);
                 setDialogMessage('Schedule updated successfully');
                 setSuccessDialogOpen(true);

@@ -186,7 +186,8 @@ function ViewTrainsComponent() {
         }
       })
       .catch((error) => {
-        console.log('Error while searching', error);
+        setErrorDialogMessage('Network error');
+        setErrorDialogOpen(true);
       });
 
     setFilterDialogOpen(false);

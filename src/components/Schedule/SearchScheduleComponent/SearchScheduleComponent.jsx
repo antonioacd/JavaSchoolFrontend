@@ -34,17 +34,15 @@ function SearchScheduleComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Obtiene las de salida");
     getDepartureStationList();
   }, []);
 
   useEffect(() => {
-    console.log("Obtiene las de llegada");
     getArrivalStationList();
   }, [state.departureStation]);
 
   useEffect(() => {
-      console.log("Obtiene las de salida");
+
       getDepartureStationList();
   }, [state.arrivalStation]);
 
@@ -140,7 +138,6 @@ function SearchScheduleComponent() {
     if (error) {
       return;
     } else {
-      console.log(date);
       setDialogMessage('No schedules were found for the selected criteria.');
       scheduleService
         .getSchedulesByCitiesAndDate(departureStation.city, arrivalStation.city, date)
@@ -153,7 +150,8 @@ function SearchScheduleComponent() {
           }
         })
         .catch((error) => {
-          console.log("Error while searching", error);
+          setDialogMessage('Network error');
+          setErrorDialogOpen(true);
         });
       }
   };

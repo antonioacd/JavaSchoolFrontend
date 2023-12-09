@@ -70,7 +70,6 @@ function RegisterComponent() {
     userService
       .register(state.name, state.surname, state.email, state.password)
       .then((response) => {
-        console.log('data', response.data);
         openDialog('success', 'Registration succesfully');
         navigate('/login');
       })
