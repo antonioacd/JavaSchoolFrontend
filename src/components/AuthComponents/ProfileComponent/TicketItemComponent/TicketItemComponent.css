@@ -9,7 +9,7 @@
 }
 
 .buttons-2 > div:first-child {
-    margin-right: 10px; /* Ajusta el valor según la separación deseada */
+    margin-right: 10px;
 }
 
 .cell-2 {
@@ -29,13 +29,13 @@
 }
 
 .info-item-2 {
-    font: 400 13px/1.2 "Arial Rounded", sans-serif; /* Peso de la fuente 400 (normal), tamaño 18px, interlineado 1.2 */
+    font: 400 13px/1.2 "Arial Rounded", sans-serif;
     letter-spacing: 0.5px;
     margin-top: 4px;
 }
 
 .info-detail-2 {
-    font: 600 16px/1 "Jura", sans-serif; /* Peso de la fuente 600 (semi-negrita), tamaño 20px, interlineado 1 */
+    font: 600 16px/1 "Jura", sans-serif;
     letter-spacing: 1px;
     margin: 4px 0;
 }

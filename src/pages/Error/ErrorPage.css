@@ -9,12 +9,12 @@
 }
 
 .image-404 {
-    max-width: 30%;  /* Ajusta según sea necesario */
-    height: auto;     /* Mantiene la proporción de la imagen */
+    max-width: 30%;
+    height: auto;
 }
 
 @font-face {
-    font-family: 'Inconsolata'; /* Nombre de la fuente */
+    font-family: 'Inconsolata';
     src: url('../../fonts/Inconsolata-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;

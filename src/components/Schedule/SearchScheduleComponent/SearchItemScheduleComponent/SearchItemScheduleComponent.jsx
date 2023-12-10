@@ -27,7 +27,7 @@ function SearchItemScheduleComponent({ schedule }) {
 
   const availableSeats = schedule.train.seats - schedule.occupiedSeats;
   const isSeatsAvailable = availableSeats > 0;
-  const scheduleClassName = `schedule-item ${isSeatsAvailable ? '' : 'bg-secondary'}`;
+  const scheduleClassName = `schedule-item ${isSeatsAvailable ? '' : 'bg-unavaible'}`;
 
   return (
     <div className="container">

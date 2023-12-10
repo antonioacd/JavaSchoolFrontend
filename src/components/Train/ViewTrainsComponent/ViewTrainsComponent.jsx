@@ -26,6 +26,9 @@ function ViewTrainsComponent() {
     trainService.getTrains().then((res) => {
       setData(convertDataToTrains(res.data));
       setAllTrains(res.data);
+    }).catch((error) => {
+      setErrorDialogMessage(error);
+      setErrorDialogOpen(true);
     });
   }, []);
 

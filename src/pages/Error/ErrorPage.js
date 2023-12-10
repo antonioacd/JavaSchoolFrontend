@@ -14,7 +14,7 @@ function ErrorPage() {
         <div className="main-container-404">
 
             <img className="image-404"
-                src="/404page.png"  // Ruta relativa desde la raíz del proyecto
+                src="/404page.png"
                 alt="Error 404"
             />
 

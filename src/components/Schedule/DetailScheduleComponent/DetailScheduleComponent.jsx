@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import 'react-datepicker/dist/react-datepicker.css';
 import ComboBoxTrains from '../../Other/ComboBox/ComboBoxTrains';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import './DetailScheduleComponent.css';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
@@ -73,7 +74,8 @@ function DetailScheduleComponent() {
                 }
             })
             .catch((error) => {
-                console.error("Error fetching schedule data:", error);
+                setDialogMessage(error);
+                setErrorDialogOpen(true);
             });
     }
 
@@ -180,9 +182,19 @@ function DetailScheduleComponent() {
                 setDialogMessage('Error adding schedule. Please try again.');
                 setErrorDialogOpen(true);
             } else {
-                scheduleService.updateSchedule(state.id, state);
-                setDialogMessage('Schedule updated successfully');
-                setSuccessDialogOpen(true);
+                scheduleService.updateSchedule(state.id, state).then(response => {
+                    if (response.status === 200) {
+                      setDialogMessage('Schedule updated successfully');
+                      setSuccessDialogOpen(true);
+                    } else {
+                      setDialogMessage('Error updating schedule. Please try again.');
+                      setErrorDialogOpen(true);
+                    }
+                  })
+                  .catch(error => {
+                    setDialogMessage('Error updating schedule. Please try again.');
+                    setErrorDialogOpen(true);
+                  });;
             }
         }
     };
@@ -197,7 +209,7 @@ function DetailScheduleComponent() {
     }
 
     return (
-        <div className="full-screen row">
+        <div className="full-screen-schedule row">
             <div className='container-custom-big'>
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <h1 className="">Schedule Details</h1>
@@ -323,7 +335,7 @@ function DetailScheduleComponent() {
                     onAgree={() => setErrorDialogOpen(false)}
                 />
             </div>
-            <div className='row'>
+            <div className='' >
                 <ViewTicketsComponent initialData={ticketList} isMainPage={false}/>
             </div>
             

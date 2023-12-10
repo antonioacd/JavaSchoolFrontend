@@ -23,12 +23,13 @@ function ViewSchedulesComponent() {
    * Load schedules and set initial data.
    */
   useEffect(() => {
-    const schedules = [];
-
     scheduleService.getSchedules().then((res) => {
       const schedulesInfo = res.data;
       setAllSchedules(schedulesInfo);
       setData(convertDataToSchedules(schedulesInfo));
+    }).catch((error) => {
+      setErrorDialogMessage(error);
+      setErrorDialogOpen(true);
     });
   }, []);
 

@@ -9,9 +9,8 @@ class StationService {
             baseURL: STATIONS_API_BASE_URL,
         });
 
-        // Agregar un interceptor para incluir el token en las solicitudes
         this.axiosInstance.interceptors.request.use((config) => {
-            const token = localStorage.getItem('accessToken'); // Obtén el token desde localStorage
+            const token = localStorage.getItem('accessToken');
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -20,7 +19,7 @@ class StationService {
     }
 
     getStations(){
-        return this.axiosInstance.get(); // Utiliza this.axiosInstance en lugar de axios
+        return this.axiosInstance.get();
     }
 
     getStationById(id){

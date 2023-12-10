@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import validator from 'validator';
-import TrainService from '../../../services/TrainService';
+import trainService from '../../../services/TrainService';
 import stationService from '../../../services/StationService';
 import "./CreateTrainComponent.css";
 import ComboBoxStations from '../../Other/ComboBox/ComboBoxStations';
@@ -168,7 +168,7 @@ function CreateTrainComponent() {
     if (errors) {
       return;
     } else {
-      TrainService.createTrain(state)
+      trainService.createTrain(state)
         .then(response => {
           if (response.status === 200) {
             setDialogMessage('Train added successfully');

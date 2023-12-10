@@ -3,7 +3,6 @@ import EnhancedTableComponent from '../../Other/TableComponent/EnhancedTableComp
 import { useNavigate } from 'react-router-dom';
 import ticketService from '../../../services/TicketService';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
-import { is } from 'date-fns/locale';
 
 function ViewTicketsComponent({ initialData, isMainPage }) {
   const [data, setData] = useState(initialData);
@@ -107,12 +106,8 @@ function ViewTicketsComponent({ initialData, isMainPage }) {
     fetchTicketData();
   };
 
-  const handleDetailsRecords = () => {
-    // Agrega la lógica necesaria para manejar los detalles de los registros
-  };
-
   return (
-    <div className="full-screen">
+    <div>
       <EnhancedTableComponent
         data={data}
         title="Tickets"
@@ -120,7 +115,6 @@ function ViewTicketsComponent({ initialData, isMainPage }) {
         rowsPerPageOptions={rowsPerPageOptions}
         onAddRecord={handleAddRecord}
         onDeleteRecords={handleDeleteRecords}
-        onViewRecord={handleDetailsRecords}
       />
       <CustomizableDialog
         type="warning"

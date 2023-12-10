@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ScheduleService from '../../../services/ScheduleService';
+import scheduleService from '../../../services/ScheduleService';
 import 'react-datepicker/dist/react-datepicker.css';
-import TrainService from '../../../services/TrainService';
+import trainService from '../../../services/TrainService';
 import ComboBoxTrains from '../../Other/ComboBox/ComboBoxTrains';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -49,9 +49,12 @@ function CreateScheduleComponent() {
    * Fetch the list of trains when the component mounts.
    */
   useEffect(() => {
-    TrainService.getTrains().then((res) => {
+    trainService.getTrains().then((res) => {
       const trains = res.data;
       setTrainList(trains);
+    }).catch((error) => {
+      setDialogMessage(error);
+      setErrorDialogOpen(true);
     });
   }, []);
 
@@ -116,7 +119,7 @@ function CreateScheduleComponent() {
     if (error) {
       return;
     } else {
-      ScheduleService.createSchedule(state)
+      scheduleService.createSchedule(state)
         .then(response => {
           if (response.status === 200) {
             setDialogMessage('Schedule added successfully');

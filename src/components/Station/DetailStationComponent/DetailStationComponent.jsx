@@ -19,8 +19,6 @@ function DetailStationComponent() {
     city: ""
   });
 
-  const navigate = useNavigate();
-
   const [isSuccessDialogOpen, setSuccessDialogOpen] = useState(false);
   const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');

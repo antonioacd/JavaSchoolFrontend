@@ -30,9 +30,6 @@ function SearchScheduleComponent() {
   const [dialogMessage, setDialogMessage] = useState('No schedules were found for the selected criteria.');
   const [errors, setErrors] = useState({});
 
-
-  const navigate = useNavigate();
-
   useEffect(() => {
     getDepartureStationList();
   }, []);

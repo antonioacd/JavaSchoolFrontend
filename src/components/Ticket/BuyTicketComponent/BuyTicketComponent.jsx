@@ -135,8 +135,6 @@ function BuyTicketComponent() {
       });
   };
 
-  const ticketIsValid = true; // Reemplaza con la lógica real para validar el ticket.
-
   return (
     <div className='background'>
       <div className='main'>

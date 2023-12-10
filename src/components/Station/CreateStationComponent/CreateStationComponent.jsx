@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import StationService from '../../../services/StationService';
+import stationService from '../../../services/StationService';
 import TextField from '@mui/material/TextField';
 import CustomizableDialog from '../../Other/CustomizableDialog/CustomizableDialog';
 import validator from 'validator';
@@ -61,7 +61,7 @@ function CreateStationComponent() {
       return;
     }
 
-    StationService.createStation(stationData)
+    stationService.createStation(stationData)
       .then((response) => {
         if (response.status === 200) {
           setDialogMessage('Station added successfully');

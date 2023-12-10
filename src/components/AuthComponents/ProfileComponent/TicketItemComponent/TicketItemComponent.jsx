@@ -89,31 +89,26 @@ function TicketItemComponent({ ticket }) {
       const imgWidth = 180;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
   
-      // Establecer formato para el título
-      pdf.setFontSize(20);  // Aumenta el tamaño del título
+      pdf.setFontSize(20);
       pdf.setFont('bold');
       const title = "Ticket Confirmation";
       const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (pdf.internal.pageSize.width - titleWidth) / 2;  // Centra el título
       pdf.text(title, titleX, 20);
 
-      // Agregar imagen con ajuste de tamaño
       pdf.addImage(imgData, 'PNG', 15, 30, imgWidth, imgHeight);
   
-      // Contenido adicional
       pdf.setFontSize(13);
       pdf.text("Thank you for choosing our service.", 20, 135); // Ajusta la coordenada Y según tus necesidades
       pdf.text("Please arrive early to complete check-in procedures.", 20, 145);
       pdf.text("Remember not to consume food during the journey.", 20, 155);
       pdf.text("Your cooperation is appreciated. Have a safe journey!", 20, 165);
 
-      // Precauciones antes del viaje
       pdf.text("Precautions before your journey:", 20, 185);
       pdf.text("- Arrive at least 30 minutes before departure for check-in.", 20, 195);
       pdf.text("- Avoid eating inside the train.", 20, 205);
       pdf.text("- Follow safety guidelines provided by our staff.", 20, 215);
 
-      // Copiright y firma
       pdf.text("© 2023 Railway Transport Company. All rights reserved.", 20, 280);
 
       pdf.save(`ticket_${ticket.id}_${ticket.user.name}_${ticket.user.surname}.pdf`);

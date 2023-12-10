@@ -19,7 +19,7 @@
 
 .page-container {
     overflow: hidden;
-    background-image: url('/public/back-searcher.jpg'); /* Ajusta la ruta según la ubicación de tu imagen */
+    background-image: url('/public/back-searcher.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

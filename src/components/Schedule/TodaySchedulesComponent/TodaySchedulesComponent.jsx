@@ -33,7 +33,7 @@ function TodaySchedulesComponent() {
         setSchedules(filteredSchedules);
       })
       .catch((error) => {
-        setDialogMessage('Network error');
+        setDialogMessage(error);
         setErrorDialogOpen(true);
       });
   };
