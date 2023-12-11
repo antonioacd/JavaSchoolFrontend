@@ -46,7 +46,6 @@ function ViewUsersComponent() {
   };
 
   const handleAddRecord = () => {
-    navigate('/user/create');
   };
 
   const handleDeleteRecords = (selectedIds) => {

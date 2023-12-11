@@ -100,7 +100,7 @@ function DetailStationComponent() {
 
   return (
     <div className="full-screen">
-      <div className='container-custom'>
+      <div className='container-custom-big'>
         <div className="mb-4 d-flex justify-content-between align-items-center">
           <h1 className="">Station Details</h1>
           <IconButton
